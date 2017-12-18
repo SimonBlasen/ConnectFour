@@ -36,4 +36,9 @@ public class VisualisationFilewriter {
 	{
 		return fieldDepth;
 	}
+	
+	public void WriteFields(List<FieldValue> fields)
+	{
+		
+	}
 }
