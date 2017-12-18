@@ -8,6 +8,7 @@ import de.cogsys.ai.sogo.game.SogoMove;
 import de.cogsys.ai.sogo.player.MrNovice;
 import de.cogsys.ai.sogo.player.MrRandom;
 import de.cogsys.ai.sogo.player.SogoPlayer;
+import visualisation.Visualisation;
 
 public class Sogo {
 
@@ -24,6 +25,10 @@ public class Sogo {
 		final SogoPlayer p2 = new MrRandom(); // new ConsolePlayer(br);
 		p1.initialize(Player.P1);
 		p2.initialize(Player.P2);
+		
+		
+		Visualisation visualisation = new Visualisation();
+		
 
 		// game loop
 		boolean playing = true;
@@ -34,6 +39,7 @@ public class Sogo {
 			turn++;
 			System.out.println("Turn " + turn + ":");
 			System.out.print(g);
+			visualisation.Visualize(g);
 
 			SogoPlayer player;
 
@@ -102,6 +108,7 @@ public class Sogo {
 			break;
 		}
 		System.out.print(g);
+		visualisation.Visualize(g);
 	}
 
 }

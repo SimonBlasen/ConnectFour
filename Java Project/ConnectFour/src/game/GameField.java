@@ -44,4 +44,14 @@ public class GameField {
 	{
 		return positionHeight;
 	}
+	
+	public int getFieldValue()
+	{
+		return fieldValue;
+	}
+	
+	public boolean IsEqual(GameField other)
+	{
+		return positionWidth == other.positionWidth && positionDepth == other.positionDepth && positionHeight == other.positionHeight && fieldValue == other.fieldValue;
+	}
 }
