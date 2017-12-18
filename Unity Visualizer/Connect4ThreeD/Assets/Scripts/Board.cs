@@ -153,9 +153,9 @@ public class Board : MonoBehaviour
                     }
                     instPiles.Clear();
 
-                    for (int x = 0; x < config.width + 1; x++)
+                    for (int x = 0; x < config.width; x++)
                     {
-                        for (int z = 0; z < config.height + 1; z++)
+                        for (int z = 0; z < config.height; z++)
                         {
                             GameObject instPile = Instantiate(pilePrefab, transform);
                             instPile.transform.position = new Vector3(x * gridWidth, 0f, z * gridWidth);

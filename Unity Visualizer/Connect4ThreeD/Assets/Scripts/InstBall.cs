@@ -26,7 +26,7 @@ public class InstBall : MonoBehaviour {
 	// Update is called once per frame
 	void Update ()
     {
-        transform.position = Vector3.Lerp(transform.position, new Vector3(finalPosition.x * Board.GridWidth + Board.GridWidth * 0.5f, finalPosition.y * Board.GridWidth + Board.GridWidth * 0.5f, finalPosition.z * Board.GridWidth + Board.GridWidth * 0.5f), lerpSpeed);
+        transform.position = Vector3.Lerp(transform.position, new Vector3(finalPosition.x * Board.GridWidth, finalPosition.y * Board.GridWidth + Board.GridWidth * 0.5f, finalPosition.z * Board.GridWidth), lerpSpeed);
 	}
 
 
@@ -41,7 +41,7 @@ public class InstBall : MonoBehaviour {
         {
             finalPosition = value;
 
-            transform.position = new Vector3(finalPosition.x * Board.GridWidth + Board.GridWidth * 0.5f, finalPosition.y * Board.GridWidth + Board.GridWidth * 0.5f + yStartOffest, finalPosition.z * Board.GridWidth + Board.GridWidth * 0.5f);
+            transform.position = new Vector3(finalPosition.x * Board.GridWidth, finalPosition.y * Board.GridWidth + yStartOffest + Board.GridWidth * 0.5f, finalPosition.z * Board.GridWidth);
 
             GetComponentInChildren<MeshRenderer>().materials[0] = new Material(GetComponentInChildren<MeshRenderer>().materials[0]);
             if (finalPosition.color >= 0 && finalPosition.color < colors.Length)

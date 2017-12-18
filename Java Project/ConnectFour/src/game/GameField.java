@@ -30,5 +30,18 @@ public class GameField {
 		this.fieldValue = fieldValue;
 	}
 	
-	public int 
+	public int getPositionWidth()
+	{
+		return positionWidth;
+	}
+	
+	public int getPositionDepth()
+	{
+		return positionDepth;
+	}
+	
+	public int getPositionHeight()
+	{
+		return positionHeight;
+	}
 }
