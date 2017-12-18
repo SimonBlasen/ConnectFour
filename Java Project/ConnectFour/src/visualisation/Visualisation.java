@@ -1,5 +1,6 @@
 package visualisation;
 
+import de.cogsys.ai.sogo.game.SogoGame;
 import main.GameState;
 
 public class Visualisation {
@@ -12,6 +13,11 @@ public class Visualisation {
 	}
 	
 	public void Visualize(GameState state)
+	{
+		
+	}
+	
+	public void Visualize(SogoGame sogoGame)
 	{
 		
 	}
