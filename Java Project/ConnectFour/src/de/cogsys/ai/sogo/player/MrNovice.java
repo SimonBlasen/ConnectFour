@@ -38,7 +38,7 @@ public class MrNovice implements SogoPlayer {
 	private static final double double_p = 2;
 	private static final double single_p = 1;
 
-	private static double evaluateGame(final SogoGame g) {
+	public static double evaluateGame(final SogoGame g) {
 		List<Player[]> lines = g.getLines();
 		double res = 0;
 		for (Player[] l : lines) {

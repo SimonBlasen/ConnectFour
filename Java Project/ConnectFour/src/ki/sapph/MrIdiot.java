@@ -6,6 +6,7 @@ import de.cogsys.ai.sogo.control.SogoGameConsole;
 import de.cogsys.ai.sogo.game.SogoGame;
 import de.cogsys.ai.sogo.game.SogoMove;
 import de.cogsys.ai.sogo.game.SogoGame.Player;
+import de.cogsys.ai.sogo.player.MrNovice;
 import de.cogsys.ai.sogo.player.SogoPlayer;
 
 public class MrIdiot implements SogoPlayer {
@@ -20,32 +21,56 @@ public class MrIdiot implements SogoPlayer {
 		final SogoGame g = c.getGame();
 		final List<SogoMove> moves = g.generateValidMoves();
 
+		c.updateMove(moves.get(0));
+		
+		double value = 0.0;
+		
 		for (int i = 0; i < moves.size(); i++)
 		{
-			SogoGame newGame = g.performMove(moves.get(i));
-			
-			List<SogoMove> newMoves = newGame.generateValidMoves();
-			boolean canOtherWin = false;
-			for (int j = 0; j < newMoves.size(); j++)
+			double newValue = depthSearch(g, 3, moves.get(i), value, true);
+			if (newValue > value)
 			{
-				SogoGame finalGame = newGame.performMove(newMoves.get(j));
-				
-				if (finalGame.ends())
-				{
-					canOtherWin = true;
-					break;
-				}
-			}
-			
-			if (canOtherWin == false)
-			{
+				value = newValue;
 				c.updateMove(moves.get(i));
-				break;
 			}
 		}
 		
+		System.out.println("Finished calculation. Value: " + value);
+	}
+	
+	private double depthSearch(SogoGame game, int depth, SogoMove move, double currentValue, boolean isMax)
+	{
+		SogoGame newGame = game.performMove(move);
 		
-		//c.updateMove(moves.get(0));
+		if (depth <= 0 || newGame.ends())
+		{
+			return evaluateGame(newGame);
+		}
+		else
+		{
+			final List<SogoMove> moves = newGame.generateValidMoves();
+			
+			for (int i = 0; i < moves.size(); i++)
+			{
+				double valueThere = depthSearch(newGame, depth - 1, moves.get(i), currentValue, !isMax);
+				
+				if (valueThere > currentValue == isMax)
+				{
+					currentValue = valueThere;
+				}
+			}
+			
+			return currentValue;
+		}
+	}
+	
+	
+	private double evaluateGame(SogoGame game)
+	{
+		double val = MrNovice.evaluateGame(game);
+		//System.out.println("Evaluated: " + val);
+		
+		return val;
 	}
 
 }
