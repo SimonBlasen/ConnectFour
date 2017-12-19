@@ -8,6 +8,7 @@ import de.cogsys.ai.sogo.game.SogoMove;
 import de.cogsys.ai.sogo.player.MrNovice;
 import de.cogsys.ai.sogo.player.MrRandom;
 import de.cogsys.ai.sogo.player.SogoPlayer;
+import ki.sapph.MrIdiot;
 import visualisation.Visualisation;
 
 public class Sogo {
@@ -22,7 +23,7 @@ public class Sogo {
 
 		SogoGame g = new SogoGame();
 		final SogoPlayer p1 = new MrNovice(); // new ConsolePlayer(br);
-		final SogoPlayer p2 = new MrRandom(); // new ConsolePlayer(br);
+		final SogoPlayer p2 = new MrIdiot(); // new ConsolePlayer(br);
 		p1.initialize(Player.P1);
 		p2.initialize(Player.P2);
 		
