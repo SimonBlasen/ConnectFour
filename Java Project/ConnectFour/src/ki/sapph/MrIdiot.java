@@ -11,9 +11,11 @@ import de.cogsys.ai.sogo.player.SogoPlayer;
 
 public class MrIdiot implements SogoPlayer {
 
+	private Player p;
+	
 	@Override
 	public void initialize(Player p) {
-		
+		this.p = p;
 	}
 
 	@Override
@@ -27,10 +29,12 @@ public class MrIdiot implements SogoPlayer {
 		
 		for (int i = 0; i < moves.size(); i++)
 		{
-			double newValue = depthSearch(g, 3, moves.get(i), value, true);
+			double newValue = depthSearch(g, 5, moves.get(i), value, true);
 			if (newValue > value)
 			{
 				value = newValue;
+
+				System.out.println("Updated: " + value);
 				c.updateMove(moves.get(i));
 			}
 		}
@@ -49,6 +53,8 @@ public class MrIdiot implements SogoPlayer {
 		else
 		{
 			final List<SogoMove> moves = newGame.generateValidMoves();
+			
+			currentValue = depthSearch(newGame, depth - 1, moves.get(0), currentValue, !isMax);
 			
 			for (int i = 0; i < moves.size(); i++)
 			{
@@ -70,7 +76,7 @@ public class MrIdiot implements SogoPlayer {
 		double val = MrNovice.evaluateGame(game);
 		//System.out.println("Evaluated: " + val);
 		
-		return val;
+		return (game.getCurrentPlayer() != p ? -val : val);
 	}
 
 }

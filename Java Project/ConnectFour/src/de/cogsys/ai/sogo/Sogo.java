@@ -9,11 +9,12 @@ import de.cogsys.ai.sogo.player.MrNovice;
 import de.cogsys.ai.sogo.player.MrRandom;
 import de.cogsys.ai.sogo.player.SogoPlayer;
 import ki.sapph.MrIdiot;
+import ki.sapph.MrInefficientTree;
 import visualisation.Visualisation;
 
 public class Sogo {
 
-	public static final long PLAYER_TIMEOUT = 10000;
+	public static final long PLAYER_TIMEOUT = 60000;
 	public static final long TIMEOUT_CULANCE = 1000;
 
 	public static void main(String[] args) {
@@ -23,7 +24,7 @@ public class Sogo {
 
 		SogoGame g = new SogoGame();
 		final SogoPlayer p1 = new MrNovice(); // new ConsolePlayer(br);
-		final SogoPlayer p2 = new MrIdiot(); // new ConsolePlayer(br);
+		final SogoPlayer p2 = new MrInefficientTree(); // new ConsolePlayer(br);
 		p1.initialize(Player.P1);
 		p2.initialize(Player.P2);
 		
