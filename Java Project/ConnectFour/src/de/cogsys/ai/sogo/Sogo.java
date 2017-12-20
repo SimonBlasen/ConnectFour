@@ -14,7 +14,7 @@ import visualisation.Visualisation;
 
 public class Sogo {
 
-	public static final long PLAYER_TIMEOUT = 60000;
+	public static final long PLAYER_TIMEOUT = 15000;
 	public static final long TIMEOUT_CULANCE = 1000;
 
 	public static void main(String[] args) {
@@ -22,95 +22,147 @@ public class Sogo {
 		// BufferedReader br = new BufferedReader(new
 		// InputStreamReader(System.in));
 
-		SogoGame g = new SogoGame();
-		final SogoPlayer p1 = new MrNovice(); // new ConsolePlayer(br);
-		final SogoPlayer p2 = new MrInefficientTree(); // new ConsolePlayer(br);
-		p1.initialize(Player.P1);
-		p2.initialize(Player.P2);
-		
-		
-		Visualisation visualisation = new Visualisation();
-		
-
-		// game loop
-		boolean playing = true;
-		int turn = 0;
-		final TimeCounter tc = new TimeCounter();
-		tc.reset();
-		while (playing) {
-			turn++;
-			System.out.println("Turn " + turn + ":");
-			System.out.print(g);
-			visualisation.Visualize(g);
-
-			SogoPlayer player;
-
-			if (g.getCurrentPlayer() == Player.P1) {
-				player = p1;
-			} else {
-				player = p2;
+		int p1Won = 0;
+		int p2Won = 0;
+		int draw = 0;
+		for (int rounds = 0; rounds < 100; rounds++)
+		{
+			System.out.println("Round: " + rounds);
+			
+			SogoGame g = new SogoGame();
+			final SogoPlayer p1;// = new MrNovice(); // new ConsolePlayer(br);
+			final SogoPlayer p2;// = new MrInefficientTree(); // new ConsolePlayer(br);
+			
+			if (rounds % 2 == 0)
+			{
+				p1 = new MrNovice();
+				p2 = new MrInefficientTree();
 			}
+			else
+			{
+				p1 = new MrInefficientTree();
+				p2 = new MrNovice();
+			}
+			
+			p1.initialize(Player.P1);
+			p2.initialize(Player.P2);
+			
+			
+			
+			Visualisation visualisation = new Visualisation();
+			
 
-			final SogoPlayer currentplayer = player;
-			final SogoMove[] m = new SogoMove[1];
-			SogoMove selectedMove = null;
-
+			// game loop
+			boolean playing = true;
+			int turn = 0;
+			final TimeCounter tc = new TimeCounter();
 			tc.reset();
+			while (playing) {
+				turn++;
+				//System.out.println("Turn " + turn + ":");
+				//System.out.print(g);
+				visualisation.Visualize(g);
 
-			final SogoGame sg = new SogoGame(g);
+				SogoPlayer player;
 
-			final Thread thread = new Thread(() -> {
-				currentplayer.generateNextMove(new SogoGameConsole() {
-					@Override
-					public SogoGame getGame() {
-						return new SogoGame(sg);
-					}
+				if (g.getCurrentPlayer() == Player.P1) {
+					player = p1;
+				} else {
+					player = p2;
+				}
 
-					@Override
-					public long getTimeLeft() {
-						return Math.max(0, PLAYER_TIMEOUT - tc.valueMilli());
-					}
+				final SogoPlayer currentplayer = player;
+				final SogoMove[] m = new SogoMove[1];
+				SogoMove selectedMove = null;
 
-					@Override
-					public void updateMove(final SogoMove move) {
-						m[0] = move;
-					}
+				tc.reset();
+
+				final SogoGame sg = new SogoGame(g);
+
+				final Thread thread = new Thread(() -> {
+					currentplayer.generateNextMove(new SogoGameConsole() {
+						@Override
+						public SogoGame getGame() {
+							return new SogoGame(sg);
+						}
+
+						@Override
+						public long getTimeLeft() {
+							return Math.max(0, PLAYER_TIMEOUT - tc.valueMilli());
+						}
+
+						@Override
+						public void updateMove(final SogoMove move) {
+							m[0] = move;
+						}
+					});
 				});
-			});
 
-			thread.start();
-			try {
-				thread.join(PLAYER_TIMEOUT + TIMEOUT_CULANCE);
-				selectedMove = m[0];
-				thread.interrupt();
-			} catch (InterruptedException e) {
+				thread.start();
+				try {
+					thread.join(PLAYER_TIMEOUT + TIMEOUT_CULANCE);
+					selectedMove = m[0];
+					thread.interrupt();
+				} catch (InterruptedException e) {
+				}
+
+				if (selectedMove == null || !g.isValidMove(selectedMove)) {
+					System.out.println(
+							"Player " + g.getCurrentPlayer() + " has selected an invalid move and forfeits the game");
+					//System.exit(1);
+					break;
+				}
+				g = g.performMove(selectedMove);
+				if (g.ends()) {
+					playing = false;
+				}
+				//System.out.println();
 			}
 
-			if (!g.isValidMove(selectedMove)) {
-				System.out.println(
-						"Player " + g.getCurrentPlayer() + "has selected an invalid move and forfeits the game");
-				System.exit(1);
+			switch (g.result()) {
+			case P1:
+				if (rounds % 2 == 0)
+				{
+					System.out.println("Player 1 (X) wins");
+					p1Won++;
+				}
+				else
+				{
+					System.out.println("Player 2 (O) wins");
+					p2Won++;
+				}
+				break;
+			case P2:
+				if (rounds % 2 == 0)
+				{
+					System.out.println("Player 2 (O) wins");
+					p2Won++;
+				}
+				else
+				{
+					System.out.println("Player 1 (X) wins");
+					p1Won++;
+				}
+				break;
+			case NONE:
+				System.out.println("Draw!");
+				draw++;
+				break;
 			}
-			g = g.performMove(selectedMove);
-			if (g.ends()) {
-				playing = false;
-			}
-			System.out.println();
+			//System.out.print(g);
+			
+
+			System.out.print("###############################");
+			System.out.print("###############################");
+			System.out.print("### [" + p1Won + ":" + p2Won + "] Draw: " + draw + " ######");
+			System.out.print("###############################");
+			System.out.print("###############################");
 		}
-
-		switch (g.result()) {
-		case P1:
-			System.out.println("Player 1 (X) wins");
-			break;
-		case P2:
-			System.out.println("Player 2 (O) wins");
-			break;
-		case NONE:
-			System.out.println("Draw!");
-			break;
-		}
-		System.out.print(g);
-		visualisation.Visualize(g);
+		
+		
+		
+		
+		//visualisation.Visualize(g);
 	}
 
 }
