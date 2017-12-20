@@ -9,7 +9,8 @@ public class MrIdiotGamestate {
 
 	public SogoGame game;
 	public boolean isMax;
-	public double value;
+	private double value;
+	private boolean valueSet = false;
 	
 	private List<MrIdiotGamestate> children;
 	private MrIdiotGamestate parent = null;
@@ -35,6 +36,50 @@ public class MrIdiotGamestate {
 	}
 	
 	
+	public double getValue()
+	{
+		if (valueSet == false)
+		{
+			return isMax ? 10000.0 : -10000.0;
+		}
+		return value;
+	}
+	
+	public void setValue(double value)
+	{
+		this.value = value;
+		valueSet = true;
+	}
+	
+	public boolean isValueSet()
+	{
+		return valueSet;
+	}
+	
+	/**
+	 * If a child node found a new value, which is possible to achieve
+	 * @param value
+	 * @return Whether the value helped or not
+	 */
+	public boolean updateValue(double value)
+	{
+		if (valueSet == false || (value > this.value == isMax))
+		{
+			setValue(value);
+			return true;
+		}
+		return false;
+	}
+	
+	public boolean doesHelp(double value)
+	{
+		if (valueSet == false)
+		{
+			return true;
+		}
+		
+		return value > this.value == isMax;
+	}
 	
 	public MrIdiotGamestate getParent()
 	{
