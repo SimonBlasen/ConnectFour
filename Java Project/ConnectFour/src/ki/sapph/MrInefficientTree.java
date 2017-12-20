@@ -71,49 +71,31 @@ public class MrInefficientTree implements SogoPlayer {
 	{
 		if (c.getTimeLeft() <= 0)
 		{
-			//System.out.println("Time run out");
 			return;
 		}
 		if (depth <= 0 || node.game.ends())
 		{
-			//if (node.game.ends())
-			//{
-			//	System.out.println("Game end found");
-			//}
 			node.setValue(evaluateGame(node.game));
-			
-			if (node.getValue() >= 999.0)
-			{
-				int asdf = 0;
-				asdf++;
-			}
 		}
 		else
 		{
 			List<SogoMove> moves = node.game.generateValidMoves();
 			for (int i = 0; i < moves.size(); i++)
 			{
-				if (moves.get(i) == null)
-				{
-					System.out.println("Would have nulled");
-				}
-				else
-				{
-					SogoGame newG = node.game.performMove(moves.get(i));
-					MrIdiotGamestate child = new MrIdiotGamestate(newG, !node.isMax);
-					child.setParent(node);
+				SogoGame newG = node.game.performMove(moves.get(i));
+				MrIdiotGamestate child = new MrIdiotGamestate(newG, !node.isMax);
+				child.setParent(node);
 					
-					evaluateNode(child, depth - 1);
-					node.updateValue(child.getValue());
+				evaluateNode(child, depth - 1);
+				node.updateValue(child.getValue());
 					
-					boolean didNodeChange = node.updateValue(child.getValue());
-					if (didNodeChange && node.getParent().doesHelp(node.getValue()) == false)
-					{
-						// You can prun this path
-						// The reason is, that 'node' found a better path in this child here. But it didnt help the parent, so the parent wont take any of the up comming children
-						
-						return;
-					}
+				boolean didNodeChange = node.updateValue(child.getValue());
+				if (didNodeChange && node.getParent().doesHelp(node.getValue()) == false)
+				{
+					// You can prun this path
+					// The reason is, that 'node' found a better path in this child here. But it didnt help the parent, so the parent wont take any of the up comming children
+					
+					return;
 				}
 			}
 			
@@ -140,7 +122,6 @@ public class MrInefficientTree implements SogoPlayer {
 	private double evaluateGame(SogoGame game)
 	{
 		double val = MrNovice.evaluateGame(game);
-		//System.out.println("Evaluated: " + val);
 		
 		return (game.getCurrentPlayer() != p ? -val : val);
 	}
