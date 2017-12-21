@@ -5,11 +5,12 @@ import de.cogsys.ai.sogo.control.TimeCounter;
 import de.cogsys.ai.sogo.game.SogoGame;
 import de.cogsys.ai.sogo.game.SogoGame.Player;
 import de.cogsys.ai.sogo.game.SogoMove;
+import de.cogsys.ai.sogo.player.BadPlayer;
 import de.cogsys.ai.sogo.player.MrNovice;
 import de.cogsys.ai.sogo.player.MrRandom;
 import de.cogsys.ai.sogo.player.SogoPlayer;
-import ki.sapph.MrIdiot;
-import ki.sapph.MrInefficientTree;
+//import ki.sapph.MrIdiot;
+//import ki.sapph.MrInefficientTree;
 import visualisation.Visualisation;
 
 public class Sogo {
@@ -36,11 +37,11 @@ public class Sogo {
 			if (rounds % 2 == 0)
 			{
 				p1 = new MrNovice();
-				p2 = new MrInefficientTree();
+				p2 = new BadPlayer();
 			}
 			else
 			{
-				p1 = new MrInefficientTree();
+				p1 = new BadPlayer();
 				p2 = new MrNovice();
 			}
 			
