@@ -6,6 +6,7 @@ import de.cogsys.ai.sogo.control.SogoGameConsole;
 import de.cogsys.ai.sogo.game.SogoGame.Player;
 import de.cogsys.ai.sogo.player.MrNovice;
 import de.cogsys.ai.sogo.player.SogoPlayer;
+import util.GameAnalyzer;
 import de.cogsys.ai.sogo.game.SogoGame;
 import de.cogsys.ai.sogo.game.SogoMove;
 
@@ -13,6 +14,12 @@ public class MrInefficientTree implements SogoPlayer {
 
 	private Player p;
 	private SogoGameConsole c;
+
+	private static final double win_p = 1000;
+	private static final double triple_p = 20;
+	private static final double double_p = 2;
+	private static final double single_p = 1;
+	
 	
 	@Override
 	public void initialize(Player p) {
@@ -32,7 +39,7 @@ public class MrInefficientTree implements SogoPlayer {
 		int tookIndex = 0;
 		
 		double maxYet = -10000.0;
-		for (int depth = 4; depth < 20; depth++)
+		for (int depth = 5; depth <= 20; depth += 1)
 		{
 			MrIdiotGamestate root = new MrIdiotGamestate(g, true, evaluateGame(g));
 			
@@ -89,9 +96,10 @@ public class MrInefficientTree implements SogoPlayer {
 				evaluateNode(child, depth - 1);
 				node.updateValue(child.getValue());
 					
-				boolean didNodeChange = node.updateValue(child.getValue());
-				if (didNodeChange && node.getParent().doesHelp(node.getValue()) == false)
+				//boolean didNodeChange = node.updateValue(child.getValue());
+				if (node.canPrun())
 				{
+					//System.out.println("Prun alpha");
 					// You can prun this path
 					// The reason is, that 'node' found a better path in this child here. But it didnt help the parent, so the parent wont take any of the up comming children
 					
@@ -121,8 +129,52 @@ public class MrInefficientTree implements SogoPlayer {
 	
 	private double evaluateGame(SogoGame game)
 	{
-		double val = MrNovice.evaluateGame(game);
+		double val = evaluateGameG(game);
 		
 		return (game.getCurrentPlayer() != p ? -val : val);
+	}
+	
+	public static double evaluateGameG(final SogoGame g) {
+		List<Player[]> lines = g.getLines();
+		double res = 0;
+		for (Player[] l : lines) {
+			int self = GameAnalyzer.countFreeLine(l, g.getCurrentPlayer());
+			int other = GameAnalyzer.countFreeLine(l, g.getOtherPlayer());
+			if (other == 0) {
+				switch (self) {
+				case 4:
+					return win_p;
+				case 3:
+					res += triple_p;
+					break;
+				case 2:
+					res += double_p;
+					break;
+				case 1:
+					res += single_p;
+					break;
+				default:
+					break;
+				}
+			}
+			if (self == 0) {
+				switch (other) {
+				case 4:
+					return -win_p;
+				case 3:
+					res -= triple_p;
+					break;
+				case 2:
+					res -= double_p;
+					break;
+				case 1:
+					res -= single_p;
+					break;
+				default:
+					break;
+				}
+			}
+		}
+		return res;
 	}
 }

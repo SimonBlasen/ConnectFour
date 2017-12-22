@@ -9,6 +9,8 @@ public class MrIdiotGamestate {
 
 	public SogoGame game;
 	public boolean isMax;
+	private double alpha;
+	private double beta;
 	private double value;
 	private boolean valueSet = false;
 	
@@ -31,6 +33,9 @@ public class MrIdiotGamestate {
 		this.game = game;
 		this.isMax = isMax;
 		this.value = value;
+		
+		this.alpha = -100000.0;
+		this.beta = 100000.0;
 		
 		children = new ArrayList<>();
 	}
@@ -63,12 +68,26 @@ public class MrIdiotGamestate {
 	 */
 	public boolean updateValue(double value)
 	{
+		if (isMax && value > alpha)
+		{
+			alpha = value;
+		}
+		else if (isMax == false && value < beta)
+		{
+			beta = value;
+		}
+		
 		if (valueSet == false || (value > this.value == isMax))
 		{
 			setValue(value);
 			return true;
 		}
 		return false;
+	}
+	
+	public boolean canPrun()
+	{
+		return alpha >= beta;
 	}
 	
 	public boolean doesHelp(double value)
@@ -89,6 +108,8 @@ public class MrIdiotGamestate {
 	public void setParent(MrIdiotGamestate parent)
 	{
 		this.parent = parent;
+		this.alpha = parent.alpha;
+		this.beta = parent.beta;
 		if (this.parent != null)
 		{
 			this.parent.children.add(this);

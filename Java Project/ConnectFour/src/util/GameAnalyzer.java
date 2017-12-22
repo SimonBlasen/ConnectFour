@@ -5,6 +5,22 @@ import de.cogsys.ai.sogo.game.SogoGame.Player;
 
 public class GameAnalyzer {
 
+	public static int countFreeLine(Player[] line, Player player) {
+		int c = 0;
+		for (int i = 0; i < 4; i++) {
+			if (line[i] == player) {
+				c++;
+			}
+			else if (line[i] != Player.NONE)
+			{
+				return 0;
+			}
+		}
+		return c;
+	}
+	
+	
+	
 	public static int getAmountOfLines(SogoGame g, int lineLength, Player player)
 	{
 		// ATTENTION: Doesnt work yet
