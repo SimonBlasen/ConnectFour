@@ -9,6 +9,8 @@ import de.cogsys.ai.sogo.player.BadPlayer;
 import de.cogsys.ai.sogo.player.MrNovice;
 import de.cogsys.ai.sogo.player.MrRandom;
 import de.cogsys.ai.sogo.player.SogoPlayer;
+import ki.sapph.MrInefficientTree;
+import ki.sapph.MrMoreefficientTree;
 //import ki.sapph.MrIdiot;
 //import ki.sapph.MrInefficientTree;
 import visualisation.Visualisation;
@@ -37,11 +39,11 @@ public class Sogo {
 			if (rounds % 2 == 0)
 			{
 				p1 = new MrNovice();
-				p2 = new BadPlayer();
+				p2 = new MrMoreefficientTree();
 			}
 			else
 			{
-				p1 = new BadPlayer();
+				p1 = new MrMoreefficientTree();
 				p2 = new MrNovice();
 			}
 			
@@ -120,6 +122,9 @@ public class Sogo {
 				//System.out.println();
 			}
 
+
+			visualisation.Visualize(g);
+
 			switch (g.result()) {
 			case P1:
 				if (rounds % 2 == 0)
@@ -151,7 +156,6 @@ public class Sogo {
 				break;
 			}
 			//System.out.print(g);
-			
 
 			System.out.print("###############################");
 			System.out.print("###############################");
@@ -163,7 +167,6 @@ public class Sogo {
 		
 		
 		
-		//visualisation.Visualize(g);
 	}
 
 }

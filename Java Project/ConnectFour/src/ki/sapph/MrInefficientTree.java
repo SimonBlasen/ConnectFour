@@ -39,7 +39,7 @@ public class MrInefficientTree implements SogoPlayer {
 		int tookIndex = 0;
 		
 		double maxYet = -10000.0;
-		for (int depth = 5; depth <= 20; depth += 1)
+		for (int depth = 5; depth <= 20; depth += 2)
 		{
 			MrIdiotGamestate root = new MrIdiotGamestate(g, true, evaluateGame(g));
 			
@@ -135,6 +135,7 @@ public class MrInefficientTree implements SogoPlayer {
 	}
 	
 	public static double evaluateGameG(final SogoGame g) {
+		
 		List<Player[]> lines = g.getLines();
 		double res = 0;
 		for (Player[] l : lines) {
