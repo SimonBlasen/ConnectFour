@@ -3,6 +3,8 @@ package ki.sapph;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.text.html.HTMLDocument.HTMLReader.IsindexAction;
+
 import de.cogsys.ai.sogo.game.SogoGame;
 import de.cogsys.ai.sogo.game.SogoGame.Player;
 
@@ -32,6 +34,8 @@ public class MrMoreefficientGamestate
 	 */
 	
 	
+	public long p1s = 0x00;
+	public long p2s = 0x00;
 	
 	private boolean[][][] b1s = new boolean[4][4][4];
 	private boolean[][][] b2s = new boolean[4][4][4];
@@ -108,7 +112,10 @@ public class MrMoreefficientGamestate
 	
 	public boolean fieldAir(int x, int y, int z)
 	{
-		return b1s[x][y][z] == false;
+		//return b1s[x][y][z] == false;
+		long temp = (0x1 << (x + y * 4 + z * 16));
+		
+		return (p1s & temp) == 0x00 && (p2s & temp) == 0x00;
 	}
 	
 	public boolean fieldAir(int[] coords)
@@ -118,7 +125,17 @@ public class MrMoreefficientGamestate
 	
 	public boolean fieldP(int x, int y, int z, boolean player)
 	{
-		return b2s[x][y][z] == player;
+		long temp = (0x1 << (x + y * 4 + z * 16));
+		
+		if (player)
+		{
+			return (p1s & temp) != 0x00;
+		}
+		else
+		{
+			return (p2s & temp) != 0x00;
+		}
+		//return b2s[x][y][z] == player;
 	}
 	
 	public boolean fieldP(int[] coords, boolean player)
@@ -156,12 +173,22 @@ public class MrMoreefficientGamestate
 				{
 					if (game.board[x][y][z] == Player.NONE)
 					{
-						b1s[x][y][z] = false;
+						//b1s[x][y][z] = false;
 					}
 					else
 					{
-						b1s[x][y][z] = true;
-						b2s[x][y][z] = game.board[x][y][z] != game.getCurrentPlayer();
+						long temp = (0x1 << (x + y * 4 + z * 16));
+						
+						if (game.board[x][y][z] == game.getCurrentPlayer())
+						{
+							p1s |= temp;
+						}
+						else
+						{
+							p2s |= temp;
+						}
+						//b1s[x][y][z] = true;
+						//b2s[x][y][z] = game.board[x][y][z] != game.getCurrentPlayer();
 					}
 				}
 			}
@@ -174,7 +201,10 @@ public class MrMoreefficientGamestate
 		this.alpha = parent.alpha;
 		this.beta = parent.beta;
 
-		for (int x = 0; x < 4; x++)
+		this.p1s = parent.p1s;
+		this.p2s = parent.p2s;
+		
+		/*for (int x = 0; x < 4; x++)
 		{
 			for (int y = 0; y < 4; y++)
 			{
@@ -185,7 +215,7 @@ public class MrMoreefficientGamestate
 				}
 			}
 		}
-		
+		*/
 		if (this.parent != null)
 		{
 			this.parent.children[moveIndex] = this;
@@ -196,9 +226,11 @@ public class MrMoreefficientGamestate
 			int y = moveIndex / 4;
 			int z = 0;
 			
+			long temp = (0x1 << (x + y * 4 + z * 16));
+			
 			for (int i = 0; i < 4; i++)
 			{
-				if (b1s[x][y][i] == false)
+				if (fieldAir(x, y, z))
 				{
 					z = i;
 					b1s[x][y][i] = true;
