@@ -9,6 +9,7 @@ import de.cogsys.ai.sogo.player.BadPlayer;
 import de.cogsys.ai.sogo.player.MrNovice;
 import de.cogsys.ai.sogo.player.MrRandom;
 import de.cogsys.ai.sogo.player.SogoPlayer;
+import ki.sapph.MrBitwiseTree;
 import ki.sapph.MrInefficientTree;
 import ki.sapph.MrMoreefficientTree;
 //import ki.sapph.MrIdiot;
@@ -39,11 +40,11 @@ public class Sogo {
 			if (rounds % 2 == 0)
 			{
 				p1 = new MrNovice();
-				p2 = new MrMoreefficientTree();
+				p2 = new MrBitwiseTree();
 			}
 			else
 			{
-				p1 = new MrMoreefficientTree();
+				p1 = new MrBitwiseTree();
 				p2 = new MrNovice();
 			}
 			

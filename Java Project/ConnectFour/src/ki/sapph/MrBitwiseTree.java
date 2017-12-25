@@ -55,12 +55,20 @@ public class MrBitwiseTree implements SogoPlayer {
 			
 			SogoMove nextMove = moves.get(0);
 			
-			for (int depth = 5; depth <= 20; depth += 1)
+			for (int depth = 7; depth <= 20; depth += 1)
 			{
 				boolean[][][] b1s = GameAnalyzer.getB1sFromGame(g);
 				boolean[][][] b2s = GameAnalyzer.getB2sFromGame(g);
+
+				long bp1 = GameAnalyzer.getBP1FromGame(g);
+				long bp2 = GameAnalyzer.getBP2FromGame(g);
+
+				//System.out.println("P1: " + Long.toBinaryString(bp1));
+				//System.out.println("P2: " + Long.toBinaryString(bp2));
 				
-				double val = evaluateNode(b1s, b2s, true, -1000000.0, 1000000.0, depth, true, 0);
+				//double val = evaluateNode(b1s, b2s, true, -1000000.0, 1000000.0, depth, true, 0);
+				
+				double val = evaluateNode(bp1, bp2, true, -100000.0, 100000.0, depth, true, 0);
 				
 
 				if (c.getTimeLeft() <= 0)
@@ -70,7 +78,7 @@ public class MrBitwiseTree implements SogoPlayer {
 				int took = (new Random(0)).nextInt(bestIndices.size());
 				c.updateMove(new SogoMove(bestIndices.get(took) % 4, bestIndices.get(took) / 4));
 				
-				System.out.println("Depth [" + depth + "] done. Actions: " + bestIndices.size());
+				System.out.println("Depth [" + depth + "] done");
 				
 				System.out.println("Took value: " + bestIndices.get(took));
 				
@@ -90,17 +98,17 @@ public class MrBitwiseTree implements SogoPlayer {
 	{
 		// Execute move at moveIndex
 		
-		long placedField = 0x0;
+		long placedField = 0x0L;
 		
 		if (firstNode == false)
 		{
 			for (int z = 0; z < 4; z++)
 			{
-				placedField = (0x00000001 << (moveIndex + z * 16));
+				placedField = (0x00000001L << (moveIndex + z * 16));
 				
-				if ((bp1 & placedField) == 0x0 && (bp2 & placedField) == 0x0)
+				if ((bp1 & placedField) == 0x0L && (bp2 & placedField) == 0x0L)
 				{
-					if (isMax)
+					if (!isMax)
 					{
 						bp1 |= placedField;
 					}
@@ -123,7 +131,7 @@ public class MrBitwiseTree implements SogoPlayer {
 		
 		
 
-		if (depth <= 0 || GameAnalyzer.hasGameEnded(isMax ? bp1 : bp2))
+		if (depth <= 0 || GameAnalyzer.hasGameEnded(isMax ? bp2 : bp1))
 		{
 			double val = evaluateGame(bp1, bp2);
 			return val;
@@ -132,14 +140,16 @@ public class MrBitwiseTree implements SogoPlayer {
 		{
 			for (int i = 0; i < 16; i++)
 			{
-				if (bsp1[i % 4][i / 4][3] == false && c.getTimeLeft() > 0)
+				long dropPosition = (0x1L << (48 + i));
+				
+				if ((bp1 & dropPosition) == 0x0L && (bp2 & dropPosition) == 0x0L && c.getTimeLeft() > 0)
 				{
-					double childValue = evaluateNode(bsp1, bsp2, !isMax, alpha, beta, depth - 1, false, i);
+					double childValue = evaluateNode(bp1, bp2, !isMax, alpha, beta, depth - 1, false, i);
 					
 					if (firstNode)
 					{
-						if (depth >= 7)
-						System.out.println("Move [" + i + "] is " + childValue);
+						if (depth >= 8)
+						System.out.println("Move [" + i + "] is " + (childValue != 10000.0 && childValue != -10000.0 ? childValue : "pruned"));
 					}
 					
 					if (childValue > bestValue == isMax)
@@ -172,20 +182,11 @@ public class MrBitwiseTree implements SogoPlayer {
 					if (alpha >= beta && firstNode == false)
 					{
 						// Pruning
-						
-						if (firstNode == false)
-						{
-							bsp1[x][y][z] = false;
-						}
 						return isMax ? 10000.0 : -10000.0;
 					}
 				}
 			}
 			
-			if (firstNode == false)
-			{
-				bsp1[x][y][z] = false;
-			}
 			return bestValue;
 		}
 		

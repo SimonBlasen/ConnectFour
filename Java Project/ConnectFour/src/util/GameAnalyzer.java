@@ -204,7 +204,7 @@ public class GameAnalyzer {
 	{
 		for (int i = 0; i < longLines.length; i++)
 		{
-			if ((bp1 & longLines[i]) != 0x0)
+			if ((bp1 & longLines[i]) == longLines[i])
 			{
 				return true;
 			}
@@ -212,6 +212,40 @@ public class GameAnalyzer {
 		return false;
 	}
 	
+	
+	public static long getBP1FromGame(SogoGame g)
+	{
+		long bp = 0x0L;
+		for (int z = 3; z >= 0; z--)
+		{
+			for (int y = 3; y >= 0; y--)
+			{
+				for (int x = 3; x >= 0; x--)
+				{
+					bp = (bp << 1) | (g.board[x][y][z] == g.getCurrentPlayer() ? 0x1L : 0x0L);
+				}
+			}
+		}
+		
+		return bp;
+	}
+	
+	public static long getBP2FromGame(SogoGame g)
+	{
+		long bp = 0x0L;
+		for (int z = 3; z >= 0; z--)
+		{
+			for (int y = 3; y >= 0; y--)
+			{
+				for (int x = 3; x >= 0; x--)
+				{
+					bp = (bp << 1) | (g.board[x][y][z] == g.getOtherPlayer() ? 0x1L : 0x0L);
+				}
+			}
+		}
+		
+		return bp;
+	}
 	
 	public static boolean[][][] getB1sFromGame(SogoGame g)
 	{
