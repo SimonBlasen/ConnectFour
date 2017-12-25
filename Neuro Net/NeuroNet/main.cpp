@@ -77,7 +77,7 @@ void xor_test()
     cout << endl << "Training network." << endl;
 
     FANN::training_data data;
-    if (data.read_train_from_file("/home/simon/git/ConnectFour/Neuro Net/xor.data"))
+    if (data.read_train_from_file("D:/Dokumente/GitHub2/ConnectFour/Neuro Net/xor.data"))
     {
         cout << "in loop" << endl;
 
