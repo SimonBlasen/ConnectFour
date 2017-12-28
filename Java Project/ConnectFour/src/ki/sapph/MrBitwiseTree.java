@@ -40,6 +40,114 @@ public class MrBitwiseTree implements SogoPlayer {
 	
 	private int counterP = 0;
 
+	public int generateNextMoveMuchBetter(long p1, long p2)
+	{
+		c = new SogoGameConsole() {
+			
+			@Override
+			public void updateMove(SogoMove move) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public long getTimeLeft() {
+				// TODO Auto-generated method stub
+				return 100000000L;
+			}
+			
+			@Override
+			public SogoGame getGame() {
+				return new SogoGame();
+			}
+		};
+		
+		double[] currentValues = new double[16];
+		double[] nextValues = new double[16];
+		
+		
+		
+		
+		if (false && counterP <= 4)
+		{
+			c.updateMove(new SogoMove(counterP, 0));
+			counterP++;
+		}
+		else
+		{
+			if (true || doneFirstMove)
+			{
+				int tookIndex = 0;
+				
+				double maxYet = -10000.0;
+				
+				
+				for (int depth = 4; depth <= 4; depth += 1)
+				{
+					//boolean[][][] b1s = GameAnalyzer.getB1sFromGame(g);
+					//boolean[][][] b2s = GameAnalyzer.getB2sFromGame(g);
+
+					long bp1 = p1;
+					long bp2 = p2;
+					
+					
+					
+					
+					//System.out.println("P1: " + Long.toBinaryString(bp1));
+					//System.out.println("P2: " + Long.toBinaryString(bp2));
+					
+					//double val = evaluateNode(b1s, b2s, true, -1000000.0, 1000000.0, depth, true, 0);
+					
+					double val = evaluateNode(bp1, bp2, true, -300000.0, 300000.0, depth, true, 0, depth <= 2);
+					
+
+					//int took = (new Random(0)).nextInt(bestIndices.size());
+
+					if (true)
+						
+					{
+
+						return takeIndex;
+					}
+					
+					int forbiddenAmount = 0;
+					for (int i = 0; i < forbidden.length; i++)
+					{
+						forbiddenAmount += forbidden[i] ? 1 : 0;
+					}
+					if (forbiddenAmount >= 15)
+					{
+						break;
+					}
+					
+					
+					System.out.println("Depth [" + depth + "] done");
+					
+					
+					if (safeWin != -1)
+					{
+						System.out.println("---- Took a safe win ---- at " + safeWin);
+						break;
+					}
+					else
+					{
+						System.out.println("Took value: " + takeIndex);
+					}
+				}
+				
+			}
+			else
+			{
+				doneFirstMove = true;
+			}
+		}
+		
+		
+		return 0;
+		
+	}
+	
+	
 	@Override
 	public void generateNextMove(SogoGameConsole c)
 	{
@@ -235,8 +343,8 @@ public class MrBitwiseTree implements SogoPlayer {
 					{
 						calcMoves[i] = childValue;
 						
-						if (depth >= 6 || showAll)
-						System.out.println("Move [" + i + "] is " + (childValue != 10000.0 && childValue != -10000.0 ? childValue : "pruned" + (forbidden[i] ? " IS FORBIDDEN" : "")));
+						//if (depth >= 6 || showAll)
+						//System.out.println("Move [" + i + "] is " + (childValue != 10000.0 && childValue != -10000.0 ? childValue : "pruned" + (forbidden[i] ? " IS FORBIDDEN" : "")));
 						//System.out.println("Move [" + i + "] is in long: " + Long.toBinaryString(dropPosition));
 					}
 					
@@ -385,7 +493,7 @@ public class MrBitwiseTree implements SogoPlayer {
 		}
 	}
 	
-	private double evaluateGame(long bp1, long bp2)
+	public double evaluateGame(long bp1, long bp2)
 	{
 		double res = 0.0;
 		
