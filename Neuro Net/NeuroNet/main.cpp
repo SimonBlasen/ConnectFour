@@ -143,7 +143,7 @@ void connectfour_training()
 
     const float learning_rate = 0.7f;
     const unsigned int num_layers = 3;
-    const unsigned int num_input = 128;
+    const unsigned int num_input = 64;
     const unsigned int num_hidden = 10;
     const unsigned int num_output = 1;
     const float desired_error = 0.00004f;

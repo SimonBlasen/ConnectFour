@@ -111,8 +111,8 @@ public class NeuroUtils {
 
 
 
-		//generateTrainData(savedP1, savedP2);
-		generateTrainDataDoubleInput(savedP1, savedP2);
+		generateTrainData(savedP1, savedP2);
+		//generateTrainDataDoubleInput(savedP1, savedP2);
 
 		System.out.println("100% Done!");
 
@@ -215,7 +215,7 @@ public class NeuroUtils {
 
 	public static void writeTrainData(String[] boards, double[] expectedValues, int inputsAmount) {
 
-		String filePath = "D:/Dokumente/connectfour_float_test.data";
+		String filePath = "D:/Dokumente/connectfour_float.data";
 
 
 		try {
