@@ -143,12 +143,12 @@ void connectfour_training()
 
     const float learning_rate = 0.7f;
     const unsigned int num_layers = 3;
-    const unsigned int num_input = 64;
-    const unsigned int num_hidden = 3;
+    const unsigned int num_input = 128;
+    const unsigned int num_hidden = 10;
     const unsigned int num_output = 1;
-    const float desired_error = 0.01f;
-    const unsigned int max_iterations = 300000000;
-    const unsigned int iterations_between_reports = 1000;
+    const float desired_error = 0.00004f;
+    const unsigned int max_iterations = 13000;
+    const unsigned int iterations_between_reports = 10;
 
     cout << endl << "Creating network." << endl;
 
@@ -161,8 +161,8 @@ void connectfour_training()
 
     net.set_learning_rate(learning_rate);
 
-    net.set_activation_steepness_hidden(1.0);
-    net.set_activation_steepness_output(1.0);
+    net.set_activation_steepness_hidden(0.5);
+    net.set_activation_steepness_output(0.5);
 
     net.set_activation_function_hidden(FANN::SIGMOID_SYMMETRIC_STEPWISE);
     net.set_activation_function_output(FANN::SIGMOID_SYMMETRIC_STEPWISE);
@@ -204,7 +204,7 @@ void connectfour_training()
 
         cout << endl << "Testing network." << endl;
 
-        for (unsigned int i = 0; i < data.length_train_data(); ++i)
+        for (unsigned int i = 0; i < 128; ++i)
         {
             // Run the network on the test data
             fann_type *calc_out = net.run(data.get_input()[i]);

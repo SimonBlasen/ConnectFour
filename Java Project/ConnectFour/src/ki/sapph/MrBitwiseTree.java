@@ -18,10 +18,10 @@ public class MrBitwiseTree implements SogoPlayer {
 
 	private boolean doneFirstMove = false;
 	
-	private static final double win_p = 1000;
-	private static final double triple_p = 20;
-	private static final double double_p = 2;
-	private static final double single_p = 1;
+	private static final double win_p = 1000.0 / 1000.0;
+	private static final double triple_p = 20.0 / 1000.0;
+	private static final double double_p = 2.0 / 1000.0;
+	private static final double single_p = 1.0 / 1000.0;
 	
 	private static final double sapphassassiinoInfinity = 9999999.0;
 	

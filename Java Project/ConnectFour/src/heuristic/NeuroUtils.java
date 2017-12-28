@@ -111,8 +111,8 @@ public class NeuroUtils {
 
 
 
-		generateTrainData(savedP1, savedP2);
-		
+		//generateTrainData(savedP1, savedP2);
+		generateTrainDataDoubleInput(savedP1, savedP2);
 
 		System.out.println("100% Done!");
 
@@ -132,10 +132,24 @@ public class NeuroUtils {
 			expectedValues[i] = ki.evaluateGame(bps1[i], bps2[i]);
 		}
 
-		writeTrainData(boards,expectedValues);
+		writeTrainData(boards,expectedValues, 64);
 
 	}
 
+	public static void generateTrainDataDoubleInput(long[] bps1, long[] bps2) {
+
+		MrBitwiseTree ki = new MrBitwiseTree();
+
+		String[] boards = new String[bps1.length];
+		double[] expectedValues = new double[bps1.length];
+		for(int i = 0; i < bps1.length; i++) {
+			boards[i] = generateBoardDoubleInput(bps1[i], bps2[i]);
+			expectedValues[i] = ki.evaluateGame(bps1[i], bps2[i]);
+		}
+
+		writeTrainData(boards,expectedValues, 128);
+
+	}
 
 
 	public static String generateBoard(long bp1, long bp2) {
@@ -161,17 +175,53 @@ public class NeuroUtils {
 
 		return output;
 	}
+	
+	public static String generateBoardDoubleInput(long bp1, long bp2) {
+
+		String output = "";
+
+		//generate valid net input:
+		for(int i = 63; i >= 0; i--) {
+			long currentPos = 0x1L << i;
+			if((currentPos & bp1) != 0x0L) {
+				output += "1";
+			}
+			else {
+				output += "0";
+			}
+			if(i >= 0) {
+				output += " ";
+			}
+		}
+		
+		for(int i = 63; i >= 0; i--) {
+			long currentPos = 0x1L << i;
+			if((currentPos & bp2) != 0x0L) {
+				output += "1";
+			}
+			else {
+				output += "0";
+			}
+			if(i > 0) {
+				output += " ";
+			}
+		}
+		
+
+		return output;
+	}
 
 
 
-	public static void writeTrainData(String[] boards, double[] expectedValues) {
+	public static void writeTrainData(String[] boards, double[] expectedValues, int inputsAmount) {
 
-		String filePath = "D:/Dokumente/connectfour_float.data";
+		String filePath = "D:/Dokumente/connectfour_float_test.data";
 
 
 		try {
 			PrintWriter writer = new PrintWriter(filePath, "UTF-8");
 
+			writer.println(boards.length + " " + inputsAmount + " 1");
 
 			for(int i = 0; i < boards.length; i++) {
 				writer.println(boards[i]);
