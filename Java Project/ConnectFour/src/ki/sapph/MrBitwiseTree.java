@@ -23,14 +23,22 @@ public class MrBitwiseTree implements SogoPlayer {
 	private static final double double_p = 2;
 	private static final double single_p = 1;
 	
+	private static final double sapphassassiinoInfinity = 9999999.0;
+	
 	
 	private List<Integer> bestIndices = new ArrayList<Integer>();
+	private int takeIndex = -1;
+	boolean[] forbidden = new boolean[16];
+	private int safeWin = -1;
 	
+	public double[] calcMoves = new double[16];
 	
 	@Override
 	public void initialize(Player p) {
 		this.p = p;
 	}
+	
+	private int counterP = 0;
 
 	@Override
 	public void generateNextMove(SogoGameConsole c)
@@ -44,57 +52,119 @@ public class MrBitwiseTree implements SogoPlayer {
 		
 		c.updateMove(moves.get((new Random(0)).nextInt(moves.size())));
 		
+		safeWin = -1;
 		
 		bestIndices.clear();
-		
-		if (doneFirstMove  || true)
+		for (int i = 0; i < forbidden.length; i++)
 		{
-			int tookIndex = 0;
-			
-			double maxYet = -10000.0;
-			
-			SogoMove nextMove = moves.get(0);
-			
-			for (int depth = 7; depth <= 20; depth += 1)
-			{
-				boolean[][][] b1s = GameAnalyzer.getB1sFromGame(g);
-				boolean[][][] b2s = GameAnalyzer.getB2sFromGame(g);
-
-				long bp1 = GameAnalyzer.getBP1FromGame(g);
-				long bp2 = GameAnalyzer.getBP2FromGame(g);
-
-				//System.out.println("P1: " + Long.toBinaryString(bp1));
-				//System.out.println("P2: " + Long.toBinaryString(bp2));
-				
-				//double val = evaluateNode(b1s, b2s, true, -1000000.0, 1000000.0, depth, true, 0);
-				
-				double val = evaluateNode(bp1, bp2, true, -100000.0, 100000.0, depth, true, 0);
-				
-
-				if (c.getTimeLeft() <= 0)
-				{
-					break;
-				}
-				int took = (new Random(0)).nextInt(bestIndices.size());
-				c.updateMove(new SogoMove(bestIndices.get(took) % 4, bestIndices.get(took) / 4));
-				
-				System.out.println("Depth [" + depth + "] done");
-				
-				System.out.println("Took value: " + bestIndices.get(took));
-				
-				
-			}
-			
+			forbidden[i] = false;
+		}
+		
+		
+		if (false && counterP <= 4)
+		{
+			c.updateMove(new SogoMove(counterP, 0));
+			counterP++;
 		}
 		else
 		{
-			doneFirstMove = true;
+			if (true || doneFirstMove)
+			{
+				int tookIndex = 0;
+				
+				double maxYet = -10000.0;
+				
+				SogoMove nextMove = moves.get(0);
+				
+				for (int depth = 1; depth <= 20; depth += 1)
+				{
+					//boolean[][][] b1s = GameAnalyzer.getB1sFromGame(g);
+					//boolean[][][] b2s = GameAnalyzer.getB2sFromGame(g);
+
+					long bp1 = GameAnalyzer.getBP1FromGame(g);
+					long bp2 = GameAnalyzer.getBP2FromGame(g);
+					
+					
+					for (int x = 0; x < 4; x++)
+					{
+						for (int y = 0; y < 4; y++)
+						{
+							for (int z = 0; z < 4; z++)
+							{
+								long temp = 0x1L << (x + y * 4 + z * 16);
+								//System.out.println(g.board[x][y][z] + " : " + (bp1 & temp) + " : " + (bp2 & temp));
+							}
+						}
+					}
+					
+					
+					
+					
+					//System.out.println("P1: " + Long.toBinaryString(bp1));
+					//System.out.println("P2: " + Long.toBinaryString(bp2));
+					
+					//double val = evaluateNode(b1s, b2s, true, -1000000.0, 1000000.0, depth, true, 0);
+					
+					double val = evaluateNode(bp1, bp2, true, -300000.0, 300000.0, depth, true, 0, depth <= 2);
+					
+
+					if (c.getTimeLeft() <= 0)
+					{
+						break;
+					}
+					//int took = (new Random(0)).nextInt(bestIndices.size());
+					
+					if (safeWin != -1)
+					{
+						c.updateMove(new SogoMove(safeWin % 4, safeWin / 4));
+					}
+					else
+					{
+						c.updateMove(new SogoMove(takeIndex % 4, takeIndex / 4));
+					}
+					
+					int forbiddenAmount = 0;
+					for (int i = 0; i < forbidden.length; i++)
+					{
+						forbiddenAmount += forbidden[i] ? 1 : 0;
+					}
+					if (forbiddenAmount >= 15)
+					{
+						break;
+					}
+					
+					
+					System.out.println("Depth [" + depth + "] done");
+					
+					
+					if (safeWin != -1)
+					{
+						System.out.println("---- Took a safe win ---- at " + safeWin);
+						break;
+					}
+					else
+					{
+						System.out.println("Took value: " + takeIndex);
+					}
+				}
+				
+			}
+			else
+			{
+				doneFirstMove = true;
+			}
 		}
+		
+		
+		
+		
 		
 		
 	}
 	
-	private double evaluateNode(long bp1, long bp2, boolean isMax, double alpha, double beta, int depth, boolean firstNode, int moveIndex)
+	private boolean showAll = false;
+	
+	private double evaluateNode(long bp1, long bp2, boolean isMax, double alpha, double beta, int depth, boolean firstNode, int moveIndex, boolean beginner)
 	{
 		// Execute move at moveIndex
 		
@@ -104,17 +174,17 @@ public class MrBitwiseTree implements SogoPlayer {
 		{
 			for (int z = 0; z < 4; z++)
 			{
-				placedField = (0x00000001L << (moveIndex + z * 16));
+				placedField = (0x1L << (moveIndex + z * 16));
 				
 				if ((bp1 & placedField) == 0x0L && (bp2 & placedField) == 0x0L)
 				{
 					if (!isMax)
 					{
-						bp1 |= placedField;
+						bp1 = bp1 | placedField;
 					}
 					else
 					{
-						bp2 |= placedField;
+						bp2 = bp2 | placedField;
 					}
 					break;
 				}
@@ -123,10 +193,10 @@ public class MrBitwiseTree implements SogoPlayer {
 		
 		
 
-		double bestValue = isMax ? -10000.0 : 10000.0;
+		double bestValue = isMax ? -20000000.0 : 20000000.0;
 		if (c.getTimeLeft() <= 0)
 		{
-			return -10000.0;
+			return bestValue;
 		}
 		
 		
@@ -142,22 +212,42 @@ public class MrBitwiseTree implements SogoPlayer {
 			{
 				long dropPosition = (0x1L << (48 + i));
 				
-				if ((bp1 & dropPosition) == 0x0L && (bp2 & dropPosition) == 0x0L && c.getTimeLeft() > 0)
+				if ((bp1 & dropPosition) == 0x0L && (bp2 & dropPosition) == 0x0L && c.getTimeLeft() > 0 /*&& forbidden[i] == false*/)
 				{
-					double childValue = evaluateNode(bp1, bp2, !isMax, alpha, beta, depth - 1, false, i);
+					double childValue = evaluateNode(bp1, bp2, !isMax, alpha, beta, depth - 1, false, i, beginner);
+
+					if (firstNode && childValue == -1000.0 && beginner)
+					{
+						//forbidden[i] = true;
+					}
+					
+					if (firstNode && childValue == 1000.0 && safeWin == -1)
+					{
+						//safeWin = i;
+					}
+					
+					if (childValue >= 1000.0 && firstNode)
+					{
+						showAll = true;
+					}
 					
 					if (firstNode)
 					{
-						if (depth >= 8)
-						System.out.println("Move [" + i + "] is " + (childValue != 10000.0 && childValue != -10000.0 ? childValue : "pruned"));
+						calcMoves[i] = childValue;
+						
+						if (depth >= 6 || showAll)
+						System.out.println("Move [" + i + "] is " + (childValue != 10000.0 && childValue != -10000.0 ? childValue : "pruned" + (forbidden[i] ? " IS FORBIDDEN" : "")));
+						//System.out.println("Move [" + i + "] is in long: " + Long.toBinaryString(dropPosition));
 					}
+					
 					
 					if (childValue > bestValue == isMax)
 					{
-						if (firstNode)
+						if (firstNode && childValue < 2000.0)
 						{
-							bestIndices.clear();
-							bestIndices.add(i);
+							takeIndex = i;
+							//bestIndices.clear();
+							//bestIndices.add(i);
 						}
 						bestValue = childValue;
 					}
@@ -179,10 +269,10 @@ public class MrBitwiseTree implements SogoPlayer {
 					
 					//node.updateValue(child.getValue());
 					
-					if (alpha >= beta && firstNode == false)
+					if (alpha >= beta && firstNode == false && beginner == false)
 					{
-						// Pruning
-						return isMax ? 10000.0 : -10000.0;
+						// Pruning     beta      alpha
+						return isMax ? sapphassassiinoInfinity : -sapphassassiinoInfinity;
 					}
 				}
 			}
@@ -244,7 +334,7 @@ public class MrBitwiseTree implements SogoPlayer {
 					if (firstNode)
 					{
 						if (depth >= 7)
-						System.out.println("Move [" + i + "] is " + childValue);
+							System.out.println("Move [" + i + "] is " + childValue);
 					}
 					
 					if (childValue > bestValue == isMax)
@@ -307,12 +397,12 @@ public class MrBitwiseTree implements SogoPlayer {
 			long p1Here = bp1 & GameAnalyzer.longLines[i];
 			long p2Here = bp2 & GameAnalyzer.longLines[i];
 			
-			while (p1Here != 0x0)
+			while (p1Here != 0x0L)
 			{
 				p1Here &= (p1Here - 1);
 				self++;
 			}
-			while (p2Here != 0x0)
+			while (p2Here != 0x0L)
 			{
 				p2Here &= (p2Here - 1);
 				other++;

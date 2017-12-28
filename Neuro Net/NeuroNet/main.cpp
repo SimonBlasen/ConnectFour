@@ -119,7 +119,6 @@ void xor_test()
    and reports any exceptions */
 int main(int argc, char **argv)
 {
-    cout << "start" << endl;
     try
     {
         std::ios::sync_with_stdio(); // Syncronize cout and printf output

@@ -82,6 +82,8 @@ public class MrNovice implements SogoPlayer {
 		return res;
 	}
 
+	public double[] calcMoves = new double[16];
+	
 	@Override
 	public void generateNextMove(final SogoGameConsole c) {
 		final SogoGame g = c.getGame();
@@ -90,9 +92,15 @@ public class MrNovice implements SogoPlayer {
 
 		double maxscore = Double.NEGATIVE_INFINITY;
 
+		int count = 0;
 		for (SogoMove m : moves) {
 			final double score = -negamax(g.performMove(m), depth);
 
+			
+			
+			calcMoves[count] = score;
+			count++;
+			
 			if (score > maxscore) {
 				bestmoves.clear();
 				bestmoves.add(m);

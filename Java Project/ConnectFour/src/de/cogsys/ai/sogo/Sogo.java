@@ -34,6 +34,24 @@ public class Sogo {
 			System.out.println("Round: " + rounds);
 			
 			SogoGame g = new SogoGame();
+			/*
+			g = g.performMove(new SogoMove(2, 0));//
+			g = g.performMove(new SogoMove(3, 0));
+			g = g.performMove(new SogoMove(3, 0));//
+			g = g.performMove(new SogoMove(0, 0));
+			g = g.performMove(new SogoMove(0, 3));//
+			g = g.performMove(new SogoMove(0, 0));
+			g = g.performMove(new SogoMove(0, 3));//
+			g = g.performMove(new SogoMove(2, 0));
+			g = g.performMove(new SogoMove(3, 3));//
+			g = g.performMove(new SogoMove(2, 3));
+			g = g.performMove(new SogoMove(2, 3));//
+			g = g.performMove(new SogoMove(2, 3));
+			g = g.performMove(new SogoMove(3, 3));//
+			g = g.performMove(new SogoMove(3, 3));
+			g = g.performMove(new SogoMove(1, 3));//
+			*/
+			
 			final SogoPlayer p1;// = new MrNovice(); // new ConsolePlayer(br);
 			final SogoPlayer p2;// = new MrInefficientTree(); // new ConsolePlayer(br);
 			
@@ -65,7 +83,6 @@ public class Sogo {
 				turn++;
 				//System.out.println("Turn " + turn + ":");
 				//System.out.print(g);
-				visualisation.Visualize(g);
 
 				SogoPlayer player;
 
@@ -117,6 +134,10 @@ public class Sogo {
 					break;
 				}
 				g = g.performMove(selectedMove);
+				
+
+				visualisation.Visualize(g);
+				
 				if (g.ends()) {
 					playing = false;
 				}
@@ -124,7 +145,7 @@ public class Sogo {
 			}
 
 
-			visualisation.Visualize(g);
+			//visualisation.Visualize(g);
 
 			switch (g.result()) {
 			case P1:

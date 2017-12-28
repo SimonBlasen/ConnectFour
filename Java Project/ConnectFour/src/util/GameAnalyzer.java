@@ -94,14 +94,14 @@ public class GameAnalyzer {
 		{{3,0,0},{2,1,1},{1,2,2},{0,3,3}},
 		{{3,0,3},{2,1,2},{1,2,1},{0,3,0}},};
 		
-		public static final long[] longLines = new long[] {0x000000000000000F,
-				0x00000000000000F0,
-				0x0000000000000F00,
-				0x000000000000F000,
-				0x00000000000F0000,
-				0x0000000000F00000,
-				0x000000000F000000,
-				0x00000000F0000000,
+		public static final long[] longLines = new long[] {0x000000000000000FL,
+				0x00000000000000F0L,
+				0x0000000000000F00L,
+				0x000000000000F000L,
+				0x00000000000F0000L,
+				0x0000000000F00000L,
+				0x000000000F000000L,
+				0x00000000F0000000L,
 				0x0000000F00000000L,
 				0x000000F000000000L,
 				0x00000F0000000000L,
@@ -200,11 +200,11 @@ public class GameAnalyzer {
 	}
 	
 	
-	public static boolean hasGameEnded(long bp1)
+	public static boolean hasGameEnded(long bp)
 	{
 		for (int i = 0; i < longLines.length; i++)
 		{
-			if ((bp1 & longLines[i]) == longLines[i])
+			if ((bp & longLines[i]) == longLines[i])
 			{
 				return true;
 			}

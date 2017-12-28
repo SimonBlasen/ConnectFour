@@ -28,6 +28,9 @@ public class MrMoreefficientTree implements SogoPlayer {
 	public void initialize(Player p) {
 		this.p = p;
 	}
+	
+
+	public double[] calcMoves = new double[16];
 
 	@Override
 	public void generateNextMove(SogoGameConsole c)
@@ -41,7 +44,7 @@ public class MrMoreefficientTree implements SogoPlayer {
 		
 		c.updateMove(moves.get((new Random(0)).nextInt(moves.size())));
 		
-		if (doneFirstMove)
+		if (true || doneFirstMove)
 		{
 			int tookIndex = 0;
 			
@@ -49,7 +52,7 @@ public class MrMoreefficientTree implements SogoPlayer {
 			
 			SogoMove nextMove = moves.get(0);
 			
-			for (int depth = 1; depth <= 20; depth += 1)
+			for (int depth = 4; depth <= 4; depth += 1)
 			{
 				MrMoreefficientGamestate root = new MrMoreefficientGamestate(true);
 				root.rootGame = g;
@@ -63,9 +66,10 @@ public class MrMoreefficientTree implements SogoPlayer {
 				maxYet = -10000.0;
 				for (int i = 0; i < 16; i++)
 				{
-					if (root.getChildren()[i] != null && depth >= 6)
+					if (root.getChildren()[i] != null && depth >= 2)
 					{
-						System.out.println("[" + i + "] " + root.getChildren()[i].getValue() + " " + (root.getChildren()[i].isPruned ? "P" : ""));
+						calcMoves[i] = root.getChildren()[i].getValue();
+						//System.out.println("[" + i + "] " + root.getChildren()[i].getValue() + " " + (root.getChildren()[i].isPruned ? "P" : ""));
 					}
 					if (root.getChildren()[i] != null && root.getChildren()[i].getValue() > maxYet && root.getChildren()[i].isPruned == false)
 					{
@@ -133,10 +137,10 @@ public class MrMoreefficientTree implements SogoPlayer {
 				{
 					break;
 				}
-				System.out.println("Depth [" + depth + "] done");
+				//System.out.println("Depth [" + depth + "] done");
 			}
 			
-			System.out.println("Took: " + tookIndex);
+			//System.out.println("Took: " + tookIndex);
 		}
 		else
 		{
@@ -169,7 +173,7 @@ public class MrMoreefficientTree implements SogoPlayer {
 					evaluateNode(child, depth - 1, false);
 					node.updateValue(child.getValue());
 					
-					if (node.canPrun() && firstNode == false)
+					if (false && node.canPrun() && firstNode == false)
 					{
 						node.isPruned = true;
 						return;
