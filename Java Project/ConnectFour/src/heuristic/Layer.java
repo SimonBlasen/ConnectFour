@@ -3,14 +3,18 @@ package heuristic;
 public class Layer {
 	
 	//TODO remove first and last cz only needed for C
-	Neuron mFirstNeuron;
-	Neuron mLastNeuron;
-	Neuron[] mNeurons;
+	private Neuron mFirstNeuron;
+	private Neuron mLastNeuron;
+	private Neuron[] mNeurons;
 	
 	public Layer(Neuron firstNeuron, Neuron lastNeuron, Neuron[] neurons) {
 		mFirstNeuron = firstNeuron;
 		mLastNeuron = lastNeuron;
 		mNeurons = neurons;
+	}
+	
+	public Neuron[] getNeurons() {
+		return mNeurons;
 	}
 	
 	public Neuron getNeuron(int index) {

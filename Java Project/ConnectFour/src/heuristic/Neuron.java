@@ -2,10 +2,10 @@ package heuristic;
 
 public class Neuron {
 	
-	float[] mWeights;
-	Neuron[] mConnectedNeurons;
-	int mNumConnections;
-	float mValue = 0;
+	private float[] mWeights;
+	private Neuron[] mConnectedNeurons;
+	private int mNumConnections;
+	private float mValue = 0;
 	
 	public Neuron(float[] weights, Neuron[] connectedNeurons, int numConnections, float value) {
 		mWeights = weights;
