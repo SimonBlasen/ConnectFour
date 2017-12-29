@@ -87,6 +87,9 @@ public class Net {
 		
 		
 		
+		mLayers = new Layer[num_layers];
+		
+		
 		for (int i = 0; i < list.size(); i++)
 		{
 			String decl = list.get(i).split("=").length == 2 ? list.get(i).split("=")[0] : "";
