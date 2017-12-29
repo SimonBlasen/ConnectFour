@@ -6,14 +6,21 @@ public class Neuron {
 	private Neuron[] mConnectedNeurons;
 	private int mNumConnections;
 	private float mValue = 0;
+	private int mBeginConnectionsIndex;
 	
-	public Neuron(float[] weights, Neuron[] connectedNeurons, int numConnections, float value) {
+	public Neuron(float[] weights, Neuron[] connectedNeurons, int numConnections, float value, int beginConnectionsIndex) {
 		mWeights = weights;
 		mConnectedNeurons = connectedNeurons;
 		mNumConnections = numConnections;
 		mValue = value;
+		mBeginConnectionsIndex = beginConnectionsIndex;
 	}
 	
+	
+	public int getBeginConnectionsIndex()
+	{
+		return mBeginConnectionsIndex;
+	}
 	
 	public float[] getWeights() {
 		return mWeights;

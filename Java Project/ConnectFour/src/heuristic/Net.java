@@ -91,7 +91,7 @@ public class Net {
 
 
 		float neuronSum = 0;
-		float[] weights = net.weights;
+		//float[] weights = net.weights;
 		float steepness = 0.5f; //default value
 
 		float maxSum = 0;
@@ -140,7 +140,8 @@ public class Net {
 				
 				numConnections = currentNeuron.getNumConnections();
 				
-				weights = currentNeuron.getWeights(); //TODO fix
+				int weightsIndex = currentNeuron.getBeginConnectionsIndex();
+				//net.weights = currentNeuron.getWeights(); //TODO fix
 				
 				//TODO was ist in unserem Fall FANN_NETTYPE_SHORTCUT?
 				
@@ -155,12 +156,12 @@ public class Net {
 				switch(i)
 				{
 				case 3:
-					neuronSum += weights[2] * neurons[2].getValue();
+					neuronSum += net.weights[weightsIndex + 2] * neurons[2].getValue();
 				case 2:
-					neuronSum += weights[1] * neurons[1].getValue();
+					neuronSum += net.weights[weightsIndex + 1] * neurons[1].getValue();
 				
 				case 1:
-					neuronSum += weights[0] * neurons[0].getValue();
+					neuronSum += net.weights[weightsIndex + 0] * neurons[0].getValue();
 					
 				case 0:
 					break;
@@ -169,13 +170,13 @@ public class Net {
 				
 				for(; i < numConnections; i+=4) {
 					
-					neuronSum += weights[i] * neurons[i].getValue() 
-							+ weights[i+1] * neurons[i+1].getValue()
-							+ weights[i+2] * neurons[i+2].getValue()
-							+ weights[i+3] * neurons[i+3].getValue();
+					neuronSum += net.weights[weightsIndex + i] * neurons[i].getValue() 
+							+ net.weights[weightsIndex + i+1] * neurons[i+1].getValue()
+							+ net.weights[weightsIndex + i+2] * neurons[i+2].getValue()
+							+ net.weights[weightsIndex + i+3] * neurons[i+3].getValue();
 				}
 				
-				neuronSum += (steepness * neuronSum);
+				neuronSum = (steepness * neuronSum);
 				
 				maxSum = 150.0f / steepness;
 				if(neuronSum > maxSum) {
