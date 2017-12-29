@@ -147,7 +147,7 @@ void connectfour_training()
     const unsigned int num_hidden = 10;
     const unsigned int num_output = 1;
     const float desired_error = 0.00004f;
-    const unsigned int max_iterations = 13000;
+    const unsigned int max_iterations = 6000;
     const unsigned int iterations_between_reports = 10;
 
     cout << endl << "Creating network." << endl;
