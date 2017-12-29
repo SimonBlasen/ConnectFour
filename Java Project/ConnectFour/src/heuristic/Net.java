@@ -51,27 +51,300 @@ public class Net {
 		}
 		
 		
+		int num_layers = 0;
+		int network_type = 0;
+		int training_algorithm = 0;
+		int train_error_function = 0;
+		int train_stop_function = 0;
+		float connection_rate = 0.0f;
+		float cascade_output_change_fraction = 0.0f;
+		float quickprop_decay = 0.0f;
+		float quickprop_mu = 0.0f;
+		float rprop_increase_factor = 0.0f;
+		float rprop_decrease_factor = 0.0f;
+		float rprop_delta_min = 0.0f;
+		float rprop_delta_max = 0.0f;
+		float rprop_delta_zero = 0.0f;
+		int cascade_output_stagnation_epochs = 0;
+		float cascade_candidate_change_fraction = 0.0f;
+		int cascade_candidate_stagnation_epochs = 0;
+		int cascade_max_out_epochs = 0;
+		int cascade_min_out_epochs = 0;
+		int cascade_max_cand_epochs = 0;
+		int cascade_min_cand_epochs = 0;
+		int cascade_num_candidate_groups = 0;
+		float bit_fail_limit = 0.0f;
+		float cascade_candidate_limit = 0.0f;
+		float cascade_weight_multiplier = 0.0f;
+		int cascade_activation_functions_count = 0;
+		int[] cascade_activation_functions = new int[0];
+		int cascade_activation_steepnesses_count = 0;
+		float[] cascade_activation_steepnesses = new float[0];
+		int[] layer_sizes = new int[0];
+		int scale_included = 0;
+		ParserNeurons[] neurons = new ParserNeurons[0];
+		ParserConnections[] connections = new ParserConnections[0];
+		
+		
+		
 		for (int i = 0; i < list.size(); i++)
 		{
 			String decl = list.get(i).split("=").length == 2 ? list.get(i).split("=")[0] : "";
 			String val = list.get(i).split("=").length == 2 ? list.get(i).split("=")[1] : "";
 			
-			try
+			if (decl.length() > 0 && val.length() > 0)
 			{
-				if (decl.equals("learning_rate"))
+				try
 				{
-					learning_rate = Float.valueOf(val);
+					if (decl.equals("learning_rate"))
+					{
+						learning_rate = Float.valueOf(val);
+					}
+					
+					else if (decl.equals("connections (connected_to_neuron, weight)"))
+					{
+						String[] vals = val.split("\\) \\(");
+						connections = new ParserConnections[vals.length];
+						for (int j = 0; j < vals.length; j++)
+						{
+							connections[j] = new ParserConnections();
+							
+							String[] innerVals = vals[j].split(",");
+							for (int k = 0; k < innerVals.length; k++)
+							{
+								String rawValue = innerVals[k].replaceAll("\\(", "").replaceAll("\\)", "").replaceAll(" ", "");
+								
+								if (k == 0)
+								{
+									connections[j].connected_to_neuron = Integer.valueOf(rawValue);
+								}
+								else if (k == 1)
+								{
+									connections[j].weight = Float.valueOf(rawValue);
+								}
+							}
+						}
+					}
+					
+					else if (decl.equals("neurons (num_inputs, activation_function, activation_steepness)"))
+					{
+						String[] vals = val.split("\\) \\(");
+						neurons = new ParserNeurons[vals.length];
+						for (int j = 0; j < vals.length; j++)
+						{
+							neurons[j] = new ParserNeurons();
+							
+							String[] innerVals = vals[j].split(",");
+							for (int k = 0; k < innerVals.length; k++)
+							{
+								String rawValue = innerVals[k].replaceAll("\\(", "").replaceAll("\\)", "").replaceAll(" ", "");
+								
+								if (k == 0)
+								{
+									neurons[j].num_inputs = Integer.valueOf(rawValue);
+								}
+								else if (k == 1)
+								{
+									neurons[j].activation_function = Integer.valueOf(rawValue);
+								}
+								else if (k == 2)
+								{
+									neurons[j].activation_steepness = Float.valueOf(rawValue);
+								}
+							}
+						}
+					}
+					
+					else if (decl.equals("scale_included"))
+					{
+						scale_included = Integer.valueOf(val);
+					}
+					
+					else if (decl.equals("layer_sizes"))
+					{
+						String[] vals = val.split(" ");
+						layer_sizes = new int[vals.length];
+						for (int j = 0; j < vals.length; j++)
+						{
+							layer_sizes[j] = Integer.valueOf(vals[j]);
+						}
+					}
+					
+					else if (decl.equals("cascade_activation_steepnesses"))
+					{
+						String[] vals = val.split(" ");
+						cascade_activation_steepnesses = new float[vals.length];
+						for (int j = 0; j < vals.length; j++)
+						{
+							cascade_activation_steepnesses[j] = Float.valueOf(vals[j]);
+						}
+					}
+					
+					else if (decl.equals("cascade_activation_steepnesses_count"))
+					{
+						cascade_activation_steepnesses_count = Integer.valueOf(val);
+					}
+					
+					else if (decl.equals("cascade_activation_functions"))
+					{
+						String[] vals = val.split(" ");
+						cascade_activation_functions = new int[vals.length];
+						for (int j = 0; j < vals.length; j++)
+						{
+							cascade_activation_functions[j] = Integer.valueOf(vals[j]);
+						}
+					}
+					
+					else if (decl.equals("cascade_activation_functions_count"))
+					{
+						cascade_activation_functions_count = Integer.valueOf(val);
+					}
+					
+					else if (decl.equals("cascade_candidate_limit"))
+					{
+						cascade_candidate_limit = Float.valueOf(val);
+					}
+					
+					else if (decl.equals("cascade_weight_multiplier"))
+					{
+						cascade_weight_multiplier = Float.valueOf(val);
+					}
+					
+					else if (decl.equals("bit_fail_limit"))
+					{
+						bit_fail_limit = Float.valueOf(val);
+					}
+					
+					else if (decl.equals("cascade_max_out_epochs"))
+					{
+						cascade_max_out_epochs = Integer.valueOf(val);
+					}
+					
+					else if (decl.equals("cascade_min_out_epochs"))
+					{
+						cascade_min_out_epochs = Integer.valueOf(val);
+					}
+					
+					else if (decl.equals("cascade_max_cand_epochs"))
+					{
+						cascade_max_cand_epochs = Integer.valueOf(val);
+					}
+					
+					else if (decl.equals("cascade_min_cand_epochs"))
+					{
+						cascade_min_cand_epochs = Integer.valueOf(val);
+					}
+					
+					else if (decl.equals("cascade_num_candidate_groups"))
+					{
+						cascade_num_candidate_groups = Integer.valueOf(val);
+					}
+					
+					else if (decl.equals("cascade_candidate_stagnation_epochs"))
+					{
+						cascade_candidate_stagnation_epochs = Integer.valueOf(val);
+					}
+					
+					else if (decl.equals("cascade_candidate_change_fraction"))
+					{
+						cascade_candidate_change_fraction = Float.valueOf(val);
+					}
+					
+					else if (decl.equals("cascade_output_stagnation_epochs"))
+					{
+						cascade_output_stagnation_epochs = Integer.valueOf(val);
+					}
+					
+					else if (decl.equals("rprop_delta_min"))
+					{
+						rprop_delta_min = Float.valueOf(val);
+					}
+					
+					else if (decl.equals("rprop_delta_max"))
+					{
+						rprop_delta_max = Float.valueOf(val);
+					}
+					
+					else if (decl.equals("rprop_delta_zero"))
+					{
+						rprop_delta_zero = Float.valueOf(val);
+					}
+					
+					else if (decl.equals("rprop_decrease_factor"))
+					{
+						rprop_decrease_factor = Float.valueOf(val);
+					}
+					
+					else if (decl.equals("rprop_increase_factor"))
+					{
+						rprop_increase_factor = Float.valueOf(val);
+					}
+					
+					else if (decl.equals("quickprop_mu"))
+					{
+						quickprop_mu = Float.valueOf(val);
+					}
+					
+					else if (decl.equals("learning_momentum"))
+					{
+						learning_momentum = Float.valueOf(val);
+					}
+					
+					else if (decl.equals("num_layers"))
+					{
+						num_layers = Integer.valueOf(val);
+					}
+					
+					else if (decl.equals("connection_rate"))
+					{
+						connection_rate = Float.valueOf(val);
+					}
+					
+					else if (decl.equals("network_type"))
+					{
+						network_type = Integer.valueOf(val);
+					}
+					
+					else if (decl.equals("training_algorithm"))
+					{
+						training_algorithm = Integer.valueOf(val);
+					}
+					
+					else if (decl.equals("train_error_function"))
+					{
+						train_error_function = Integer.valueOf(val);
+					}
+					
+					else if (decl.equals("train_stop_function"))
+					{
+						train_stop_function = Integer.valueOf(val);
+					}
+					
+					else if (decl.equals("cascade_output_change_fraction"))
+					{
+						cascade_output_change_fraction = Float.valueOf(val);
+					}
+					
+					else if (decl.equals("quickprop_decay"))
+					{
+						quickprop_decay = Float.valueOf(val);
+					}
 				}
-				
-				else if (decl.equals("learning_momentum"))
+				catch (Exception ex)
 				{
-					learning_momentum = Float.valueOf(val);
+					System.out.println("Error reading net config file at \"" + configFile + "\"");
 				}
 			}
-			catch (Exception ex)
-			{
-				System.out.println("Error reading net config file at \"" + configFile + "\"");
-			}
+			
+			
+		}
+		
+		int afdsfds = 0;
+		afdsfds++;
+		
+		if (afdsfds == 0)
+		{
+			
 		}
 	}
 	

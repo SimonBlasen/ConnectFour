@@ -6,19 +6,29 @@ import de.cogsys.ai.sogo.game.SogoGame.Player;
 import de.cogsys.ai.sogo.game.SogoMove;
 import de.cogsys.ai.sogo.player.MrNovice;
 import de.cogsys.ai.sogo.player.SogoPlayer;
+import heuristic.Net;
 import ki.sapph.MrBitwiseTree;
 import ki.sapph.MrMoreefficientTree;
 import util.GameAnalyzer;
 
 public class Test {
 	
-	private static SogoGame[] games = new SogoGame[2];
+	private static SogoGame[] games = new SogoGame[0];
 	
 	
 
 	public static void main(String[] args) {
 		
 		
+		
+		
+		new Net("D:/Dokumente/connectfour_float.net");
+		
+		
+		
+		
+		
+		/*
 		games[0] = new SogoGame();
 		games[0].board[0][0][0] = Player.P1;
 		games[0].board[0][1][0] = Player.P2;
@@ -29,7 +39,7 @@ public class Test {
 		games[1].board[2][0][0] = Player.P1;
 		games[1].board[2][0][1] = Player.P2;
 		games[1].board[1][2][0] = Player.P1;
-		games[1].board[3][3][0] = Player.P2;
+		games[1].board[3][3][0] = Player.P2;*/
 		
 /*
 		
