@@ -32,10 +32,10 @@ void xor_test()
     const float learning_rate = 0.7f;
     const unsigned int num_layers = 3;
     const unsigned int num_input = 2;
-    const unsigned int num_hidden = 3;
+    const unsigned int num_hidden = 2;
     const unsigned int num_output = 1;
     const float desired_error = 0.01f;
-    const unsigned int max_iterations = 300000000;
+    const unsigned int max_iterations = 1000;
     const unsigned int iterations_between_reports = 1000;
 
     cout << endl << "Creating network." << endl;
@@ -52,8 +52,11 @@ void xor_test()
     net.set_activation_steepness_hidden(1.0);
     net.set_activation_steepness_output(1.0);
 
-    net.set_activation_function_hidden(FANN::SIGMOID_SYMMETRIC_STEPWISE);
-    net.set_activation_function_output(FANN::SIGMOID_SYMMETRIC_STEPWISE);
+
+    //net.set_activation_function_hidden(FANN::LINEAR);
+    //net.set_activation_function_output(FANN::LINEAR);
+    net.set_activation_function_hidden(FANN::SIGMOID_SYMMETRIC);
+    net.set_activation_function_output(FANN::SIGMOID_SYMMETRIC);
 
     // Set additional properties such as the training algorithm
     net.set_training_algorithm(FANN::TRAIN_QUICKPROP);
@@ -107,7 +110,7 @@ void xor_test()
         cout << endl << "Saving network." << endl;
 
         // Save the network in floating point and fixed point
-        net.save("xor_float.net");
+        net.save("D:/Dokumente/xor_float.net");
         unsigned int decimal_point = net.save_to_fixed("xor_fixed.net");
         data.save_train_to_fixed("xor_fixed.data", decimal_point);
 
@@ -234,9 +237,10 @@ int main(int argc, char **argv)
     try
     {
         std::ios::sync_with_stdio(); // Syncronize cout and printf output
-        //xor_test();
 
-        connectfour_training();
+        xor_test();
+
+        //connectfour_training();
     }
     catch (...)
     {

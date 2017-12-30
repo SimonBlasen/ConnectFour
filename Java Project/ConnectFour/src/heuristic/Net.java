@@ -87,9 +87,6 @@ public class Net {
 		
 		
 		
-		mLayers = new Layer[num_layers];
-		
-		
 		for (int i = 0; i < list.size(); i++)
 		{
 			String decl = list.get(i).split("=").length == 2 ? list.get(i).split("=")[0] : "";
@@ -342,6 +339,66 @@ public class Net {
 			
 		}
 		
+		
+		
+		
+		
+		
+		num_inputs = layer_sizes[0] - 1;
+		
+		
+		mLayers = new Layer[num_layers];
+		weights = new float[connections.length];
+		
+		int neuronsCounter = 0;
+		
+		for (int i = 0; i < mLayers.length; i++)
+		{
+			Neuron[] thisLayersNeurons = new Neuron[layer_sizes[i]];
+			
+			for (int j = 0; j < thisLayersNeurons.length; j++)
+			{
+				if (i == 0)
+				{
+					thisLayersNeurons[j] = new Neuron(0.0f, 0, neurons[neuronsCounter].activation_steepness);
+				}
+				else
+				{
+					if (j == 0)
+					{
+						thisLayersNeurons[j] = new Neuron(0.0f, mLayers[i - 1].getLastNeuron().getBeginConnectionsIndex() + (i >= 2 ? mLayers[i - 2].getNeurons().length : 0), neurons[neuronsCounter].activation_steepness);
+					}
+					else
+					{
+						// Bias neuron has no incomming weights, so same value as before
+						if (j == thisLayersNeurons.length - 1)
+						{
+							thisLayersNeurons[j] = new Neuron(0.0f, thisLayersNeurons[j - 1].getBeginConnectionsIndex(), neurons[neuronsCounter].activation_steepness);
+						}
+						else
+						{
+							thisLayersNeurons[j] = new Neuron(0.0f, thisLayersNeurons[j - 1].getBeginConnectionsIndex() + mLayers[i - 1].getNeurons().length, neurons[neuronsCounter].activation_steepness);
+						}
+					}
+				}
+				
+				neuronsCounter++;
+			}
+			
+			mLayers[i] = new Layer(thisLayersNeurons);
+		}
+		
+		for (int i = 0; i < connections.length; i++)
+		{
+			weights[i] = connections[i].weight;
+		}
+		
+		
+		
+		
+		
+		
+		
 		int afdsfds = 0;
 		afdsfds++;
 		
@@ -394,7 +451,7 @@ public class Net {
 		
 		
 		
-		for(int j= 0; j < net.mLayers.length; j++) {
+		for(int j= 1; j < net.mLayers.length; j++) {
 			lastNeuron =  net.mLayers[j].getLastNeuron();
 			//TODO refactor bias neuron aus schleife rausnehmen
 			
@@ -414,19 +471,17 @@ public class Net {
 				
 				neuronSum = 0;
 				
-				numConnections = currentNeuron.getNumConnections();
+				//numConnections = currentNeuron.getNumConnections();
 				
 				int weightsIndex = currentNeuron.getBeginConnectionsIndex();
 				//net.weights = currentNeuron.getWeights(); //TODO fix
 				
-				//TODO was ist in unserem Fall FANN_NETTYPE_SHORTCUT?
+				steepness = currentNeuron.getActivationSteepness();
 				
-				if(net.network_type == Nettype_Enum.FANN_NETTYPE_SHORTCUT) {
-					neurons = net.mLayers[0].getNeurons();
-				}
-				else {
-					neurons = net.mLayers[j-1].getNeurons();
-				}
+				neurons = net.mLayers[j-1].getNeurons();
+				
+				numConnections = neurons.length;
+					
 				
 				i = numConnections % 4;
 				switch(i)

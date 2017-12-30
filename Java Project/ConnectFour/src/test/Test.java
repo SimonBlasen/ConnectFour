@@ -22,9 +22,13 @@ public class Test {
 		
 		
 		
-		new Net("D:/Dokumente/connectfour_float.net");
+		Net xor = new Net("D:/Dokumente/xor_float.net");
 		
+		int[] inputs = new int[] {1, 1};
 		
+		float result = Net.run(xor, inputs);
+		
+		System.out.println(result);
 		
 		
 		
