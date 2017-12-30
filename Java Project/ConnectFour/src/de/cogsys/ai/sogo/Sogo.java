@@ -12,6 +12,7 @@ import de.cogsys.ai.sogo.player.SogoPlayer;
 import ki.sapph.MrBitwiseTree;
 import ki.sapph.MrInefficientTree;
 import ki.sapph.MrMoreefficientTree;
+import ki.sapph.MrNeurobit;
 //import ki.sapph.MrIdiot;
 //import ki.sapph.MrInefficientTree;
 import visualisation.Visualisation;
@@ -58,11 +59,11 @@ public class Sogo {
 			if (rounds % 2 == 0)
 			{
 				p1 = new MrNovice();
-				p2 = new MrBitwiseTree();
+				p2 = new MrNeurobit();
 			}
 			else
 			{
-				p1 = new MrBitwiseTree();
+				p1 = new MrNeurobit();
 				p2 = new MrNovice();
 			}
 			

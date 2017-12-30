@@ -124,6 +124,11 @@ public class MrNeurobit implements SogoPlayer {
 				{
 					double childValue = evaluateNode(bp1, bp2, !isMax, alpha, beta, depth - 1, false, i, beginner);
 					
+					if (firstNode)
+					{
+						System.out.println("Move [" + i + "] is " + childValue);
+					}
+					
 					if (childValue > bestValue == isMax)
 					{
 						if (firstNode && childValue < 2000.0)
