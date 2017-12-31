@@ -5,9 +5,15 @@ CONFIG -= qt
 
 SOURCES += main.cpp \
     memoryitem.cpp \
-    game.cpp
+    game.cpp \
+    qplayer.cpp \
+    netutils.cpp \
+    gameanalyzer.cpp
 LIBS += -lfann
 
 HEADERS += \
     memoryitem.h \
-    game.h
+    game.h \
+    qplayer.h \
+    netutils.h \
+    gameanalyzer.h
