@@ -5,25 +5,25 @@
 
 using namespace std;
 
-class memoryItem
+class MemoryItem
 {
 public:
-    memoryItem(double reward, vector<int> oldState, vector<int> newState);
+    MemoryItem(double reward, long oldState, long newState);
 
 
     double getReward() const;
     void setReward(double value);
 
-    vector<int> getOldInput() const;
-    void setOldInput(const vector<int> &value);
+    long getOldInput() const;
+    void setOldInput(long board);
 
-    vector<int> getNewInput() const;
-    void setNewInput(const vector<int> &value);
+    long getNewInput() const;
+    void setNewInput(long board);
 
 private:
     double mReward;
-    vector<int> mOldInput;
-    vector<int> mNewInput;
+    long mOldInput;
+    long mNewInput;
 
 };
 

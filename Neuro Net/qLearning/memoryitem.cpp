@@ -1,6 +1,6 @@
 #include "memoryitem.h"
 
-memoryItem::memoryItem(double reward, vector<int> oldState, vector<int> newState)
+MemoryItem::MemoryItem(double reward, long oldState, long newState)
 {
     mReward = reward;
     mOldInput = oldState;
@@ -8,32 +8,32 @@ memoryItem::memoryItem(double reward, vector<int> oldState, vector<int> newState
 
 }
 
-double memoryItem::getReward() const
+double MemoryItem::getReward() const
 {
     return mReward;
 }
 
-void memoryItem::setReward(double value)
+void MemoryItem::setReward(double value)
 {
     mReward = value;
 }
 
-vector<int> memoryItem::getOldInput() const
+long MemoryItem::getOldInput() const
 {
     return mOldInput;
 }
 
-void memoryItem::setOldInput(const vector<int> &value)
+void MemoryItem::setOldInput(long board)
 {
-    mOldInput = value;
+    mOldInput = board;
 }
 
-vector<int> memoryItem::getNewInput() const
+long MemoryItem::getNewInput() const
 {
     return mNewInput;
 }
 
-void memoryItem::setNewInput(const vector<int> &value)
+void MemoryItem::setNewInput(long board)
 {
-    mNewInput = value;
+    mNewInput = board;
 }

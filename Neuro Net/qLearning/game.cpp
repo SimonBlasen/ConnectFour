@@ -29,13 +29,14 @@ void Game::play(){
 
 void Game::gameLoop(){
 
-    long move = player.getInput();
+    long move = player.getInput(score,board,isNewGame);
 
     //Debug
     cout << "Coosen move = " << move << endl;
+
+    board  = (board | move);
     cout << "Board = " << board << endl;
 
-    board  = board | move;
 
     if(GameAnalyzer::isWon(board)){
         score += 1;

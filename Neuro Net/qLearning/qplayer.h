@@ -5,13 +5,12 @@
 #include "memoryitem.h"
 #include "netutils.h"
 
-
 class QPlayer
 {
 public:
     QPlayer();
-    int test;
-    long getInput();
+    int oldScore;
+    long getInput(float oldScore, long board, bool isNew);
     FANN::neural_net net;
 };
 

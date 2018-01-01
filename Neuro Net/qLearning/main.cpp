@@ -39,15 +39,9 @@ int print_callback(FANN::neural_net &net, FANN::training_data &train,
    and reports any exceptions */
 int main(int argc, char **argv)
 {
-    cout << "bla" << endl;
-
-    QPlayer player;
-    player.getInput();
-
-    cout << "player is fine" << endl;
 
     Game g;
-    Game::play();
+    g.gameLoop();
 
     cout << "game is fine" << endl;
 
