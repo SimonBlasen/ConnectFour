@@ -17,10 +17,6 @@ public class MrNeurobit implements SogoPlayer {
 	private Player p;
 	private SogoGameConsole c;
 	
-	private static final double win_p = 1000.0 / 1000.0;
-	private static final double triple_p = 20.0 / 1000.0;
-	private static final double double_p = 2.0 / 1000.0;
-	private static final double single_p = 1.0 / 1000.0;
 	
 	private static final double sapphassassiinoInfinity = 9999999.0;
 	
@@ -171,6 +167,12 @@ public class MrNeurobit implements SogoPlayer {
 		
 		for (int i = 0; i < convertedGame.length; i++)
 		{
+			long currentPosOneDown = 0x0L;
+			if (i >= 16)
+			{
+				currentPosOneDown = 0x1L << (i - 16);
+			}
+			
 			if ((t1 & 0x1L) == 0x1L)
 			{
 				convertedGame[i] = 1;
@@ -181,7 +183,18 @@ public class MrNeurobit implements SogoPlayer {
 			}
 			else
 			{
-				convertedGame[i] = 0;
+				if (i < 16)
+				{
+					convertedGame[i] = 0;
+				}
+				else if ((currentPosOneDown & bp1) == 0x0L && (currentPosOneDown & bp2) == 0x0L)
+				{
+					convertedGame[i] = 0;
+				}
+				else
+				{
+					convertedGame[i] = 0;
+				}
 			}
 			
 			t1 = t1 >> 1;

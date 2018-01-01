@@ -144,25 +144,31 @@ void connectfour_training()
 {
     cout << endl << "ConnectFour training started." << endl;
 
-    const float learning_rate = 0.7f;
+
+    const unsigned int cascade_max_neurons = 64;
+
+    const float learning_rate = 0.35f;//0.7f;
     const unsigned int num_layers = 3;
     const unsigned int num_input = 64;
-    const unsigned int num_hidden = 10;
+    const unsigned int num_hidden = 64;
     const unsigned int num_output = 1;
-    const float desired_error = 0.00004f;
-    const unsigned int max_iterations = 6000;
-    const unsigned int iterations_between_reports = 10;
+    const float desired_error = 0.0000040f;
+    const unsigned int max_iterations = 100000;
+    const unsigned int iterations_between_reports = 100;
 
     cout << endl << "Creating network." << endl;
 
     FANN::neural_net net;
     //net.create_standard(num_layers, num_input, num_hidden, num_output);
 
-    const unsigned int layers [3] = {num_input, num_hidden,num_output};
+    //const unsigned int layers [2] = {num_input,num_output};
+    const unsigned int layers [3] = {num_input,num_hidden,num_output};
 
+    //net.create_shortcut_array(2,layers);
     net.create_standard_array(num_layers,layers);
 
     net.set_learning_rate(learning_rate);
+    net.randomize_weights(-2.0, 2.0);
 
     net.set_activation_steepness_hidden(0.5);
     net.set_activation_steepness_output(0.5);
@@ -172,6 +178,7 @@ void connectfour_training()
 
     // Set additional properties such as the training algorithm
     net.set_training_algorithm(FANN::TRAIN_QUICKPROP);
+
 
     // Output network type and parameters
     cout << endl << "Network Type                         :  ";
@@ -196,12 +203,17 @@ void connectfour_training()
     {
         cout << "in loop" << endl;
 
+        data.scale_input_train_data(-1.0, 1.0);
+
         // Initialize and train the network with the data
         net.init_weights(data);
 
         cout << "Max Epochs " << setw(8) << max_iterations << ". "
             << "Desired Error: " << left << desired_error << right << endl;
         net.set_callback(print_callback, NULL);
+
+        //net.cascadetrain_on_data(data, cascade_max_neurons, iterations_between_reports, desired_error);
+
         net.train_on_data(data, max_iterations,
             iterations_between_reports, desired_error);
 
@@ -238,9 +250,9 @@ int main(int argc, char **argv)
     {
         std::ios::sync_with_stdio(); // Syncronize cout and printf output
 
-        xor_test();
+        //xor_test();
 
-        //connectfour_training();
+        connectfour_training();
     }
     catch (...)
     {
