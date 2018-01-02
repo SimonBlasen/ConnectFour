@@ -30,4 +30,19 @@ void NetUtils::initQNeuralNet(FANN::neural_net &net){
     net.set_training_algorithm(FANN::TRAIN_QUICKPROP);
 }
 
+void NetUtils::generateInput(long p1, long p2, float input[]){
+
+    for(int i = 0; i < 64; i++){
+        if((p1 >> i) & 1 == 1){
+            input[i] = 1;
+        }
+        else if((p2 >> i) & 1 == 1){
+            input[i] = -1;
+        }
+        else{
+            input[i] = 0;
+        }
+    }
+}
+
 
