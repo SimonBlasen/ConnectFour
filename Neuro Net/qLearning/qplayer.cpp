@@ -22,7 +22,7 @@ QPlayer::QPlayer()
 
 }
 
-long QPlayer::getInput(float score, long board, bool isNew){
+long QPlayer::getInput(float score, long boardOwn, long boardEnemy, bool isNew){
     runs++;
 
     if(firstRun){
@@ -42,8 +42,7 @@ long QPlayer::getInput(float score, long board, bool isNew){
             reward = -0.1;
         }
 
-
-        MemoryItem item(reward, oldState, board);
+        MemoryItem item(reward, oldState, boardOwn,boardEnemy);
 
         replayMemory[replayIndex] = item;
         replayIndex = (replayIndex < replayMemory.size()) ? replayIndex+1 : 0;

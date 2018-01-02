@@ -8,22 +8,31 @@ using namespace std;
 class MemoryItem
 {
 public:
-    MemoryItem(double reward, long oldState, long newState);
+    MemoryItem(double reward, long oldStateOwn, long oldStateEnemy, long newStateOwn, long newStateEnemy);
 
+
+
+
+    long getNewStateEnemy() const;
+    void setNewStateEnemy(long value);
+
+    long getNewStateOwn() const;
+    void setNewStateOwn(long value);
+
+    long getOldStateEnemy() const;
+    void setOldStateEnemy(long value);
+
+    long getOldStateOwn() const;
 
     double getReward() const;
-    void setReward(double value);
-
-    long getOldInput() const;
-    void setOldInput(long board);
-
-    long getNewInput() const;
-    void setNewInput(long board);
+    void setReward(double reward);
 
 private:
     double mReward;
-    long mOldInput;
-    long mNewInput;
+    long mOldStateOwn;
+    long mOldStateEnemy;
+    long mNewStateOwn;
+    long mNewStateEnemy;
 
 };
 

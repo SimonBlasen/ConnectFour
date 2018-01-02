@@ -1,26 +1,28 @@
 #include "game.h"
-const int Game::gamesAmount = 1;
-
+const int Game::GAMES_AMOUNT = 1;
 Game::Game()
 {
     this->score = 0;
     this->isNewGame = true;
     this->isP1 = true; // needed?
-    this->board = 0x0L;
+    this->boardP1 = 0x0L;
+    this->boardP2 = 0x0L;
 }
 
 void Game::reset(){
-    this->board = 0x0L;
     this->score = 0;
     this->isNewGame = true;
+    boardP1 = 0x0L;
+    boardP2 = 0x0L;
 }
 
 void Game::play(){
     Game g;
-    for(int i = 0; i < gamesAmount; i++){
-        while (!GameAnalyzer::hasEnded(g.board)) {
+    for(int i = 0; i < GAMES_AMOUNT; i++){
+        while (!GameAnalyzer::hasEnded(g.boardP1, g.boardP2)) {
             //visualize?
-            cout << g.board << endl;
+            //DEBUG
+            cout << g.boardP1 << endl;
             g.gameLoop();
         }
     }
@@ -29,25 +31,33 @@ void Game::play(){
 
 void Game::gameLoop(){
 
-    long move = player.getInput(score,board,isNewGame);
+    long move = 0;
+
+    if(isP1){
+        move = player1.getInput(score,boardP1,boardP2,isNewGame);
+        boardP1 = boardP1 | move;
+    }
+    else{
+        move = player2.getInput(score,boardP2,boardP1,isNewGame);
+        boardP2 = boardP2 | move;
+    }
 
     //Debug
     cout << "Coosen move = " << move << endl;
 
-    board  = (board | move);
-    cout << "Board = " << board << endl;
 
 
-    if(GameAnalyzer::isWon(board)){
+    if(GameAnalyzer::isWon(boardP1, boardP2)){
         score += 1;
     }
-    else if(GameAnalyzer::isLost(board)){
+    else if(GameAnalyzer::isLost(boardP1, boardP2)){
         score += -1;
     }
 
     if(isNewGame){
         isNewGame = false;
     }
+    isP1 = !isP1;
 }
 
 

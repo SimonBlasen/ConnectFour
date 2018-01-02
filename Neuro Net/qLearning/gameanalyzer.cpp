@@ -96,23 +96,23 @@ GameAnalyzer::GameAnalyzer()
 
 }
 
-bool GameAnalyzer::isWon(long board){
+bool GameAnalyzer::isWon(long boardP1, long boardP2){
 
     return false;
 
 }
 
-bool GameAnalyzer::isLost(long board)
+bool GameAnalyzer::isLost(long boardP1, long boardP2)
 {
     return false;
 
 }
 
-bool GameAnalyzer::hasEnded(long board)
+bool GameAnalyzer::hasEnded(long boardP1, long boardP2)
 {
     for (int i = 0; i < longLines.size(); i++)
     {
-        if ((board & longLines[i]) == longLines[i])
+        if ((boardP1 & longLines[i]) == longLines[i] || (boardP2 & longLines[i]) == longLines[i])
         {
             return true;
         }

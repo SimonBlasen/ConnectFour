@@ -1,11 +1,50 @@
 #include "memoryitem.h"
 
-MemoryItem::MemoryItem(double reward, long oldState, long newState)
+MemoryItem::MemoryItem(double reward, long oldStateOwn, long oldStateEnemy, long newStateOwn, long newStateEnemy)
 {
     mReward = reward;
-    mOldInput = oldState;
-    mNewInput = newState;
+    mOldStateOwn = oldStateOwn;
+    mOldStateEnemy = oldStateEnemy;
+    mNewStateOwn = newStateOwn;
+    mNewStateEnemy = newStateEnemy;
 
+
+}
+
+
+long MemoryItem::getNewStateEnemy() const
+{
+    return mNewStateEnemy;
+}
+
+void MemoryItem::setNewStateEnemy(long value)
+{
+    mNewStateEnemy = value;
+}
+
+long MemoryItem::getNewStateOwn() const
+{
+    return mNewStateOwn;
+}
+
+void MemoryItem::setNewStateOwn(long value)
+{
+    mNewStateOwn = value;
+}
+
+long MemoryItem::getOldStateEnemy() const
+{
+    return mOldStateEnemy;
+}
+
+void MemoryItem::setOldStateEnemy(long value)
+{
+    mOldStateEnemy = value;
+}
+
+long MemoryItem::getOldStateOwn() const
+{
+    return mOldStateOwn;
 }
 
 double MemoryItem::getReward() const
@@ -13,27 +52,7 @@ double MemoryItem::getReward() const
     return mReward;
 }
 
-void MemoryItem::setReward(double value)
+void MemoryItem::setReward(double reward)
 {
-    mReward = value;
-}
-
-long MemoryItem::getOldInput() const
-{
-    return mOldInput;
-}
-
-void MemoryItem::setOldInput(long board)
-{
-    mOldInput = board;
-}
-
-long MemoryItem::getNewInput() const
-{
-    return mNewInput;
-}
-
-void MemoryItem::setNewInput(long board)
-{
-    mNewInput = board;
+    mReward = reward;
 }

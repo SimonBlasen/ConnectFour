@@ -18,12 +18,16 @@ public:
 
 private:
 
-    static const int gamesAmount;
+    static const int GAMES_AMOUNT;
     double score;
     bool isNewGame;
     bool isP1;
-    long board;
-    QPlayer player;
+
+    //long board;
+    long boardP1;
+    long boardP2;
+    QPlayer player1;
+    QPlayer player2;
 
 };
 

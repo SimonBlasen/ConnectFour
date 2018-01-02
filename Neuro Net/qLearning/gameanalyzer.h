@@ -10,9 +10,9 @@ class GameAnalyzer
 public:
     GameAnalyzer();
     static const vector<long unsigned int> longLines;
-    static bool hasEnded(long board);
-    static bool isWon(long board);
-    static bool isLost(long board);
+    static bool hasEnded(long boardP1, long boardP2);
+    static bool isWon(long boardP1, long boardP2);
+    static bool isLost(long boardP1, long boardP2);
 };
 
 #endif // GAMEANALYZER_H
