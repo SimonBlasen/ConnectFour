@@ -158,15 +158,34 @@ public class NeuroUtils {
 
 		//generate valid net input:
 		for(int i = 63; i >= 0; i--) {
+			
+			long currentPosOneDown = 0x0L;
+			if (i >= 16)
+			{
+				currentPosOneDown = 0x1L << (i - 16);
+			}
+			
 			long currentPos = 0x1L << i;
 			if((currentPos & bp1) != 0x0L) {
-				output += "1";
-			}
-			else if((currentPos & bp2) != 0x0L) {
 				output += "-1";
 			}
-			else {
-				output += "0";
+			else if((currentPos & bp2) != 0x0L) {
+				output += "1";
+			}
+			else
+			{
+				if (i < 16)
+				{
+					output += "0";
+				}
+				else if ((currentPosOneDown & bp1) == 0x0L && (currentPosOneDown & bp2) == 0x0L)
+				{
+					output += "0";
+				}
+				else
+				{
+					output += "0";
+				}
 			}
 			if(i > 0) {
 				output += " ";
