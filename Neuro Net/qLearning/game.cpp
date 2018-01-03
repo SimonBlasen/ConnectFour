@@ -45,8 +45,6 @@ void Game::gameLoop(){
     //Debug
     cout << "Coosen move = " << move << endl;
 
-
-
     if(GameAnalyzer::isWon(boardP1, boardP2)){
         score += 1;
     }

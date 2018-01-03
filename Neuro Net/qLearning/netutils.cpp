@@ -45,4 +45,10 @@ void NetUtils::generateInput(long p1, long p2, float input[]){
     }
 }
 
+void NetUtils::generateTrainData(vector<float *> trainingInput, vector<float> trainingOutput,FANN::training_data &data)
+{
+    //TODO
+
+}
+
 

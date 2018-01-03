@@ -6,10 +6,16 @@
 #include <ios>
 #include <iostream>
 #include <iomanip>
+#include <vector>
+
+using namespace std;
 
 class NetUtils
 {
 private:
+
+
+public:
     static const float LEARNING_RATE;
     static const unsigned int AMOUNT_LAYERS;
     static const unsigned int SIZE_INPUT;
@@ -21,11 +27,10 @@ private:
     static const double STEEPNESS_HIDDEN;
     static const double STEEPNESS_INPUT;
     static const double STEEPNESS_OUTPUT;
-
-public:
     NetUtils();
     static void initQNeuralNet(FANN::neural_net &net);
     static void generateInput(long p1, long p2, float output[]);
+    static void generateTrainData(vector<float*> trainingInput, vector<float> trainingOutput, FANN::training_data &data);
 };
 
 #endif // NETUTILS_H

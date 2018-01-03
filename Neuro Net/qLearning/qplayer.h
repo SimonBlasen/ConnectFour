@@ -16,7 +16,8 @@ class QPlayer
 private:
     vector<MemoryItem> replayMemory;
     float oldScore;
-    long oldState;
+    long oldStateOwn;
+    long oldStateEnemy;
     FANN::neural_net net;
     double runs;
     bool firstRun;

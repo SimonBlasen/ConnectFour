@@ -16,7 +16,8 @@ QPlayer::QPlayer()
     replayMemory.reserve(REPLAY_MEMORY_SIZE);
     replayIndex = 0;
     oldScore = 0.0f;
-    oldState = 0L;
+    oldStateOwn = 0L;
+    oldStateEnemy = 0L;
     runs =  0;
     firstRun = true;
 
@@ -24,6 +25,8 @@ QPlayer::QPlayer()
 
 long QPlayer::getInput(float score, long boardOwn, long boardEnemy, bool isNew){
     runs++;
+
+
 
     if(firstRun){
         firstRun = false;
@@ -42,15 +45,15 @@ long QPlayer::getInput(float score, long boardOwn, long boardEnemy, bool isNew){
             reward = -0.1;
         }
 
-        MemoryItem item(reward, oldState, boardOwn,boardEnemy);
+        MemoryItem item(reward, oldStateOwn, oldStateEnemy, boardOwn,boardEnemy);
 
         replayMemory[replayIndex] = item;
         replayIndex = (replayIndex < replayMemory.size()) ? replayIndex+1 : 0;
 
         if(replayMemory.size() > REPLAY_MEMORY_SIZE)
         {
-            vector<long> trainingDataX;
-            vector<float> trainingDataY;
+           vector<float*> trainingDataX;
+           vector<float> trainingDataY;
 
             //select random elements from replayMemory:
             for(int i = 0; i < REPLAY_BATCH_SIZE; i++){
@@ -63,21 +66,29 @@ long QPlayer::getInput(float score, long boardOwn, long boardEnemy, bool isNew){
                 vector<float> qTableRow(possibleActions.size());
 
                 for(int j = 0; j < possibleActions.size(); j++){
-                    long currentBoard = (possibleActions[j] | currentItem.getNewInput());
+                    long newBoard = (possibleActions[j] | currentItem.getNewStateOwn());
 
+                    float input[64] = {0};
+                    NetUtils::generateInput(newBoard,currentItem.getNewStateEnemy(),input);
 
-
-
-                    qTableRow[j] = (float) net.run(currentBoard); ///FIX NEEDED
+                    // a bit hacky but should work because run returns array with outputs.
+                    qTableRow[j] = *net.run(input); ///FIX NEEDED
                 }
 
                 float updatedQValue = currentItem.getReward() + DISCOUNT *  *max_element( qTableRow.begin(), qTableRow.end());
 
-                trainingDataX.push_back(currentItem.getOldInput());
+                float trainingInput[64] = {0};
+                NetUtils::generateInput(currentItem.getOldStateOwn(),currentItem.getOldStateEnemy(),trainingInput);
+
+                trainingDataX.push_back(trainingInput);
                 trainingDataY.push_back(updatedQValue);
             }
+            FANN::training_data data;
+            NetUtils::generateTrainData(trainingDataX,trainingDataY,data);
 
-            net.train_on_data(); ///FIX input format
+            net.train_on_data(data,1,1,0.4f);
+
+            net.train_on_data(data,NetUtils::MAX_ITERATIONS,NetUtils::ITERATION_TO_NEXT_PRINT,NetUtils::DESIRED_ERROR); ///FIX input format
 
         }
     }
@@ -103,19 +114,23 @@ long QPlayer::getInput(float score, long boardOwn, long boardEnemy, bool isNew){
     }
     else
     {
+
         vector<float> qTableRow(possibleActions.size());
         for(int i = 0; i < possibleActions.size();i++){
-            long currentState = board;
-            long currentStateWithAction = currentState | possibleActions[actionIndex];
+            long currentStateOwn = boardOwn;
+            long currentStateWithAction = currentStateOwn | possibleActions[actionIndex];
 
+            float input[64] = {0};
+            NetUtils::generateInput(currentStateOwn,boardEnemy,input);
 
-            qTableRow[i] = net.run(currentStateWithAction); ///FIX NEEDED
+            qTableRow[i] = *net.run(input); ///FIX NEEDED
         }
         actionIndex = getBestMoveIndex(qTableRow);
     }
 
     oldScore = score;
-    oldState = board;
+    oldStateOwn = boardOwn;
+    oldStateEnemy = boardEnemy;
 
     return possibleActions[actionIndex];
 
