@@ -59,6 +59,7 @@ void NetUtils::generateInput(long p1, long p2, float input[]){
 void NetUtils::generateTrainData(vector<float *> trainingInput, vector<float*> trainingOutput,FANN::training_data &data)
 {
     float* inputs[trainingInput.size()];
+
     std::copy(trainingInput.begin(), trainingInput.end(), inputs);
     float* outputs[trainingOutput.size()];
     std::copy(trainingOutput.begin(), trainingOutput.end(), outputs);

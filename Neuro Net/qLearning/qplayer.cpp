@@ -86,9 +86,8 @@ void QPlayer::applyReward(float score, long boardOwn, long boardEnemy, bool isNe
             FANN::training_data data;
             NetUtils::generateTrainData(trainingDataX,trainingDataY,data);
 
-            net.train_on_data(data,1,1,0.4f);
-
             net.train_on_data(data,NetUtils::MAX_ITERATIONS,NetUtils::ITERATION_TO_NEXT_PRINT,NetUtils::DESIRED_ERROR); ///FIX input format
+            net.save("qLearn.net");
         }
     }
 }
