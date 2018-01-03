@@ -493,8 +493,12 @@ public class MrBitwiseTree implements SogoPlayer {
 		}
 	}
 	
+	// currently active Evaluate Method
 	public double evaluateGame(long bp1, long bp2)
 	{
+		List<Byte> all3LinesP1 = new ArrayList<Byte>();
+		List<Byte> all3LinesP2 = new ArrayList<Byte>();
+		
 		double res = 0.0;
 		
 		for (int i = 0; i < GameAnalyzer.longLines.length; i++)
@@ -522,6 +526,7 @@ public class MrBitwiseTree implements SogoPlayer {
 					return win_p;
 				case 3:
 					res += triple_p;
+					all3LinesP1.add((byte) i);
 					break;
 				case 2:
 					res += double_p;
@@ -539,6 +544,7 @@ public class MrBitwiseTree implements SogoPlayer {
 					return -win_p;
 				case 3:
 					res -= triple_p;
+					all3LinesP2.add((byte) i);
 					break;
 				case 2:
 					res -= double_p;
@@ -552,8 +558,88 @@ public class MrBitwiseTree implements SogoPlayer {
 			}
 		}
 		
-		return res;
+		
+		// Checks the field for Dilemmas 
+		if(checkDilemma(all3LinesP1, bp1, bp2)){
+			return win_p;
+		}else if(checkDilemma(all3LinesP2, bp2, bp1)){
+			return -win_p;
+		}else{
+			return res;
+		}
 	}
+	
+	
+	
+	// Check for a Dilemma, true if bp1 argument has one
+	public boolean checkDilemma(List<Byte> all3Lines, long bp1, long bp2){
+		
+		long stonePos1;
+		long stonePos2;
+		
+		long curLongLine1;
+		long curLongLine2;
+		
+		// compares all 3Lines
+		for(int i=0; i<all3Lines.size()-1; i++){
+			for(int j=i+1; j<all3Lines.size(); j++){
+
+				curLongLine1 = GameAnalyzer.longLines[all3Lines.get(i)];
+				curLongLine2 = GameAnalyzer.longLines[all3Lines.get(j)];
+				
+				stonePos1 = curLongLine1 & bp1;
+				stonePos1 = stonePos1 ^ curLongLine1;
+				
+				
+				
+				stonePos2 = curLongLine2 & bp1;
+				stonePos2 = stonePos2 ^ curLongLine2;
+				// stonePos now keeps only a single 1 at missing place
+				
+				// Make sure Pos1 != Pos2
+				long testPos = stonePos1 & stonePos2;
+				if(testPos == 0){
+					
+					if(fieldPlayable(stonePos1, bp1, bp2)
+						&& fieldPlayable(stonePos2, bp1, bp2)){
+						return true;
+					}
+				}		
+			}
+		}		
+		
+		return false;
+	}
+	
+	
+	// checks if the given stone position can be filled
+	public boolean fieldPlayable(long stonePos, long bp1, long bp2){
+		
+		// checks if the stone is on the lowest level
+		if(stonePos < 0XFFFFL){
+			return true;
+		}else{
+			
+			stonePos = stonePos >> 16;
+			
+			if((stonePos & bp1) != 0 || (stonePos & bp2) != 0){
+				return true;
+			}			
+		}
+
+		return false;
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	
 	private double evaluateGame(boolean[][][] b1s, boolean[][][] b2s)

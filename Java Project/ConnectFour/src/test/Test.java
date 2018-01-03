@@ -1,5 +1,8 @@
 package test;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import de.cogsys.ai.sogo.control.SogoGameConsole;
 import de.cogsys.ai.sogo.game.SogoGame;
 import de.cogsys.ai.sogo.game.SogoGame.Player;
@@ -20,8 +23,20 @@ public class Test {
 	public static void main(String[] args) {
 		
 		
+		MrBitwiseTree bittree = new MrBitwiseTree();
+		
+		long bp1 = 0XB00087L;
+		long bp2 = 0X70L;
+		
+		List<Byte> all3Lines = new ArrayList<Byte>();
+		all3Lines.add((byte) 0);
+		all3Lines.add((byte) 5);
+
+		
+		System.out.println(bittree.checkDilemma(all3Lines, bp1, bp2));
 		
 		
+		/*
 		Net xor = new Net("D:/Dokumente/xor_float.net");
 		
 		int[] inputs = new int[] {1, 1};
@@ -116,7 +131,7 @@ public class Test {
 		
 		*/
 		
-
+/*
 		
 		for (int gc = 0; gc < games.length; gc++)
 		{
@@ -184,7 +199,7 @@ public class Test {
 		
 		
 		
-		
+		*/
 
 				
 		
