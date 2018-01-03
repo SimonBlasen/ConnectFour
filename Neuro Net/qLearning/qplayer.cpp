@@ -23,11 +23,10 @@ QPlayer::QPlayer()
 
 }
 
-long QPlayer::getInput(float score, long boardOwn, long boardEnemy, bool isNew){
+void QPlayer::applyReward(float score, long boardOwn, long boardEnemy, bool isNew)
+{
+
     runs++;
-
-
-
     if(firstRun){
         firstRun = false;
         NetUtils::initQNeuralNet(net);
@@ -52,8 +51,8 @@ long QPlayer::getInput(float score, long boardOwn, long boardEnemy, bool isNew){
 
         if(replayMemory.size() > REPLAY_MEMORY_SIZE)
         {
-           vector<float*> trainingDataX;
-           vector<float> trainingDataY;
+            vector<float*> trainingDataX;
+            vector<float*> trainingDataY;
 
             //select random elements from replayMemory:
             for(int i = 0; i < REPLAY_BATCH_SIZE; i++){
@@ -62,7 +61,7 @@ long QPlayer::getInput(float score, long boardOwn, long boardEnemy, bool isNew){
 
 
                 //should return long with one 1 at the chosen position
-                vector<long> possibleActions; ///TODO create possible actions
+                vector<long> possibleActions = generatePossibleMoves(boardOwn, boardEnemy);
                 vector<float> qTableRow(possibleActions.size());
 
                 for(int j = 0; j < possibleActions.size(); j++){
@@ -81,17 +80,20 @@ long QPlayer::getInput(float score, long boardOwn, long boardEnemy, bool isNew){
                 NetUtils::generateInput(currentItem.getOldStateOwn(),currentItem.getOldStateEnemy(),trainingInput);
 
                 trainingDataX.push_back(trainingInput);
-                trainingDataY.push_back(updatedQValue);
+                float trainingOutput[1]= {updatedQValue};
+                trainingDataY.push_back(trainingOutput);
             }
             FANN::training_data data;
             NetUtils::generateTrainData(trainingDataX,trainingDataY,data);
 
-            net.train_on_data(data,1,1,0.4f);
-
             net.train_on_data(data,NetUtils::MAX_ITERATIONS,NetUtils::ITERATION_TO_NEXT_PRINT,NetUtils::DESIRED_ERROR); ///FIX input format
-
+            net.save("qLearn.net");
         }
     }
+}
+
+long QPlayer::getInput(float score, long boardOwn, long boardEnemy, bool isNew){
+
 
     double epsilonRunFactor = 0;
 
@@ -104,10 +106,7 @@ long QPlayer::getInput(float score, long boardOwn, long boardEnemy, bool isNew){
 
 
     double r = rand() / RAND_MAX;
-    vector<long> possibleActions; ///TODO need method
-
-    ///TODO REMOVE
-    possibleActions.push_back(0x1);
+    vector<long> possibleActions = generatePossibleMoves(boardOwn,boardEnemy);
 
     int actionIndex = 0;
 
@@ -137,7 +136,6 @@ long QPlayer::getInput(float score, long boardOwn, long boardEnemy, bool isNew){
 
     return possibleActions[actionIndex];
 
-
 }
 
 int QPlayer::getBestMoveIndex(vector<float> values)
@@ -150,4 +148,24 @@ int QPlayer::getBestMoveIndex(vector<float> values)
     }
     return currentBest;
 
+}
+
+vector<long> QPlayer::generatePossibleMoves(long boardP1, long boardP2)
+{
+    vector<long> possMoves;
+    for (int i = 0; i < 16; i++)
+    {
+        for (int j = 0; j < 4; j++)
+        {
+            long toCheck = (0x01 << ((j * 16) + i));
+
+            if ((toCheck & boardP1) == 0x0L && (toCheck & boardP2) == 0x0L)
+            {
+                possMoves.push_back(toCheck);
+                break;
+            }
+        }
+    }
+
+    return possMoves;
 }

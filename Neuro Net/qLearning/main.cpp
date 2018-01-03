@@ -41,8 +41,7 @@ int main(int argc, char **argv)
 {
 
     Game g;
-    g.gameLoop();
-    g.gameLoop();
+    Game::play();
 
     cout << "game is fine" << endl;
 

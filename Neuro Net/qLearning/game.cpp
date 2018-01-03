@@ -1,5 +1,5 @@
 #include "game.h"
-const int Game::GAMES_AMOUNT = 1;
+const int Game::GAMES_AMOUNT = 10;
 Game::Game()
 {
     this->scoreP1 = 0;
@@ -24,9 +24,14 @@ void Game::play(){
         while (!GameAnalyzer::hasEnded(g.boardP1, g.boardP2)) {
             //visualize?
             //DEBUG
-            cout << g.boardP1 << endl;
+            cout << "Board = " <<  g.boardP1 << endl;
             g.gameLoop();
         }
+        cout << "has ended" << endl;
+        g.reset();
+
+        g.player1.applyReward(g.scoreP1,g.boardP1,g.boardP2,g.isNewGame);
+        g.player2.applyReward(g.scoreP2,g.boardP2,g.boardP1,g.isNewGame);
     }
 }
 
@@ -34,19 +39,6 @@ void Game::play(){
 void Game::gameLoop(){
 
     long move = 0;
-
-    if(isP1){
-        move = player1.getInput(scoreP1,boardP1,boardP2,isNewGame);
-        boardP1 = boardP1 | move;
-    }
-    else{
-        move = player2.getInput(scoreP2,boardP2,boardP1,isNewGame);
-        boardP2 = boardP2 | move;
-    }
-
-    //Debug
-    cout << "Current Player = " << isP1 ? "1"  : "2" << endl;
-    cout << "Coosen move = " << move << endl;
 
     if(isP1){
         if(GameAnalyzer::isWon(boardP1)){
@@ -64,6 +56,29 @@ void Game::gameLoop(){
             scoreP2 += -1;
         }
     }
+
+
+    if(isP1){
+        player1.applyReward(scoreP1,boardP1,boardP2,isNewGame);
+        move = player1.getInput(scoreP1,boardP1,boardP2,isNewGame);
+        boardP1 = boardP1 | move;
+    }
+    else{
+        player2.applyReward(scoreP2,boardP2,boardP1,isNewGame);
+        move = player2.getInput(scoreP2,boardP2,boardP1,isNewGame);
+        boardP2 = boardP2 | move;
+    }
+
+    //Debug
+    if(isP1){
+        cout << "Current Player = 1" << endl;
+    }
+    else{
+        cout << "Current Player = 2" << endl;
+    }
+
+    cout << "Coosen move = " << move << endl;
+
 
 
 

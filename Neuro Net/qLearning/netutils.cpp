@@ -33,21 +33,37 @@ void NetUtils::initQNeuralNet(FANN::neural_net &net){
 void NetUtils::generateInput(long p1, long p2, float input[]){
 
     for(int i = 0; i < 64; i++){
-        if((p1 >> i) & 1 == 1){
-            input[i] = 1;
+        if((p1 >> i) & 0x1L == 1){
+            input[i] = 0.3f;
         }
-        else if((p2 >> i) & 1 == 1){
-            input[i] = -1;
+        else if((p2 >> i) & 0x1L == 1){
+            input[i] = -0.3f;
         }
-        else{
-            input[i] = 0;
+        else {
+            if (i < 16)
+            {
+                input[i] = 0.1f;
+            }
+            else if (((p1 >> (i - 16)) & p1) == 0x0L && ((p1 >> (i - 16)) & p2) == 0x0L)
+            {
+                input[i] = -0.1f;
+            }
+            else
+            {
+                input[i] = 0.1f;
+            }
         }
     }
 }
 
-void NetUtils::generateTrainData(vector<float *> trainingInput, vector<float> trainingOutput,FANN::training_data &data)
+void NetUtils::generateTrainData(vector<float *> trainingInput, vector<float*> trainingOutput,FANN::training_data &data)
 {
-    //TODO
+    float* inputs[trainingInput.size()];
+
+    std::copy(trainingInput.begin(), trainingInput.end(), inputs);
+    float* outputs[trainingOutput.size()];
+    std::copy(trainingOutput.begin(), trainingOutput.end(), outputs);
+    data.set_train_data(trainingInput.size(),64, inputs,1,outputs);
 
 }
 

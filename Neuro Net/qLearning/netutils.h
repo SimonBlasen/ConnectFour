@@ -30,7 +30,7 @@ public:
     NetUtils();
     static void initQNeuralNet(FANN::neural_net &net);
     static void generateInput(long p1, long p2, float output[]);
-    static void generateTrainData(vector<float*> trainingInput, vector<float> trainingOutput, FANN::training_data &data);
+    static void generateTrainData(vector<float*> trainingInput, vector<float*> trainingOutput, FANN::training_data &data);
 };
 
 #endif // NETUTILS_H
