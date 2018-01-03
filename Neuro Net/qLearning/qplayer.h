@@ -35,8 +35,11 @@ private:
 public:
     QPlayer();
 
-    long getInput(float oldScore, long boardOwn, long boardEnemy, bool isNew);
+
+    void applyReward(float score, long boardOwn, long boardEnemy, bool isNew);
+    long getInput(float score, long boardOwn, long boardEnemy, bool isNew);
     static int getBestMoveIndex(vector<float> moves);
+    vector<long> generatePossibleMoves(long boardP1, long boardP2);
 
 };
 

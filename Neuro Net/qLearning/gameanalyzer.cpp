@@ -98,6 +98,14 @@ GameAnalyzer::GameAnalyzer()
 
 bool GameAnalyzer::isWon(long board){
 
+    for (int i = 0; i < longLines.size(); i++)
+    {
+        if ((board & longLines[i]) == longLines[i])
+        {
+            return true;
+        }
+    }
+
     return false;
 
 }
@@ -106,14 +114,14 @@ bool GameAnalyzer::isWon(long board){
 
 bool GameAnalyzer::hasEnded(long boardP1, long boardP2)
 {
-    for (int i = 0; i < longLines.size(); i++)
+    if(isWon(boardP1) || isWon(boardP2) || ((boardP1 | boardP2) == 0xFFFFFFFFFFFFFFFFL))
     {
-        if ((boardP1 & longLines[i]) == longLines[i] || (boardP2 & longLines[i]) == longLines[i])
-        {
-            return true;
-        }
+        return true;
     }
-    return false;
+    else
+    {
+        return false;
+    }
 
 }
 
