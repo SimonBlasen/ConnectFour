@@ -102,7 +102,6 @@ void QPlayer::applyReward(float score, long boardOwn, long boardEnemy, bool isNe
             }
 
 
-
             for (int i = 0; i < trainingDataY.size(); i++)
             {
                 //cout <<"Fucker"<< " qValue: " << trainingDataY[i][0] << endl;
