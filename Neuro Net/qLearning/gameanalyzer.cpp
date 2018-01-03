@@ -2,7 +2,7 @@
 
 ///TODO!!! long unsigned??
 
-const vector<long unsigned int> GameAnalyzer::longLines = {0x000000000000000FL,
+const vector<uint64_t> GameAnalyzer::longLines = {0x000000000000000FL,
                                               0x00000000000000F0L,
                                               0x0000000000000F00L,
                                               0x000000000000F000L,

@@ -4,6 +4,7 @@
 #include "qplayer.h"
 #include "gameanalyzer.h"
 #include <iostream>
+#include <fstream>
 
 using namespace std;
 
@@ -14,9 +15,17 @@ public:
     void reset();
     void gameLoop();
     static void play();
+    void visualizeUnity(bool p1sMove, long move);
 
 
 private:
+
+    static const int PRINT_INFO_BATCHES;
+    int print_info_counter;
+
+    int p1_won;
+    int p2_won;
+
 
     static const int GAMES_AMOUNT;
     float scoreP1;

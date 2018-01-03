@@ -9,7 +9,7 @@ class GameAnalyzer
 {
 public:
     GameAnalyzer();
-    static const vector<long unsigned int> longLines;
+    static const vector<uint64_t> longLines;
     static bool hasEnded(long boardP1, long boardP2);
     static bool isWon(long boardP1);
 };

@@ -19,7 +19,7 @@ private:
     long oldStateOwn;
     long oldStateEnemy;
     FANN::neural_net net;
-    double runs;
+    int runs;
     bool firstRun;
     int replayIndex;
 
@@ -31,11 +31,12 @@ private:
     const static int REPLAY_MEMORY_SIZE;
     const static double REPLAY_BATCH_SIZE;
 
+    FANN::training_data *data;
 
 public:
     QPlayer();
 
-
+    int getRuns();
     void applyReward(float score, long boardOwn, long boardEnemy, bool isNew);
     long getInput(float score, long boardOwn, long boardEnemy, bool isNew);
     static int getBestMoveIndex(vector<float> moves);

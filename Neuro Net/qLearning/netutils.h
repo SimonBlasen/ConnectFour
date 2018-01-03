@@ -7,6 +7,7 @@
 #include <iostream>
 #include <iomanip>
 #include <vector>
+#include <qplayer.h>
 
 using namespace std;
 
@@ -29,8 +30,9 @@ public:
     static const double STEEPNESS_OUTPUT;
     NetUtils();
     static void initQNeuralNet(FANN::neural_net &net);
-    static void generateInput(long p1, long p2, float output[]);
-    static void generateTrainData(vector<float*> trainingInput, vector<float*> trainingOutput, FANN::training_data &data);
+    static void generateInput(long p1, long p2, vector<float> input);
+    static void generateInput(long p1, long p2, float input[]);
+    static FANN::training_data generateTrainData(vector<float*> trainingInput, vector<float*> trainingOutput);
 };
 
 #endif // NETUTILS_H
