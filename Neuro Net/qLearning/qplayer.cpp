@@ -106,6 +106,9 @@ long QPlayer::getInput(float score, long boardOwn, long boardEnemy, bool isNew){
     double r = rand() / RAND_MAX;
     vector<long> possibleActions; ///TODO need method
 
+    ///TODO REMOVE
+    possibleActions.push_back(0x1);
+
     int actionIndex = 0;
 
     if(r > (EPSILON + epsilonRunFactor))

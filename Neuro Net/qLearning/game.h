@@ -19,7 +19,8 @@ public:
 private:
 
     static const int GAMES_AMOUNT;
-    double score;
+    float scoreP1;
+    float scoreP2;
     bool isNewGame;
     bool isP1;
 

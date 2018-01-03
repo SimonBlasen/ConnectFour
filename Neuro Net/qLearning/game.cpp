@@ -2,7 +2,8 @@
 const int Game::GAMES_AMOUNT = 1;
 Game::Game()
 {
-    this->score = 0;
+    this->scoreP1 = 0;
+    this->scoreP2 = 0;
     this->isNewGame = true;
     this->isP1 = true; // needed?
     this->boardP1 = 0x0L;
@@ -10,8 +11,9 @@ Game::Game()
 }
 
 void Game::reset(){
-    this->score = 0;
-    this->isNewGame = true;
+    scoreP1 = 0;
+    scoreP2 = 0;
+    isNewGame = true;
     boardP1 = 0x0L;
     boardP2 = 0x0L;
 }
@@ -34,23 +36,36 @@ void Game::gameLoop(){
     long move = 0;
 
     if(isP1){
-        move = player1.getInput(score,boardP1,boardP2,isNewGame);
+        move = player1.getInput(scoreP1,boardP1,boardP2,isNewGame);
         boardP1 = boardP1 | move;
     }
     else{
-        move = player2.getInput(score,boardP2,boardP1,isNewGame);
+        move = player2.getInput(scoreP2,boardP2,boardP1,isNewGame);
         boardP2 = boardP2 | move;
     }
 
     //Debug
+    cout << "Current Player = " << isP1 ? "1"  : "2" << endl;
     cout << "Coosen move = " << move << endl;
 
-    if(GameAnalyzer::isWon(boardP1, boardP2)){
-        score += 1;
+    if(isP1){
+        if(GameAnalyzer::isWon(boardP1)){
+            scoreP1 += 1;
+        }
+        else if(GameAnalyzer::isWon(boardP2)){
+            scoreP1 += -1;
+        }
     }
-    else if(GameAnalyzer::isLost(boardP1, boardP2)){
-        score += -1;
+    else{
+        if(GameAnalyzer::isWon(boardP2)){
+            scoreP2 += 1;
+        }
+        else if(GameAnalyzer::isWon(boardP1)){
+            scoreP2 += -1;
+        }
     }
+
+
 
     if(isNewGame){
         isNewGame = false;

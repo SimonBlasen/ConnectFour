@@ -96,17 +96,13 @@ GameAnalyzer::GameAnalyzer()
 
 }
 
-bool GameAnalyzer::isWon(long boardP1, long boardP2){
+bool GameAnalyzer::isWon(long board){
 
     return false;
 
 }
 
-bool GameAnalyzer::isLost(long boardP1, long boardP2)
-{
-    return false;
 
-}
 
 bool GameAnalyzer::hasEnded(long boardP1, long boardP2)
 {

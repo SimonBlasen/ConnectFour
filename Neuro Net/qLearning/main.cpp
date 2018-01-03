@@ -42,16 +42,9 @@ int main(int argc, char **argv)
 
     Game g;
     g.gameLoop();
+    g.gameLoop();
 
     cout << "game is fine" << endl;
-
-
-
-
-
-
-
-
 
 
 
