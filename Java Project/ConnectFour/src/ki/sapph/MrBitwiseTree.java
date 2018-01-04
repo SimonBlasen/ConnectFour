@@ -563,13 +563,15 @@ public class MrBitwiseTree implements SogoPlayer {
 		{
 			double milton = turnP1 ? win_p * 0.8 + stonesAmount : -win_p * 0.8 - stonesAmount;
 			double heuristic = evaluateGame(bp1, bp2);
-			return turnP1 ? Math.max(milton, heuristic) : Math.min(milton, heuristic);
+			return milton;
+			//return turnP1 ? Math.max(milton, heuristic) : Math.max(milton, heuristic);
 		}
 		else if (result == -1)
 		{
 			double milton = turnP1 ? -win_p * 0.8 - stonesAmount : win_p * 0.8 + stonesAmount;
 			double heuristic = evaluateGame(bp1, bp2);
-			return turnP1 ? Math.min(milton, heuristic) : Math.max(milton, heuristic);
+			return milton;
+			//return turnP1 ? Math.max(milton, heuristic) : Math.max(milton, heuristic);
 			
 
 		}
