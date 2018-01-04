@@ -58,13 +58,13 @@ public class Sogo {
 			
 			if (rounds % 2 == 0)
 			{
-				p1 = new MrNovice();
-				p2 = new MrNeurobit();
+				p1 = new MrBitwiseTree();
+				p2 = new MrNovice();
 			}
 			else
 			{
-				p1 = new MrNeurobit();
-				p2 = new MrNovice();
+				p1 = new MrNovice();
+				p2 = new MrBitwiseTree();
 			}
 			
 			p1.initialize(Player.P1);

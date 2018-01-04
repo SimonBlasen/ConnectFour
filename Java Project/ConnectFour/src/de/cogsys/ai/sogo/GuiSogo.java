@@ -21,6 +21,8 @@ import de.cogsys.ai.sogo.player.GuiPlayer;
 import de.cogsys.ai.sogo.player.MrNovice;
 import de.cogsys.ai.sogo.player.MrRandom;
 import de.cogsys.ai.sogo.player.SogoPlayer;
+import ki.sapph.MrBitwiseTree;
+import util.GameAnalyzer;
 
 /**
  * @author Sebastian Otte
@@ -89,7 +91,7 @@ public class GuiSogo {
 		System.exit(0);
 	}
 
-	public static final long PLAYER_TIMEOUT = 10000;
+	public static final long PLAYER_TIMEOUT = 100000000;
 	public static final long TIMEOUT_CULANCE = 500;
 
 	private MainFrame mainframe;
@@ -275,6 +277,16 @@ public class GuiSogo {
 
 				this.game = this.game.performMove(selectedMove);
 				this.lastmove = selectedMove;
+				
+				long bp1 = GameAnalyzer.getBP1FromGame(this.game);
+				long bp2 = GameAnalyzer.getBP2FromGame(this.game);
+				
+				MrBitwiseTree mrbt = new MrBitwiseTree();
+				double valval = mrbt.evaluateMilton(bp1, bp2, game.getCurrentPlayer() == Player.P1);
+				
+				System.out.println("########################");
+				System.out.println("## " + valval);
+				System.out.println("########################");
 			}
 		}
 

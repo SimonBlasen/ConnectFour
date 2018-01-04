@@ -18,10 +18,10 @@ public class MrBitwiseTree implements SogoPlayer {
 
 	private boolean doneFirstMove = false;
 	
-	private static final double win_p = 1000.0 / 1000.0;
-	private static final double triple_p = 20.0 / 1000.0;
-	private static final double double_p = 2.0 / 1000.0;
-	private static final double single_p = 1.0 / 1000.0;
+	private static final double win_p = 1000.0 / 1.0;
+	private static final double triple_p = 20.0 / 1.0;
+	private static final double double_p = 2.0 / 1.0;
+	private static final double single_p = 1.0 / 1.0;
 	
 	private static final double sapphassassiinoInfinity = 9999999.0;
 	
@@ -98,6 +98,7 @@ public class MrBitwiseTree implements SogoPlayer {
 					
 					//double val = evaluateNode(b1s, b2s, true, -1000000.0, 1000000.0, depth, true, 0);
 					
+					curDepth = depth;
 					double val = evaluateNode(bp1, bp2, true, -300000.0, 300000.0, depth, true, 0, depth <= 2);
 					
 
@@ -184,7 +185,7 @@ public class MrBitwiseTree implements SogoPlayer {
 				
 				SogoMove nextMove = moves.get(0);
 				
-				for (int depth = 1; depth <= 20; depth += 1)
+				for (int depth = 2; depth <= 20; depth += 2)
 				{
 					//boolean[][][] b1s = GameAnalyzer.getB1sFromGame(g);
 					//boolean[][][] b2s = GameAnalyzer.getB2sFromGame(g);
@@ -213,6 +214,7 @@ public class MrBitwiseTree implements SogoPlayer {
 					
 					//double val = evaluateNode(b1s, b2s, true, -1000000.0, 1000000.0, depth, true, 0);
 					
+					curDepth = depth;
 					double val = evaluateNode(bp1, bp2, true, -300000.0, 300000.0, depth, true, 0, depth <= 2);
 					
 
@@ -271,6 +273,7 @@ public class MrBitwiseTree implements SogoPlayer {
 	}
 	
 	private boolean showAll = false;
+	private int curDepth = 0;
 	
 	private double evaluateNode(long bp1, long bp2, boolean isMax, double alpha, double beta, int depth, boolean firstNode, int moveIndex, boolean beginner)
 	{
@@ -309,13 +312,24 @@ public class MrBitwiseTree implements SogoPlayer {
 		
 		
 
-		if (depth <= 0 || GameAnalyzer.hasGameEnded(isMax ? bp2 : bp1))
-		{
-			double val = evaluateGame(bp1, bp2);
-			return val;
-		}
-		else
-		{
+		//if (depth <= 0 || GameAnalyzer.hasGameEnded(isMax ? bp2 : bp1))
+		//{
+			double val;
+			if (GameAnalyzer.hasGameEnded(isMax ? bp2 : bp1))
+			{
+				val = evaluateGame(bp1, bp2);
+				return val;
+			}
+			else if (depth <= 0)
+			{
+				val = evaluateMilton(bp1, bp2, !isMax);
+				return val;
+			}
+			
+			//double val = evaluateGame(bp1, bp2);
+		//}
+		//else
+		//{
 			for (int i = 0; i < 16; i++)
 			{
 				long dropPosition = (0x1L << (48 + i));
@@ -334,17 +348,22 @@ public class MrBitwiseTree implements SogoPlayer {
 						//safeWin = i;
 					}
 					
-					if (childValue >= 1000.0 && firstNode)
+					if (childValue >= 900.0 && firstNode)
 					{
 						showAll = true;
 					}
 					
 					if (firstNode)
 					{
+						if (Math.abs(calcMoves[i] - childValue) >= 899*2.0 && Math.abs(calcMoves[i] - childValue) <= 901*2.0)
+						{
+							
+						}
+						
 						calcMoves[i] = childValue;
 						
-						//if (depth >= 6 || showAll)
-						//System.out.println("Move [" + i + "] is " + (childValue != 10000.0 && childValue != -10000.0 ? childValue : "pruned" + (forbidden[i] ? " IS FORBIDDEN" : "")));
+						if (depth >= 1 || showAll)
+						System.out.println("Move [" + i + "] is " + (childValue != 10000.0 && childValue != -10000.0 ? childValue : "pruned" + (forbidden[i] ? " IS FORBIDDEN" : "")));
 						//System.out.println("Move [" + i + "] is in long: " + Long.toBinaryString(dropPosition));
 					}
 					
@@ -386,112 +405,262 @@ public class MrBitwiseTree implements SogoPlayer {
 			}
 			
 			return bestValue;
-		}
+		//}
 		
 	}
 	
-	private double evaluateNode(boolean[][][] bsp1, boolean[][][] bsp2, boolean isMax, double alpha, double beta, int depth, boolean firstNode, int moveIndex)
+	
+	
+	private boolean[] threatPoses = new boolean[16];
+	
+	/**
+	 * 1 = p1 threat
+	 * 2 = p2 threat
+	 * 3 = stone
+	 * 0 = air
+	 * 
+	 * 
+	 */
+	private byte[][] threats = new byte[16][4];
+	
+	
+	
+	public double evaluateMilton(long bp1, long bp2, boolean turnP1)
 	{
-		int x = moveIndex % 4;
-		int y = moveIndex / 4;
-		int z = 0;
-		
-		if (firstNode == false)
+		/*boolean[] threats = new boolean[16];
+		for (int i = 0; i < threats.length; i++)
 		{
-			for (int i = 0; i < 4; i++)
+			threats[i] = false;
+		}*/
+		for (int i = 0; i < threatPoses.length; i++)
+		{
+			if (threatPoses[i])
 			{
-				if (bsp1[x][y][i] == false)
+				for (int j = 0; j < threats[i].length; j++)
 				{
-					z = i;
-					bsp1[x][y][i] = true;
-					bsp2[x][y][i] = isMax;
-					break;
+					threats[i][j] = 0;
+				}
+				threatPoses[i] = false;
+			}
+		}
+		
+		for (int i = 0; i < GameAnalyzer.longLines.length; i++)
+		{
+			long p1Here = bp1 & GameAnalyzer.longLines[i];
+			long p2Here = bp2 & GameAnalyzer.longLines[i];
+
+			int self = 0;
+			int other = 0;
+			
+			while (p1Here != 0x0L)
+			{
+				p1Here &= (p1Here - 1);
+				self++;
+			}
+			while (p2Here != 0x0L)
+			{
+				p2Here &= (p2Here - 1);
+				other++;
+			}
+			
+			long threatPos = 0x0L;
+			boolean pThreat = false;
+			
+			if (self == 0 && other == 3)
+			{
+				threatPos = bp2 & GameAnalyzer.longLines[i];
+				threatPos = threatPos ^ GameAnalyzer.longLines[i];
+			}
+			else if (self == 3 && other == 0)
+			{
+				threatPos = bp1 & GameAnalyzer.longLines[i];
+				threatPos = threatPos ^ GameAnalyzer.longLines[i];
+				pThreat = true;
+			}
+			
+			
+			if (threatPos != 0x0L)
+			{
+				int floor = 0;
+				while (threatPos > 0xFFFFL)
+				{
+					threatPos = threatPos >> 16;
+					floor++;
+				}
+				
+				for (int j = 0; j < GameAnalyzer.bottomLines.length; j++)
+				{
+					if (threatPos == GameAnalyzer.bottomLines[j])
+					{
+						if (threatPoses[j] == false)
+						{
+							for (int k = 0; k < floor; k++)
+							{
+								long pBottom = (threatPos << (k * 16)) & (bp1 | bp2);
+								if (pBottom == 0x0L)
+								{
+									threats[j][floor] = 0;
+									break;
+								}
+								else
+								{
+									threats[j][floor] = 3;
+								}
+							}
+						}
+						
+						threatPoses[j] = true;
+						threats[j][floor] = pThreat ? (byte)1 : (byte)2;
+						break;
+					}
 				}
 			}
 		}
 		
-		double bestValue = isMax ? -10000.0 : 10000.0;
-		
-		
-		if (c.getTimeLeft() <= 0)
+	
+		/*byte result = recThreatning(true);
+		if (result == 1)
 		{
-			if (firstNode == false)
-			{
-				bsp1[x][y][z] = false;
-			}
-			
-			return -10000.0;
+			return win_p * 0.9;
 		}
-		if (depth <= 0 || GameAnalyzer.hasGameEnded(bsp1, bsp2, x, y, z, isMax))
+		else if (result == -1)
 		{
-			double val = evaluateGame(bsp1, bsp2);
-			if (firstNode == false)
-			{
-				bsp1[x][y][z] = false;
-			}
-			return val;
+			return -win_p * 0.9;
 		}
 		else
 		{
-			for (int i = 0; i < 16; i++)
+			return evaluateGame(bp1, bp2);
+			//return 0.0;
+		}*/
+		
+		byte result = recThreatning(turnP1);
+		
+		if (result == 1)
+		{
+			return turnP1 ? win_p * 0.9 : -win_p * 0.9;
+		}
+		else if (result == -1)
+		{
+			return turnP1 ? -win_p * 0.9 : win_p * 0.9;
+		}
+		else
+		{
+			return evaluateGame(bp1, bp2);
+			//return 0.0;
+		}
+	}
+	
+	private byte recThreatning(boolean turnP1)
+	{
+		byte turnPlayer = turnP1 ? (byte)1 : 2;
+		byte turnOtherPlayer = turnP1 ? (byte)2 : 1;
+		
+		
+		
+		for (int i = 0; i < threatPoses.length; i++)
+		{
+			if (threatPoses[i])
 			{
-				if (bsp1[i % 4][i / 4][3] == false && c.getTimeLeft() > 0)
+				for (int j = 0; j < threats[i].length; j++)
 				{
-					double childValue = evaluateNode(bsp1, bsp2, !isMax, alpha, beta, depth - 1, false, i);
-					
-					if (firstNode)
+					//eigene akute Drohung
+					if (j == 0 && threats[i][0] == turnPlayer)
 					{
-						if (depth >= 7)
-							System.out.println("Move [" + i + "] is " + childValue);
+						return 1;
 					}
-					
-					if (childValue > bestValue == isMax)
+					else if (threats[i][j] == turnPlayer && j > 0 && threats[i][j - 1] == 3)
 					{
-						if (firstNode)
-						{
-							bestIndices.clear();
-							bestIndices.add(i);
-						}
-						bestValue = childValue;
+						return 1;
 					}
-					else if (childValue == bestValue)
+				}
+
+				
+				//beliebiger Zug
+				
+				//eigene Drohung
+				
+				//feindliche Drohung - loose
+				
+				
+			}
+		}
+		
+		for (int i = 0; i < threatPoses.length; i++)
+		{
+			if (threatPoses[i])
+			{
+				for (int j = 0; j < threats[i].length; j++)
+				{
+					//feindliche akute Drohung
+					if (j == 0 && threats[i][0] == turnOtherPlayer)
 					{
-						if (firstNode)
-						{
-							//bestIndices.add(i);
-						}
+						threats[i][j] = 3;
+						return (byte)-recThreatning(!turnP1);
 					}
-					if (isMax == false && childValue < beta)
+					else if (threats[i][j] == turnOtherPlayer && j > 0 && threats[i][j - 1] == 3)
 					{
-						beta = childValue;
-					}
-					else if (isMax && childValue > alpha)
-					{
-						alpha = childValue;
-					}
-					
-					//node.updateValue(child.getValue());
-					
-					if (alpha >= beta && firstNode == false)
-					{
-						// Pruning
-						
-						if (firstNode == false)
-						{
-							bsp1[x][y][z] = false;
-						}
-						return isMax ? 10000.0 : -10000.0;
+						threats[i][j] = 3;
+						return (byte)-recThreatning(!turnP1);
 					}
 				}
 			}
-			
-			if (firstNode == false)
-			{
-				bsp1[x][y][z] = false;
-			}
-			return bestValue;
 		}
+		
+		
+		for (int i = 0; i < threatPoses.length; i++)
+		{
+			if (threatPoses[i])
+			{
+				for (int j = 0; j < 3; j++)
+				{
+					if ((j == 0 || threats[i][j - 1] == 3) && threats[i][j] == 0 && threats[i][j + 1] == 0)
+					{
+						threats[i][j] = 3;
+						return (byte)-recThreatning(!turnP1);
+					}
+				}
+			}
+		}
+		
+		
+		//eigene drohung kaputt machen
+		for (int i = 0; i < threatPoses.length; i++)
+		{
+			if (threatPoses[i])
+			{
+				for (int j = 0; j < 3; j++)
+				{
+					if ((j == 0 || threats[i][j - 1] == 3) && threats[i][j] == 0 && threats[i][j + 1] == turnPlayer)
+					{
+						threats[i][j] = 3;
+						return (byte)-recThreatning(!turnP1);
+					}
+				}
+			}
+		}
+		
+		//feindliche drohung aktiv machen
+		for (int i = 0; i < threatPoses.length; i++)
+		{
+			if (threatPoses[i])
+			{
+				for (int j = 0; j < 3; j++)
+				{
+					if ((j == 0 || threats[i][j - 1] == 3) && threats[i][j] == 0 && threats[i][j + 1] == turnOtherPlayer)
+					{
+						//threats[i][j] = 3;
+						return -1;
+					}
+				}
+			}
+		}
+		
+		
+		
+		return 0;
 	}
+	
+	
 	
 	// currently active Evaluate Method
 	public double evaluateGame(long bp1, long bp2)
@@ -636,145 +805,4 @@ public class MrBitwiseTree implements SogoPlayer {
 	
 	
 	
-	
-	
-	
-	
-	
-	
-	private double evaluateGame(boolean[][][] b1s, boolean[][][] b2s)
-	{
-		double res = 0.0;
-		
-		for (int i = 0; i < GameAnalyzer.lines.length; i++)
-		{
-			int self = 0;
-			int other = 0;
-			
-			for (int j = 0; j < 4; j++)
-			{
-				self += GameAnalyzer.isAir(b1s, GameAnalyzer.lines[i][j]) ? 0 : (GameAnalyzer.isP1(b2s, GameAnalyzer.lines[i][j]) ? 1 : 0);
-				other += GameAnalyzer.isAir(b1s, GameAnalyzer.lines[i][j]) ? 0 : ((GameAnalyzer.isP1(b2s, GameAnalyzer.lines[i][j]) == false) ? 1 : 0);
-			}
-			
-			if (other == 0) {
-				switch (self) {
-				case 4:
-					return win_p;
-				case 3:
-					res += triple_p;
-					break;
-				case 2:
-					res += double_p;
-					break;
-				case 1:
-					res += single_p;
-					break;
-				default:
-					break;
-				}
-			}
-			if (self == 0) {
-				switch (other) {
-				case 4:
-					return -win_p;
-				case 3:
-					res -= triple_p;
-					break;
-				case 2:
-					res -= double_p;
-					break;
-				case 1:
-					res -= single_p;
-					break;
-				default:
-					break;
-				}
-			}
-		}
-		
-		return res;
-	}
-	
-	private double evaluateGame(MrMoreefficientGamestate game)
-	{
-		double val = evaluateGameG(game);
-		
-		/*SogoGame g = new SogoGame();
-		for (int x = 0; x < 4; x++)
-		{
-			for (int y = 0; y < 4; y++)
-			{
-				for (int z = 0; z < 4; z++)
-				{
-					if (game.fieldAir(x, y, z) == true)
-					{
-						g.board[x][y][z] = Player.NONE;
-					}
-					else
-					{
-						g.board[x][y][z] = game.fieldP(x, y, z, false) ? Player.P1 : Player.P2;
-					}
-				}
-			}
-		}
-		
-		double val = MrNovice.evaluateGame(g);*/
-		
-		return val;
-	}
-	
-	public static double evaluateGameG(MrMoreefficientGamestate g)
-	{
-		double res = 0.0;
-		
-		for (int i = 0; i < GameAnalyzer.lines.length; i++)
-		{
-			int self = 0;
-			int other = 0;
-			
-			for (int j = 0; j < 4; j++)
-			{
-				self += g.fieldAir(GameAnalyzer.lines[i][j]) ? 0 : (g.fieldP(GameAnalyzer.lines[i][j], false) ? 1 : 0);
-				other += g.fieldAir(GameAnalyzer.lines[i][j]) ? 0 : (g.fieldP(GameAnalyzer.lines[i][j], true) ? 1 : 0);
-			}
-			
-			if (other == 0) {
-				switch (self) {
-				case 4:
-					return win_p;
-				case 3:
-					res += triple_p;
-					break;
-				case 2:
-					res += double_p;
-					break;
-				case 1:
-					res += single_p;
-					break;
-				default:
-					break;
-				}
-			}
-			if (self == 0) {
-				switch (other) {
-				case 4:
-					return -win_p;
-				case 3:
-					res -= triple_p;
-					break;
-				case 2:
-					res -= double_p;
-					break;
-				case 1:
-					res -= single_p;
-					break;
-				default:
-					break;
-				}
-			}
-		}
-		
-		return res;
-	}
 }

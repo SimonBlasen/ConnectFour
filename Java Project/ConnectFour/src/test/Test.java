@@ -23,6 +23,72 @@ public class Test {
 	public static void main(String[] args) {
 		
 		
+		
+		
+		
+		
+		
+		MrBitwiseTree bit = new MrBitwiseTree();
+		
+		long bp1 = 0xC006L;
+		long bp2 = 0xE0072001L;
+		
+		
+		bit.generateNextMove(new SogoGameConsole() {
+			
+			@Override
+			public void updateMove(SogoMove move) {
+				
+			}
+			
+			@Override
+			public long getTimeLeft() {
+				// TODO Auto-generated method stub
+				return 1000;
+			}
+			
+			@Override
+			public SogoGame getGame() {
+				SogoGame game = new SogoGame();
+				game.board[0][0][0] = Player.P1;
+				game.board[0][0][1] = Player.P1;
+				game.board[1][0][1] = Player.P1;
+				game.board[2][0][1] = Player.P1;
+				game.board[0][3][0] = Player.P1;
+				game.board[0][3][1] = Player.P1;
+				game.board[1][3][1] = Player.P1;
+				game.board[2][3][1] = Player.P1;
+				game.board[1][0][0] = Player.P2;
+				game.board[2][0][0] = Player.P2;
+				game.board[1][3][0] = Player.P2;
+				game.board[2][3][0] = Player.P2;
+				
+				
+				return game;
+			}
+		});
+		
+		//double val = bit.evaluateMilton(bp1, bp2, false);
+		
+		
+		
+		//System.out.println(val);
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		/*
 		MrBitwiseTree bittree = new MrBitwiseTree();
 		
 		long bp1 = 0XB00087L;
@@ -34,7 +100,7 @@ public class Test {
 
 		
 		System.out.println(bittree.checkDilemma(all3Lines, bp1, bp2));
-		
+		*/
 		
 		/*
 		Net xor = new Net("D:/Dokumente/xor_float.net");
