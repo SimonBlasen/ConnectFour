@@ -19,7 +19,7 @@ import visualisation.Visualisation;
 
 public class Sogo {
 
-	public static final long PLAYER_TIMEOUT = 15000;
+	public static final long PLAYER_TIMEOUT = 10000;
 	public static final long TIMEOUT_CULANCE = 1000;
 
 	public static void main(String[] args) {
@@ -58,13 +58,13 @@ public class Sogo {
 			
 			if (rounds % 2 == 0)
 			{
-				p1 = new MrBitwiseTree();
-				p2 = new MrNovice();
+				p1 = new MrNovice();
+				p2 = new MrBitwiseTree();
 			}
 			else
 			{
-				p1 = new MrNovice();
-				p2 = new MrBitwiseTree();
+				p1 = new MrBitwiseTree();
+				p2 = new MrNovice();
 			}
 			
 			p1.initialize(Player.P1);

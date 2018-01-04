@@ -40,6 +40,8 @@ public class MrBitwiseTree implements SogoPlayer {
 	
 	private int counterP = 0;
 
+	private int stonesAmountRound = 0;
+	
 	public int generateNextMoveMuchBetter(long p1, long p2)
 	{
 		c = new SogoGameConsole() {
@@ -80,6 +82,7 @@ public class MrBitwiseTree implements SogoPlayer {
 				int tookIndex = 0;
 				
 				double maxYet = -10000.0;
+				
 				
 				
 				for (int depth = 4; depth <= 4; depth += 1)
@@ -185,6 +188,8 @@ public class MrBitwiseTree implements SogoPlayer {
 				
 				SogoMove nextMove = moves.get(0);
 				
+				
+				
 				for (int depth = 2; depth <= 20; depth += 2)
 				{
 					//boolean[][][] b1s = GameAnalyzer.getB1sFromGame(g);
@@ -192,6 +197,8 @@ public class MrBitwiseTree implements SogoPlayer {
 
 					long bp1 = GameAnalyzer.getBP1FromGame(g);
 					long bp2 = GameAnalyzer.getBP2FromGame(g);
+					
+					stonesAmountRound = countStones(bp1, bp2);
 					
 					
 					for (int x = 0; x < 4; x++)
@@ -228,10 +235,28 @@ public class MrBitwiseTree implements SogoPlayer {
 					{
 						c.updateMove(new SogoMove(safeWin % 4, safeWin / 4));
 					}
-					else
+					else if (val > -999.0)
 					{
 						c.updateMove(new SogoMove(takeIndex % 4, takeIndex / 4));
 					}
+					else
+					{
+						System.out.println("Self rescue");
+					}
+					
+					
+					
+					int amountOverMinus1000 = 0;
+					for (int i = 0; i < 16; i++)
+					{
+						if (calcMoves[i] < -999.0)
+						{
+							amountOverMinus1000++;
+						}
+					}
+					
+					
+					
 					
 					int forbiddenAmount = 0;
 					for (int i = 0; i < forbidden.length; i++)
@@ -444,6 +469,23 @@ public class MrBitwiseTree implements SogoPlayer {
 		return stonesAmout;
 	}
 	
+	public int countOpenLines(long bp1, long bp2)
+	{
+		int amount = GameAnalyzer.longLines.length;
+		
+		for (int i = 0; i < GameAnalyzer.longLines.length; i++)
+		{
+			long p1Here = GameAnalyzer.longLines[i] & bp1;
+			long p2Here = GameAnalyzer.longLines[i] & bp2;
+			if (p1Here != 0x0L && p2Here != 0x0L)
+			{
+				amount--;
+			}
+		}
+		
+		return amount;
+	}
+	
 	
 	public double evaluateMilton(long bp1, long bp2, boolean turnP1)
 	{
@@ -557,29 +599,44 @@ public class MrBitwiseTree implements SogoPlayer {
 		
 		
 		
-		int stonesAmount = countStones(bp1, bp2);
+		//int stonesAmount = countStones(bp1, bp2);
+		int openLinesAmount = countOpenLines(bp1, bp2);
 		
-		if (result == 1)
+		
+		if (stonesAmountRound <= 4)
 		{
-			double milton = turnP1 ? win_p * 0.8 + stonesAmount : -win_p * 0.8 - stonesAmount;
-			double heuristic = evaluateGame(bp1, bp2);
-			return milton;
-			//return turnP1 ? Math.max(milton, heuristic) : Math.max(milton, heuristic);
-		}
-		else if (result == -1)
-		{
-			double milton = turnP1 ? -win_p * 0.8 - stonesAmount : win_p * 0.8 + stonesAmount;
-			double heuristic = evaluateGame(bp1, bp2);
-			return milton;
-			//return turnP1 ? Math.max(milton, heuristic) : Math.max(milton, heuristic);
-			
-
+			return evaluateGame(bp1, bp2);
 		}
 		else
 		{
-			return evaluateGame(bp1, bp2);
-			//return 0.0;
+			//double badness = (64.0 - stonesAmount) * 3.0;
+			double badness = openLinesAmount * 2.5;
+			
+			if (result == 1)
+			{
+				double milton = turnP1 ? win_p * 0.9 - badness : -win_p * 0.9 + badness;
+				double heuristic = evaluateGame(bp1, bp2);
+				return milton;
+				//return turnP1 ? Math.max(milton, heuristic) : Math.max(milton, heuristic);
+			}
+			else if (result == -1)
+			{
+				double milton = turnP1 ? -win_p * 0.9 + badness : win_p * 0.9 - badness;
+				double heuristic = evaluateGame(bp1, bp2);
+				return milton;
+				//return turnP1 ? Math.max(milton, heuristic) : Math.max(milton, heuristic);
+				
+
+			}
+			else
+			{
+				return evaluateGame(bp1, bp2);
+				//return 0.0;
+			}
 		}
+		
+		
+		
 	}
 	
 	private byte recThreatning(boolean turnP1)
