@@ -282,6 +282,7 @@ public class GuiSogo {
 				long bp2 = GameAnalyzer.getBP2FromGame(this.game);
 				
 				MrBitwiseTree mrbt = new MrBitwiseTree();
+
 				double valval = mrbt.evaluateMilton(bp1, bp2, game.getCurrentPlayer() == Player.P1);
 				
 				System.out.println("########################");

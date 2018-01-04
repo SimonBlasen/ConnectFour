@@ -23,12 +23,11 @@ public class Test {
 	public static void main(String[] args) {
 		
 		
-		
-		
-		
-		
+		 
 		
 		MrBitwiseTree bit = new MrBitwiseTree();
+		
+		
 		
 		long bp1 = 0xC006L;
 		long bp2 = 0xE0072001L;

@@ -425,6 +425,26 @@ public class MrBitwiseTree implements SogoPlayer {
 	
 	
 	
+	public int countStones(long bp1, long bp2) {
+		int stonesAmout = 0;
+		
+		while (bp1 != 0x0L)
+		{
+			bp1 &= (bp1 - 1L);
+			stonesAmout++;
+			
+		}
+		while (bp2 != 0x0L)
+		{
+			bp2 &= (bp2 - 1L);
+			stonesAmout++;
+			
+		}
+
+		return stonesAmout;
+	}
+	
+	
 	public double evaluateMilton(long bp1, long bp2, boolean turnP1)
 	{
 		/*boolean[] threats = new boolean[16];
@@ -535,13 +555,23 @@ public class MrBitwiseTree implements SogoPlayer {
 		
 		byte result = recThreatning(turnP1);
 		
+		
+		
+		int stonesAmount = countStones(bp1, bp2);
+		
 		if (result == 1)
 		{
-			return turnP1 ? win_p * 0.9 : -win_p * 0.9;
+			double milton = turnP1 ? win_p * 0.8 + stonesAmount : -win_p * 0.8 - stonesAmount;
+			double heuristic = evaluateGame(bp1, bp2);
+			return turnP1 ? Math.max(milton, heuristic) : Math.min(milton, heuristic);
 		}
 		else if (result == -1)
 		{
-			return turnP1 ? -win_p * 0.9 : win_p * 0.9;
+			double milton = turnP1 ? -win_p * 0.8 - stonesAmount : win_p * 0.8 + stonesAmount;
+			double heuristic = evaluateGame(bp1, bp2);
+			return turnP1 ? Math.min(milton, heuristic) : Math.max(milton, heuristic);
+			
+
 		}
 		else
 		{
