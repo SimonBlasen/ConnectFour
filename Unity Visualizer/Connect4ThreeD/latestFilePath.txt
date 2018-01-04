@@ -1,1 +1,1 @@
-D:\Dokumente\Connect4Test.txt
+D:\Dokumente\GitHub2\ConnectFour\Neuro Net\build-qLearning-Kopie_von_Desktop_Qt_5_9_0_MSVC2015_32bit-Release\unity-visualisation-file.txt

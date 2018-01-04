@@ -1,6 +1,8 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class InstBall : MonoBehaviour {
 
@@ -20,7 +22,19 @@ public class InstBall : MonoBehaviour {
 	// Use this for initialization
 	void Start ()
     {
-		
+		if (GameObject.Find("Canvas").transform.Find("InputField Dropspeed") != null)
+        {
+            string inputLerpSpeed = GameObject.Find("Canvas").transform.Find("InputField Dropspeed").GetComponent<InputField>().text;
+
+            try
+            {
+                lerpSpeed = Convert.ToSingle(inputLerpSpeed);
+            }
+            catch (Exception ex)
+            {
+
+            }
+        }
 	}
 	
 	// Update is called once per frame
