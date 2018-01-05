@@ -45,6 +45,7 @@ public class GuiSogo {
 		"MrNovice (depth 3)",
 		"MrNovice (depth 4)",
 		"MrRandom",
+		"MrBitwiseTree",
 	};
 
 	public static SogoPlayer createAgent(final String agent) {
@@ -53,6 +54,7 @@ public class GuiSogo {
 		if (agent.equals(agents[2])) return new MrNovice(3);
 		if (agent.equals(agents[3])) return new MrNovice(4);
 		if (agent.equals(agents[4])) return new MrRandom();
+		if (agent.equals(agents[5])) return new MrBitwiseTree();
 		return null;
 	}
 
@@ -91,7 +93,7 @@ public class GuiSogo {
 		System.exit(0);
 	}
 
-	public static final long PLAYER_TIMEOUT = 100000000;
+	public static final long PLAYER_TIMEOUT = 10000;
 	public static final long TIMEOUT_CULANCE = 500;
 
 	private MainFrame mainframe;

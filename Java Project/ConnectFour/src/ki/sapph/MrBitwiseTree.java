@@ -3,6 +3,7 @@ package ki.sapph;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 import de.cogsys.ai.sogo.control.SogoGameConsole;
 import de.cogsys.ai.sogo.game.SogoGame;
@@ -41,7 +42,8 @@ public class MrBitwiseTree implements SogoPlayer {
 		final SogoGame g = c.getGame();
 		final List<SogoMove> moves = g.generateValidMoves();
 
-		c.updateMove(moves.get((new Random(0)).nextInt(moves.size())));
+		
+		c.updateMove(moves.get(ThreadLocalRandom.current().nextInt(0, moves.size())));
 
 
 
@@ -350,7 +352,7 @@ public class MrBitwiseTree implements SogoPlayer {
 		double amountsP1 = 0;
 		double amountsP2 = 0;
 		
-		double[] floors = new double[] {4, 3, 2.2, 1.5};
+		double[] floors = new double[] {3, 2.5, 2.5, 1.6};
 		
 		for (int i = 0; i < threatPoses.length; i++)
 		{
@@ -372,8 +374,8 @@ public class MrBitwiseTree implements SogoPlayer {
 			}
 		}
 		
-		resultP1 *= amountsP1;
-		resultP2 *= amountsP2;
+		resultP1 *= (amountsP1);
+		resultP2 *= (amountsP2);
 		
 		result = resultP1 - resultP2;
 		

@@ -3,6 +3,7 @@ package ki.sapph;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 import de.cogsys.ai.sogo.control.SogoGameConsole;
 import de.cogsys.ai.sogo.game.SogoGame;
@@ -161,8 +162,8 @@ public class MrExpert implements SogoPlayer {
 		
 		double[] currentValues = new double[16];
 		double[] nextValues = new double[16];
-		
-		c.updateMove(moves.get((new Random(0)).nextInt(moves.size())));
+
+		c.updateMove(moves.get(ThreadLocalRandom.current().nextInt(0, moves.size())));
 		
 		safeWin = -1;
 		

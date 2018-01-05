@@ -60,7 +60,7 @@ public class VisualisationFilewriter {
 			
 			
 		} catch (FileNotFoundException | UnsupportedEncodingException e) {
-		System.out.println("File coudl not be written");
+		//System.out.println("File coudl not be written");
 
 		}
 		
