@@ -61,7 +61,7 @@ public class NeuroUtils {
 
 			}
 			else {
-				toDoMove = ki.generateNextMoveMuchBetter(isP1 ? p1 : p2, isP1 ? p2 : p1);
+				//toDoMove = ki.generateNextMoveMuchBetter(isP1 ? p1 : p2, isP1 ? p2 : p1);
 			}
 
 
