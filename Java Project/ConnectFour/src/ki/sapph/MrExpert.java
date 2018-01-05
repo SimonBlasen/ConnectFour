@@ -202,7 +202,7 @@ public class MrExpert implements SogoPlayer {
 					stonesAmountRound = countStones(bp1, bp2);
 stonesAmountRound = countStones(bp1, bp2);
 					
-					if (stonesAmountRound == 4 || stonesAmountRound == 5)
+					if (stonesAmountRound == 4)
 					{
 						return;
 					}

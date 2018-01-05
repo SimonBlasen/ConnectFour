@@ -27,7 +27,7 @@ public class MrBitwiseTree implements SogoPlayer {
 	private int takeIndex = -1;
 	public double[] calcMoves = new double[16];
 	private int stonesAmountRound = 0;
-	private boolean debug_messages = false;
+	private boolean debug_messages = true;
 	
 	
 	@Override
@@ -47,15 +47,15 @@ public class MrBitwiseTree implements SogoPlayer {
 
 
 
-		for (int depth = 2; depth <= 30; depth += 1)
+		for (int depth = 2; depth <= 30; depth += 2)
 		{
 			long bp1 = GameAnalyzer.getBP1FromGame(g);
 			long bp2 = GameAnalyzer.getBP2FromGame(g);
 
 			stonesAmountRound = countStones(bp1, bp2);
-			if (stonesAmountRound == 4 || stonesAmountRound == 5)
+			if (stonesAmountRound == 4)
 			{
-				return;
+				//return;
 			}
 
 			double val = evaluateNode(bp1, bp2, true, -300000.0, 300000.0, depth, true, 0, depth <= 2);
@@ -352,7 +352,8 @@ public class MrBitwiseTree implements SogoPlayer {
 		double amountsP1 = 0;
 		double amountsP2 = 0;
 		
-		double[] floors = new double[] {3, 2.5, 2.5, 1.6};
+//		double[] floors = new double[] {3, 2.5, 2.5, 1.6};
+		double[] floors = new double[] {1.0, 3.0, 2.0, 1.0};
 		
 		for (int i = 0; i < threatPoses.length; i++)
 		{
@@ -374,8 +375,8 @@ public class MrBitwiseTree implements SogoPlayer {
 			}
 		}
 		
-		resultP1 *= (amountsP1);
-		resultP2 *= (amountsP2);
+		//resultP1 *= (amountsP1);
+		//resultP2 *= (amountsP2);
 		
 		result = resultP1 - resultP2;
 		

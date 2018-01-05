@@ -20,7 +20,7 @@ import visualisation.Visualisation;
 
 public class Sogo {
 
-	public static final long PLAYER_TIMEOUT = 10000;
+	public static final long PLAYER_TIMEOUT = 3000;
 	public static final long TIMEOUT_CULANCE = 1000;
 
 	public static void main(String[] args) {
