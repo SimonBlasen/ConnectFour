@@ -28,7 +28,7 @@ public class MrBitwiseTree implements SogoPlayer {
 	private int takeIndex = -1;
 	public double[] calcMoves = new double[16];
 	private int stonesAmountRound = 0;
-	private boolean debug_messages = true;
+	private boolean debug_messages = false;
 	
 	
 	@Override
@@ -40,6 +40,9 @@ public class MrBitwiseTree implements SogoPlayer {
 		System.out.println("Floor 2: " + Sogo.weight2);
 		System.out.println("Floor 3: " + Sogo.weight3);
 		System.out.println("Floor 4: " + Sogo.weight4);
+		System.out.println("Depths:");
+		System.out.println("Depth start: " + Sogo.depthStart);
+		System.out.println("Depth steps: " + Sogo.depthAdd);
 	}
 	
 	@Override
@@ -55,7 +58,7 @@ public class MrBitwiseTree implements SogoPlayer {
 		
 
 
-		for (int depth = 2; depth <= 30; depth += 1)
+		for (int depth = Sogo.depthStart; depth <= 30; depth += Sogo.depthAdd)
 		{
 			long bp1 = GameAnalyzer.getBP1FromGame(g);
 			long bp2 = GameAnalyzer.getBP2FromGame(g);
@@ -137,7 +140,7 @@ public class MrBitwiseTree implements SogoPlayer {
 		}
 		else if (depth <= 0)
 		{
-			val = evaluateMilton(bp1, bp2, !isMax);
+			val = evaluateMilton(bp1, bp2, isMax);
 			return val;
 		}
 
@@ -190,6 +193,7 @@ public class MrBitwiseTree implements SogoPlayer {
 	
 	
 	private boolean[] threatPoses = new boolean[16];
+	private boolean[] threatPoses2 = new boolean[16];
 	
 	/**
 	 * 1 = p1 threat
@@ -246,13 +250,14 @@ public class MrBitwiseTree implements SogoPlayer {
 	{
 		for (int i = 0; i < threatPoses.length; i++)
 		{
-			if (threatPoses[i])
+			if (threatPoses[i] /*|| threatPoses2[i]*/)
 			{
 				for (int j = 0; j < threats[i].length; j++)
 				{
 					threats[i][j] = 0;
 				}
 				threatPoses[i] = false;
+				//threatPoses2[i] = false;
 			}
 		}
 		
@@ -274,6 +279,9 @@ public class MrBitwiseTree implements SogoPlayer {
 				p2Here &= (p2Here - 1);
 				other++;
 			}
+
+			long threatPos2_0 = 0x0L;
+			long threatPos2_1 = 0x0L;
 			
 			long threatPos = 0x0L;
 			boolean pThreat = false;
@@ -297,6 +305,17 @@ public class MrBitwiseTree implements SogoPlayer {
 			{
 				return -win_p;
 			}
+			/*else if (self == 2 && other == 0)
+			{
+				threatPos2_0 = (bp1 & GameAnalyzer.longLines[i]) & ((bp1 & GameAnalyzer.longLines[i]) - 0x1L);
+				threatPos2_1 = (bp1 & GameAnalyzer.longLines[i]) ^ threatPos2_0;
+				pThreat = true;
+			}
+			else if (self == 0 && other == 2)
+			{
+				threatPos2_0 = (bp2 & GameAnalyzer.longLines[i]) & ((bp2 & GameAnalyzer.longLines[i]) - 0x1L);
+				threatPos2_1 = (bp2 & GameAnalyzer.longLines[i]) ^ threatPos2_0;
+			}*/
 			
 			
 			if (threatPos != 0x0L)
@@ -319,12 +338,12 @@ public class MrBitwiseTree implements SogoPlayer {
 								long pBottom = (threatPos << (k * 16)) & (bp1 | bp2);
 								if (pBottom == 0x0L)
 								{
-									threats[j][floor] = 0;
+									threats[j][k] = 0;
 									break;
 								}
 								else
 								{
-									threats[j][floor] = 3;
+									threats[j][k] = 3;
 								}
 							}
 						}
@@ -335,6 +354,75 @@ public class MrBitwiseTree implements SogoPlayer {
 					}
 				}
 			}
+			/*else if (threatPos2_0 != 0x0L)
+			{
+				int floor0 = 0;
+				while (threatPos2_0 > 0xFFFFL)
+				{
+					threatPos2_0 = threatPos2_0 >> 16;
+					floor0++;
+				}
+				int floor1 = 0;
+				while (threatPos2_1 > 0xFFFFL)
+				{
+					threatPos2_1 = threatPos2_1 >> 16;
+					floor1++;
+				}
+				
+				
+				for (int j = 0; j < GameAnalyzer.bottomLines.length; j++)
+				{
+					if (threatPos2_0 == GameAnalyzer.bottomLines[j])
+					{
+						if (threatPoses2[j] == false)
+						{
+							for (int k = 0; k < floor0; k++)
+							{
+								long pBottom = (threatPos2_0 << (k * 16)) & (bp1 | bp2);
+								if (pBottom == 0x0L)
+								{
+									threats[j][k] = 0;
+									break;
+								}
+								else
+								{
+									threats[j][k] = 3;
+								}
+							}
+						}
+						
+						threatPoses2[j] = true;
+						threats[j][floor0] = pThreat ? (byte)5 : (byte)6;
+						
+					}
+					
+					
+					if (threatPos2_1 == GameAnalyzer.bottomLines[j])
+					{
+						if (threatPoses2[j] == false)
+						{
+							for (int k = 0; k < floor1; k++)
+							{
+								long pBottom = (threatPos2_1 << (k * 16)) & (bp1 | bp2);
+								if (pBottom == 0x0L)
+								{
+									threats[j][k] = 0;
+									break;
+								}
+								else
+								{
+									threats[j][k] = 3;
+								}
+							}
+						}
+						
+						threatPoses2[j] = true;
+						threats[j][floor1] = pThreat ? (byte)5 : (byte)6;
+						
+					}
+				}
+				
+			}*/
 		}
 		
 	
@@ -358,36 +446,122 @@ public class MrBitwiseTree implements SogoPlayer {
 		double resultP1 = 0;
 		double resultP2 = 0;
 		double result = 0;
+		double resultP1_2er = 0;
+		double resultP2_2er = 0;
 		
 		double amountsP1 = 0;
 		double amountsP2 = 0;
 		
 //		double[] floors = new double[] {3, 2.5, 2.5, 1.6};
-		//double[] floors = new double[] {1.0, 4.0, 3.0, 2.0};
+		//double[] floors = new double[] {0.0, 4.0, 3.0, 1.0};
 		double[] floors = new double[] {Sogo.weight1, Sogo.weight2, Sogo.weight3, Sogo.weight4};
 		
 		for (int i = 0; i < threatPoses.length; i++)
 		{
 			if (threatPoses[i])
 			{
-				for (int j = 0; j < threats[i].length; j++)
+				/*for (int j = 0; j < threats[i].length; j++)
 				{
-					if (threats[i][j] == 1 && (j == 0 || threats[i][j - 1] != 2) && (turnP1 == true || (j >= 1 && (threats[i][j - 1] != 3))))
+					if (threats[i][j] == 5 && (j == 0 || (threats[i][j - 1] != 2 && threats[i][j - 1] != 6)) && (turnP1 == true || (j >= 1 && (threats[i][j - 1] != 3))))
 					{
 						amountsP1++;
 						resultP1 += floors[j];
 					}
-					else if (threats[i][j] == 2 && (j == 0 || threats[i][j - 1] != 1) && (turnP1 == true || (j >= 1 && (threats[i][j - 1] != 3))))
+					else if (threats[i][j] == 6 && (j == 0 || (threats[i][j - 1] != 1 && threats[i][j - 1] != 5)) && (turnP1 == false || (j >= 1 && (threats[i][j - 1] != 3))))
 					{
 						amountsP2++;
 						resultP2 += floors[j];
 					}
+				}*/
+				
+				for (int j = 0; j < threats[i].length; j++)
+				{
+					if (threats[i][j] == 1)
+					{
+						if (turnP1 && j == 0) 
+						{
+							return win_p;
+						}
+						else if (turnP1 == false && j == 0)
+						{
+							
+						}
+						else if (turnP1 == false && j > 0)
+						{
+							if (threats[i][j - 1] == 3)
+							{
+								
+							}
+							else if (threats[i][j - 1] == 0)
+							{
+								resultP1 += floors[j];
+							}
+							else if (threats[i][j - 1] == 2)
+							{
+								
+							}
+							else if (threats[i][j - 1] == 1)
+							{
+								resultP1 += floors[j];
+							}
+						}
+						else if (turnP1 && j > 0)
+						{
+							resultP1 += floors[j];
+						}
+					}
+					
+					else if (threats[i][j] == 2)
+					{
+						if (turnP1 == false && j == 0) 
+						{
+							return -win_p;
+						}
+						else if (turnP1 && j == 0)
+						{
+							
+						}
+						else if (turnP1 && j > 0)
+						{
+							if (threats[i][j - 1] == 3)
+							{
+								
+							}
+							else if (threats[i][j - 1] == 0)
+							{
+								resultP2 += floors[j];
+							}
+							else if (threats[i][j - 1] == 1)
+							{
+								
+							}
+							else if (threats[i][j - 1] == 2)
+							{
+								resultP2 += floors[j];
+							}
+						}
+						else if (turnP1 == false && j > 0)
+						{
+							resultP2 += floors[j];
+						}
+					}
+					/*if (threats[i][j] == 1 && (j == 0 || threats[i][j - 1] != 2) && (turnP1 == true || (j >= 1 && (threats[i][j - 1] != 3))))
+					{
+						amountsP1++;
+						resultP1 += floors[j];
+					}
+					else if (threats[i][j] == 2 && (j == 0 || threats[i][j - 1] != 1) && (turnP1 == false || (j >= 1 && (threats[i][j - 1] != 3))))
+					{
+						amountsP2++;
+						resultP2 += floors[j];
+					}*/
 				}
 			}
 		}
 		
 		//resultP1 *= (amountsP1);
 		//resultP2 *= (amountsP2);
+		
 		
 		result = resultP1 - resultP2;
 		

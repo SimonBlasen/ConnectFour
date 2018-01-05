@@ -20,25 +20,31 @@ import visualisation.Visualisation;
 
 public class Sogo {
 
-	public static final long PLAYER_TIMEOUT = 5000;
+	public static final long PLAYER_TIMEOUT = 4000;
 	public static final long TIMEOUT_CULANCE = 1000;
 
-	public static double weight1 = 1.0;
-	public static double weight2 = 9.0;
-	public static double weight3 = 13.0;
-	public static double weight4 = 5.0;
+	public static double weight1 = 0.0;
+	public static double weight2 = 4.0;
+	public static double weight3 = 3.0;
+	public static double weight4 = 1.0;
+
+	public static int depthStart = 2;
+	public static int depthAdd = 1;
 	
 	public static void main(String[] args) {
 
 		// BufferedReader br = new BufferedReader(new
 		// InputStreamReader(System.in));
 
-		if (args.length == 4)
+		if (args.length == 6)
 		{
 			weight1 = Double.valueOf(args[0]);
 			weight2 = Double.valueOf(args[1]);
 			weight3 = Double.valueOf(args[2]);
 			weight4 = Double.valueOf(args[3]);
+			
+			depthStart = Integer.valueOf(args[4]);
+			depthAdd = Integer.valueOf(args[5]);
 		}
 		
 		
@@ -78,8 +84,8 @@ public class Sogo {
 			}
 			else
 			{
-				p1 = new MrBitwiseTree();
-				p2 = new MrExpert();
+				p1 = new MrExpert();
+				p2 = new MrBitwiseTree();
 			}
 			
 			p1.initialize(Player.P1);
@@ -165,7 +171,7 @@ public class Sogo {
 
 			switch (g.result()) {
 			case P1:
-				if (rounds % 2 == 0)
+				if (true || rounds % 2 == 0)
 				{
 					System.out.println("Player 1 (X) wins");
 					p1Won++;
@@ -177,7 +183,7 @@ public class Sogo {
 				}
 				break;
 			case P2:
-				if (rounds % 2 == 0)
+				if (true || rounds % 2 == 0)
 				{
 					System.out.println("Player 2 (O) wins");
 					p2Won++;
