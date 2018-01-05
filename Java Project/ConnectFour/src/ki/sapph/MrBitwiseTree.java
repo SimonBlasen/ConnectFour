@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
+import de.cogsys.ai.sogo.Sogo;
 import de.cogsys.ai.sogo.control.SogoGameConsole;
 import de.cogsys.ai.sogo.game.SogoGame;
 import de.cogsys.ai.sogo.game.SogoMove;
@@ -33,6 +34,12 @@ public class MrBitwiseTree implements SogoPlayer {
 	@Override
 	public void initialize(Player p) {
 		this.p = p;
+		
+		System.out.println("Weights:");
+		System.out.println("Floor 1: " + Sogo.weight1);
+		System.out.println("Floor 2: " + Sogo.weight2);
+		System.out.println("Floor 3: " + Sogo.weight3);
+		System.out.println("Floor 4: " + Sogo.weight4);
 	}
 	
 	@Override
@@ -45,9 +52,10 @@ public class MrBitwiseTree implements SogoPlayer {
 		
 		c.updateMove(moves.get(ThreadLocalRandom.current().nextInt(0, moves.size())));
 
+		
 
 
-		for (int depth = 2; depth <= 30; depth += 2)
+		for (int depth = 2; depth <= 30; depth += 1)
 		{
 			long bp1 = GameAnalyzer.getBP1FromGame(g);
 			long bp2 = GameAnalyzer.getBP2FromGame(g);
@@ -186,6 +194,8 @@ public class MrBitwiseTree implements SogoPlayer {
 	/**
 	 * 1 = p1 threat
 	 * 2 = p2 threat
+	 * 5 = p1 2-er threat
+	 * 6 = p2 2-er threat
 	 * 3 = stone
 	 * 0 = air
 	 * 
@@ -353,7 +363,8 @@ public class MrBitwiseTree implements SogoPlayer {
 		double amountsP2 = 0;
 		
 //		double[] floors = new double[] {3, 2.5, 2.5, 1.6};
-		double[] floors = new double[] {1.0, 3.0, 2.0, 1.0};
+		//double[] floors = new double[] {1.0, 4.0, 3.0, 2.0};
+		double[] floors = new double[] {Sogo.weight1, Sogo.weight2, Sogo.weight3, Sogo.weight4};
 		
 		for (int i = 0; i < threatPoses.length; i++)
 		{

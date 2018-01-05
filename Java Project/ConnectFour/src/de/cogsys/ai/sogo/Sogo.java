@@ -20,14 +20,28 @@ import visualisation.Visualisation;
 
 public class Sogo {
 
-	public static final long PLAYER_TIMEOUT = 3000;
+	public static final long PLAYER_TIMEOUT = 5000;
 	public static final long TIMEOUT_CULANCE = 1000;
 
+	public static double weight1 = 1.0;
+	public static double weight2 = 9.0;
+	public static double weight3 = 13.0;
+	public static double weight4 = 5.0;
+	
 	public static void main(String[] args) {
 
 		// BufferedReader br = new BufferedReader(new
 		// InputStreamReader(System.in));
 
+		if (args.length == 4)
+		{
+			weight1 = Double.valueOf(args[0]);
+			weight2 = Double.valueOf(args[1]);
+			weight3 = Double.valueOf(args[2]);
+			weight4 = Double.valueOf(args[3]);
+		}
+		
+		
 		int p1Won = 0;
 		int p2Won = 0;
 		int draw = 0;
