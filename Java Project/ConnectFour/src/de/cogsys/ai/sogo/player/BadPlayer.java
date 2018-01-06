@@ -77,7 +77,7 @@ public class BadPlayer implements SogoPlayer {
 					}
 					
 					
-					final double score = min_value(c.getGame().performMove(m), alteredBp1, bp2, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, mDepth);
+					final double score = min_value(alteredBp1, bp2, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, mDepth);
 
 					
 					System.out.println(m.i + "," + m.j + " = " + score);
@@ -106,43 +106,49 @@ public class BadPlayer implements SogoPlayer {
 	}
 
 
-	public double max_value(final SogoGame game, long bp1, long bp2, double alpha, double beta, int remainingDepth) {
+	public double max_value(long bp1, long bp2, double alpha, double beta, int remainingDepth) {
 		//System.out.println("state = " + game.computeStringRepresentation());
 		//System.out.println("depth = " + remainingDepth);
 
-		if ((remainingDepth <= 0) || game.ends()) {
-			double valval = evaluateGame(game);
+		/*if (game.ends() != GameAnalyzer.hasGameEnded(bp2))
+		{
+			System.out.println("Game ended diff");
+		}*/
+		
+		if ((remainingDepth <= 0) || GameAnalyzer.hasGameEnded(bp2)) {
+			//double valval = evaluateGame(game);
 			double valval2 = evaluateGame(bp1, bp2);
 
-			if (valval != valval2)
+			/*if (valval != valval2)
 			{
 				System.out.println("FUCKCDJSKDJS: " + valval + "," + valval2);
-			}
+			}*/
 
 			return valval2;
 			//return evaluateGame(game);
 		}
 
 		
-		long cBp1 = GameAnalyzer.getBP1FromGame(game);
-		long cBp2 = GameAnalyzer.getBP2FromGame(game);
+		//long cBp1 = GameAnalyzer.getBP1FromGame(game);
+		//long cBp2 = GameAnalyzer.getBP2FromGame(game);
 		
-		if (cBp1 != bp1 || cBp2 != bp2)
+		/*if (cBp1 != bp1 || cBp2 != bp2)
 		{
 			//System.out.println("FUCKFUCKFUCKFUCKUF");
-		}
+		}*/
 		
 		
 
 	    double v = Double.NEGATIVE_INFINITY;
-        List<SogoMove> moves = game.generateValidMoves();
+        //List<SogoMove> moves = game.generateValidMoves();
 
-        for (int i = 0; i < 16; i++)
+        for (int in = 0; in < 16; in++)
         {
+        	int i = movesList[in];
 
-        for (SogoMove m : moves) {
-        		if (m.i == i % 4 && m.j == i / 4)
-        		{
+        //for (SogoMove m : moves) {
+        		//if (m.i == i % 4 && m.j == i / 4)
+        		//{
         			long dropPosition = (0x1L << (48 + i));
 
     				long alteredBp1 = bp2;
@@ -168,11 +174,11 @@ public class BadPlayer implements SogoPlayer {
         			}
         			else
         			{
-        				System.out.println("KAnn nich sein!!");
+        				//System.out.println("KAnn nich sein!!");
         			}
         			
         			
-        			final double value = min_value(game.performMove(m), alteredBp1, bp2, alpha, beta, (remainingDepth-1));
+        			final double value = min_value(alteredBp1, bp2, alpha, beta, (remainingDepth-1));
                     v = Math.max(v, value);
                     if (v >= beta) {
                     	//System.out.println("pruning");
@@ -181,53 +187,64 @@ public class BadPlayer implements SogoPlayer {
                     else {
                     	alpha = Math.max(alpha, v);
                     }
-        		}
+        		//}
         		
         		
         		
                 
-            }
+            //}
         }
         return v;
 
 	}
+	
+	private int[] movesList = new int[] {0, 4, 8, 12, 1, 5, 9, 13, 2, 6, 10, 14, 3, 7, 11, 15};
 
-	public double min_value(final SogoGame game, long bp1, long bp2, double alpha, double beta, int remainingDepth) {
-		if ((remainingDepth <= 0) || game.ends()) {
+	public double min_value(long bp1, long bp2, double alpha, double beta, int remainingDepth) {
+		
+		/*if (game.ends() != GameAnalyzer.hasGameEnded(bp1))
+		{
+			System.out.println("Game ended dif 1f");
+		}*/
+		
+		
+		
+		if ((remainingDepth <= 0) || GameAnalyzer.hasGameEnded(bp1)) {
 	    	// we need to be sure to evaluate from the perspective of the MiniMax Agent
 	    	
-			double valval = - evaluateGame(game);
+			//double valval = - evaluateGame(game);
 			double valval2 = - evaluateGame(bp2, bp1);
 			
-			if (valval != valval2)
+			/*if (valval != valval2)
 			{
 				System.out.println("FUCKCDJSKDJS: " + valval + "," + valval2);
-			}
+			}*/
 			
 			return valval2;
 			//return - evaluateGame(game);
 	    }
 
 		
-		long cBp2 = GameAnalyzer.getBP1FromGame(game);
-		long cBp1 = GameAnalyzer.getBP2FromGame(game);
+		//long cBp2 = GameAnalyzer.getBP1FromGame(game);
+		//long cBp1 = GameAnalyzer.getBP2FromGame(game);
 		
-		if (cBp1 != bp1 || cBp2 != bp2)
+		/*if (cBp1 != bp1 || cBp2 != bp2)
 		{
 			//System.out.println("FUCKFUCKFUCKFUCKUF");
 		}
-		
+		*/
 		
 		
 	    double v = Double.POSITIVE_INFINITY;
-        List<SogoMove> moves = game.generateValidMoves();
+        //List<SogoMove> moves = game.generateValidMoves();
 
-        for (int i = 0; i < 16; i++)
+        for (int in = 0; in < 16; in++)
         {
-    	for (SogoMove m : moves) {
+        	int i = movesList[in];
+    	//for (SogoMove m : moves) {
 
-        		if (m.i == i % 4 && m.j == i / 4)
-        		{
+        		//if (m.i == i % 4 && m.j == i / 4)
+        		//{
         			long dropPosition = (0x1L << (48 + i));
 
     				long alteredBp1 = bp2;
@@ -253,13 +270,13 @@ public class BadPlayer implements SogoPlayer {
         			}
         			else
         			{
-        				System.out.println("KAnn nich sein!!");
+        				//System.out.println("KAnn nich sein!!");
         			}
 
 
         			
 
-                    final double value = max_value(game.performMove(m), bp1, alteredBp1, alpha, beta, (remainingDepth-1));
+                    final double value = max_value(bp1, alteredBp1, alpha, beta, (remainingDepth-1));
                     v = Math.min(v, value);
                     if (v <= alpha) {
                     	//System.out.println("pruning");
@@ -271,8 +288,8 @@ public class BadPlayer implements SogoPlayer {
         		}
         		
         		
-            }
-        }
+            //}
+        //}
         
 	    return v;
 	}

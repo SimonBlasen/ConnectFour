@@ -115,7 +115,7 @@ public class MrBadBadder implements SogoPlayer {
 		//System.out.println("state = " + game.computeStringRepresentation());
 		//System.out.println("depth = " + remainingDepth);
 
-		if ((remainingDepth <= 0) || GameAnalyzer.hasGameEnded(bp1)) {
+		if ((remainingDepth <= 0) || GameAnalyzer.hasGameEnded(bp2)) {
 			return evaluateGame(bp1, bp2);
 		}
 
