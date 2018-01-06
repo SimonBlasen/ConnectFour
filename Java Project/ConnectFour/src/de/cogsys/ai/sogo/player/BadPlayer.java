@@ -596,6 +596,7 @@ public class BadPlayer implements SogoPlayer {
 							}
 							else if (threats[i][j - 1] == 0)
 							{
+								amountsP1++;
 								resultP1 += floors[j];
 							}
 							else if (threats[i][j - 1] == 2)
@@ -604,11 +605,13 @@ public class BadPlayer implements SogoPlayer {
 							}
 							else if (threats[i][j - 1] == 1)
 							{
+								amountsP1++;
 								resultP1 += floors[j];
 							}
 						}
 						else if (turnP1 && j > 0)
 						{
+							amountsP1++;
 							resultP1 += floors[j];
 						}
 					}
@@ -631,6 +634,7 @@ public class BadPlayer implements SogoPlayer {
 							}
 							else if (threats[i][j - 1] == 0)
 							{
+								amountsP2++;
 								resultP2 += floors[j];
 							}
 							else if (threats[i][j - 1] == 1)
@@ -639,11 +643,13 @@ public class BadPlayer implements SogoPlayer {
 							}
 							else if (threats[i][j - 1] == 2)
 							{
+								amountsP2++;
 								resultP2 += floors[j];
 							}
 						}
 						else if (turnP1 == false && j > 0)
 						{
+							amountsP2++;
 							resultP2 += floors[j];
 						}
 					}
@@ -684,13 +690,13 @@ public class BadPlayer implements SogoPlayer {
 		}
 		else
 		{
-			if (resultP1 == 0 && resultP2 == 0)
+			if (amountsP1 == 0 && amountsP2 == 0)
 			{
 				return evaluateGame(bp1, bp2);
 			}
 			else
 			{
-				return result;
+				return amountsP1 * 80.0 - amountsP2 * 60.0;
 			}
 			
 			
