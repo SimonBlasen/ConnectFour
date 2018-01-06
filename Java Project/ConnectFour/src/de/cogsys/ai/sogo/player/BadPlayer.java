@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import javax.swing.SortingFocusTraversalPolicy;
+
 import de.cogsys.ai.sogo.Sogo;
 import de.cogsys.ai.sogo.control.SogoGameConsole;
 import de.cogsys.ai.sogo.game.SogoGame.Player;
@@ -19,7 +21,7 @@ public class BadPlayer implements SogoPlayer {
 	private static final double single_p = 1;
 	private static int DEPTH = 5;
 	
-	private boolean debug_messages = false;
+	private boolean debug_messages = true;
 	
 	private int mDepth = 0;
 	private Random mRnd;
@@ -48,6 +50,8 @@ public class BadPlayer implements SogoPlayer {
 
 	private SogoMove takeMove;
 	
+	private boolean found2000 = false;
+	
 	@Override
 	public void generateNextMove(SogoGameConsole c) {
 		this.c = c;
@@ -60,13 +64,16 @@ public class BadPlayer implements SogoPlayer {
 		long bp2 = GameAnalyzer.getBP2FromGame(g);
 
 		stonesAmountRound = countStones(bp1, bp2);
+		if(stonesAmountRound >= 30)
+			System.out.println("------//_--------/////-Stones: " + stonesAmountRound);
 
 		takeMove = moves.get(0);
 		
-		for (int depth = 4; depth < 30; depth++)
+		for (int depth = 4; depth < 64; depth++)
 		{
 			double maxscore = Double.NEGATIVE_INFINITY;
 			
+			found2000 = false;
 			
 			double score = max_value_toplevel(moves, bp1, bp2, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, depth);
 			
@@ -149,7 +156,10 @@ public class BadPlayer implements SogoPlayer {
 					}
 				}*/
 
-				c.updateMove(takeMove);
+				
+					c.updateMove(takeMove);
+				
+				
 				//c.updateMove(bestmoves.get((new Random()).nextInt(bestmoves.size())));
 				if (debug_messages)
 					System.out.println("Depth " + depth + " done, took: [" + takeMove.i + "," + takeMove.j + "]");
@@ -202,6 +212,13 @@ public class BadPlayer implements SogoPlayer {
 						if (debug_messages)
 							System.out.println(m.i + "," + m.j + " = " + value);
 
+						if (value <= -1999.9)
+						{
+							found2000 = true;
+						}
+						
+						
+						
 						if (value > v && value > -999.9)
 						{
 							takeMove = m;
@@ -227,8 +244,16 @@ public class BadPlayer implements SogoPlayer {
 	public double max_value(long bp1, long bp2, double alpha, double beta, int remainingDepth)
 	{
 		if ((remainingDepth <= 0) || GameAnalyzer.hasGameEnded(bp2)) {
+
+			if (stonesAmountRound <= 36)
+			{
+				return evaluateMilton(bp1, bp2, true);
+			}
+			else
+			{
+				return wonIt(bp1, bp2);
+			}
 			
-			return evaluateMilton(bp1, bp2, true);
 		}
 		
 
@@ -273,7 +298,14 @@ public class BadPlayer implements SogoPlayer {
 	{
 		if ((remainingDepth <= 0) || GameAnalyzer.hasGameEnded(bp1))
 		{
-			return evaluateMilton(bp1, bp2, false);
+			if (stonesAmountRound <= 36)
+			{
+				return evaluateMilton(bp1, bp2, false);
+			}
+			else
+			{
+				return wonIt(bp1, bp2);
+			}
 	    }
 
 	    double v = Double.POSITIVE_INFINITY;
@@ -477,6 +509,25 @@ public class BadPlayer implements SogoPlayer {
 	 */
 	private byte[][] threats = new byte[16][4];
 	
+	
+	
+	
+	public double wonIt(long bp1, long bp2)
+	{
+		for (int i = 0; i < GameAnalyzer.longLines.length; i++)
+		{
+			if ((bp1 & GameAnalyzer.longLines[i]) == GameAnalyzer.longLines[i])
+			{
+				return 2000.0;
+			}
+			if ((bp2 & GameAnalyzer.longLines[i]) == GameAnalyzer.longLines[i])
+			{
+				return -2000.0;
+			}
+		}
+		
+		return 0.0;
+	}
 	
 	
 	public double evaluateMilton(long bp1, long bp2, boolean turnP1)
