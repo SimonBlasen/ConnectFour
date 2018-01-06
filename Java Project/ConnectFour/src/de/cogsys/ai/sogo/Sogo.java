@@ -9,6 +9,7 @@ import de.cogsys.ai.sogo.player.BadPlayer;
 import de.cogsys.ai.sogo.player.MrNovice;
 import de.cogsys.ai.sogo.player.MrRandom;
 import de.cogsys.ai.sogo.player.SogoPlayer;
+import ki.sapph.MrBadBadder;
 import ki.sapph.MrBitwiseTree;
 import ki.sapph.MrExpert;
 import ki.sapph.MrInefficientTree;
@@ -20,7 +21,7 @@ import visualisation.Visualisation;
 
 public class Sogo {
 
-	public static final long PLAYER_TIMEOUT = 4000;
+	public static final long PLAYER_TIMEOUT = 10000;
 	public static final long TIMEOUT_CULANCE = 1000;
 
 	public static double weight1 = 0.0;
@@ -79,13 +80,13 @@ public class Sogo {
 			
 			if (rounds % 2 == 0)
 			{
-				p1 = new MrExpert();
-				p2 = new MrBitwiseTree();
+				p1 = new MrNovice();
+				p2 = new BadPlayer();
 			}
 			else
 			{
-				p1 = new MrExpert();
-				p2 = new MrBitwiseTree();
+				p1 = new BadPlayer();
+				p2 = new MrNovice();
 			}
 			
 			p1.initialize(Player.P1);
@@ -171,7 +172,7 @@ public class Sogo {
 
 			switch (g.result()) {
 			case P1:
-				if (true || rounds % 2 == 0)
+				if (rounds % 2 == 0)
 				{
 					System.out.println("Player 1 (X) wins");
 					p1Won++;
@@ -183,7 +184,7 @@ public class Sogo {
 				}
 				break;
 			case P2:
-				if (true || rounds % 2 == 0)
+				if (rounds % 2 == 0)
 				{
 					System.out.println("Player 2 (O) wins");
 					p2Won++;

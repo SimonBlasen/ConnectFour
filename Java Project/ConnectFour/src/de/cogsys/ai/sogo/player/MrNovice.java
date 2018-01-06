@@ -110,7 +110,7 @@ public class MrNovice implements SogoPlayer {
 			}
 		}
 
-		c.updateMove(bestmoves.get(rnd.nextInt(bestmoves.size())));
+		c.updateMove(bestmoves.get((new Random()).nextInt(bestmoves.size())));
 	}
 	
 	/**
