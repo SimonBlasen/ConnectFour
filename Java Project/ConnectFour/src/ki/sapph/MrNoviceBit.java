@@ -1,4 +1,4 @@
-package de.cogsys.ai.sogo.player;
+package ki.sapph;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,8 +10,9 @@ import de.cogsys.ai.sogo.game.SogoGame.Player;
 import util.GameAnalyzer;
 import de.cogsys.ai.sogo.game.SogoGame;
 import de.cogsys.ai.sogo.game.SogoMove;
+import de.cogsys.ai.sogo.player.SogoPlayer;
 
-public class BadPlayer implements SogoPlayer {
+public class MrNoviceBit implements SogoPlayer {
 	
 	private static final double win_p = 1000;
 	private static final double triple_p = 20;
@@ -19,21 +20,19 @@ public class BadPlayer implements SogoPlayer {
 	private static final double single_p = 1;
 	private static int DEPTH = 5;
 	
-	private boolean debug_messages = false;
-	
 	private int mDepth = 0;
 	private Random mRnd;
 	private SogoGameConsole c;
 	
-	public BadPlayer() {
+	public MrNoviceBit() {
 		this(DEPTH);
 	}
 	
-	public BadPlayer(int depth) {
+	public MrNoviceBit(int depth) {
 		this(depth, System.currentTimeMillis());
 	}
 	
-	public BadPlayer(int depth, final long seed) {
+	public MrNoviceBit(int depth, final long seed) {
 		mRnd  = new Random(seed);
 		mDepth = depth;
 	}
@@ -46,8 +45,6 @@ public class BadPlayer implements SogoPlayer {
 	
 	private int stonesAmountRound = 0;
 
-	private SogoMove takeMove;
-	
 	@Override
 	public void generateNextMove(SogoGameConsole c) {
 		this.c = c;
@@ -61,17 +58,12 @@ public class BadPlayer implements SogoPlayer {
 
 		stonesAmountRound = countStones(bp1, bp2);
 
-		takeMove = moves.get(0);
-		
-		for (int depth = 4; depth < 30; depth++)
+		for (int depth = 4; depth < 6; depth++)
 		{
 			double maxscore = Double.NEGATIVE_INFINITY;
 			
 			
-			double score = max_value_toplevel(moves, bp1, bp2, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, depth);
-			
-			
-			/*for (int i = 0; i < 16; i++)
+			for (int i = 0; i < 16; i++)
 			{
 				for (SogoMove m : moves) {
 
@@ -98,8 +90,7 @@ public class BadPlayer implements SogoPlayer {
 						final double score = min_value(alteredBp1, bp2, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, depth);
 
 
-						if (debug_messages)
-							System.out.println(m.i + "," + m.j + " = " + score);
+						//System.out.println(m.i + "," + m.j + " = " + score);
 
 						if (score > maxscore) {
 							bestmoves.clear();
@@ -110,7 +101,7 @@ public class BadPlayer implements SogoPlayer {
 						}
 					}
 				}
-			}*/
+			}
 			
 			if (c.getTimeLeft() <= 0)
 			{
@@ -118,42 +109,8 @@ public class BadPlayer implements SogoPlayer {
 			}
 			else
 			{
-				/*double bestNormalHeurVal = Double.NEGATIVE_INFINITY;
-				
-				for (int j = 0; j < bestmoves.size(); j++)
-				{
-					long placedField = 0x0L;
-
-
-
-					long alteredBp1 = bp1;
-
-					for (int z = 0; z < 4; z++)
-					{
-						placedField = (0x1L << (j + z * 16));
-
-						if ((bp1 & placedField) == 0x0L && (bp2 & placedField) == 0x0L)
-						{
-							alteredBp1 = bp1 | placedField;
-							break;
-						}
-					}
-
-					double result = evaluateGame(alteredBp1, bp2);
-					
-					if (result > bestNormalHeurVal)
-					{
-						c.updateMove(bestmoves.get(j));
-						bestNormalHeurVal = result;
-						System.out.println("Depth " + depth + " done, took: [" + bestmoves.get(j).i + "," + bestmoves.get(j).j + "]");
-					}
-				}*/
-
-				c.updateMove(takeMove);
-				//c.updateMove(bestmoves.get((new Random()).nextInt(bestmoves.size())));
-				if (debug_messages)
-					System.out.println("Depth " + depth + " done, took: [" + takeMove.i + "," + takeMove.j + "]");
-				
+				c.updateMove(bestmoves.get((new Random()).nextInt(bestmoves.size())));
+				//System.out.println("Depth " + depth + " done, took: [" + bestmoves.get(0).i + "," + bestmoves.get(0).j + "]");
 			}
 		}
 
@@ -167,68 +124,13 @@ public class BadPlayer implements SogoPlayer {
 	        
 
 	}
-	
-	public double max_value_toplevel(List<SogoMove> moves, long bp1, long bp2, double alpha, double beta, int remainingDepth)
-	{
-		double v = Double.NEGATIVE_INFINITY;
 
-		for (int i = 0; i < 16; i++)
-		{
-			for (SogoMove m : moves)
-			{
-
-				if (m.i == i % 4 && m.j == i / 4)
-				{
-					long dropPosition = (0x1L << (48 + i));
-
-					long alteredBp1 = bp2;
-					if ((bp1 & dropPosition) == 0x0L && (bp2 & dropPosition) == 0x0L && c.getTimeLeft() > 0)
-					{
-						long placedField = 0x0L;
-
-						for (int z = 0; z < 4; z++)
-						{
-							placedField = (0x1L << (i + z * 16));
-
-							if ((bp1 & placedField) == 0x0L && (bp2 & placedField) == 0x0L)
-							{
-								alteredBp1 = bp1 | placedField;
-								break;
-							}
-						}
-
-						final double value = min_value(alteredBp1, bp2, alpha, beta, (remainingDepth-1));
-						
-						if (debug_messages)
-							System.out.println(m.i + "," + m.j + " = " + value);
-
-						if (value > v && value > -999.9)
-						{
-							takeMove = m;
-							v = value;
-						}
-
-						//v = Math.max(v, value);
-						if (v >= beta) {
-							//System.out.println("pruning");
-							//return v;
-						}
-						else {
-							alpha = Math.max(alpha, v);
-						}
-					}
-				}
-			}
-		}
-		return v;
-	}
-	
 
 	public double max_value(long bp1, long bp2, double alpha, double beta, int remainingDepth)
 	{
 		if ((remainingDepth <= 0) || GameAnalyzer.hasGameEnded(bp2)) {
 			
-			return evaluateMilton(bp1, bp2, true);
+			return evaluateGame(bp1, bp2);
 		}
 		
 
@@ -273,7 +175,7 @@ public class BadPlayer implements SogoPlayer {
 	{
 		if ((remainingDepth <= 0) || GameAnalyzer.hasGameEnded(bp1))
 		{
-			return evaluateMilton(bp1, bp2, false);
+			return evaluateGame(bp1, bp2);
 	    }
 
 	    double v = Double.POSITIVE_INFINITY;
@@ -425,38 +327,6 @@ public class BadPlayer implements SogoPlayer {
 		}
 		
 		return res;
-	}
-	
-	
-	public int completelyHisLines(long bpHis, long bpOther)
-	{
-		int own = 0;
-		
-		for (int i = 0; i < GameAnalyzer.longLines.length; i++)
-		{
-			if (((bpHis & GameAnalyzer.longLines[i]) != 0x0L) && ((bpOther & GameAnalyzer.longLines[i]) == 0x0L))
-			{
-				own++;
-			}
-		}
-		
-		return own;
-	}
-	
-	
-	public int countUselessLines(long bpHis, long bpOther)
-	{
-		int own = 0;
-		
-		for (int i = 0; i < GameAnalyzer.longLines.length; i++)
-		{
-			if ((((bpHis & GameAnalyzer.longLines[i]) != 0x0L) && ((bpOther & GameAnalyzer.longLines[i]) != 0x0L)) || (((bpHis & GameAnalyzer.longLines[i]) == 0x0L) && ((bpOther & GameAnalyzer.longLines[i]) == 0x0L)))
-			{
-				own++;
-			}
-		}
-		
-		return own;
 	}
 	
 	
@@ -827,13 +697,7 @@ public class BadPlayer implements SogoPlayer {
 			}
 			else
 			{
-				//int p1Own = completelyHisLines(bp1, bp2);
-				//int p2Own = completelyHisLines(bp2, bp1);
-				
-				//double toP1Advantage = (p1Own - p2Own);
-				
-				return (amountsP1 * 80.0 - amountsP2 * 60.0) + evaluateGame(bp1, bp2) * 0.06;
-				//return (amountsP1 * 80.0 - amountsP2 * 60.0) + toP1Advantage;
+				return amountsP1 * 80.0 - amountsP2 * 60.0;
 			}
 			
 			

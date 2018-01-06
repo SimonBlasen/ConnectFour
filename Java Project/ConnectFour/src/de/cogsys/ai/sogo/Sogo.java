@@ -15,6 +15,7 @@ import ki.sapph.MrExpert;
 import ki.sapph.MrInefficientTree;
 import ki.sapph.MrMoreefficientTree;
 import ki.sapph.MrNeurobit;
+import ki.sapph.MrNoviceBit;
 //import ki.sapph.MrIdiot;
 //import ki.sapph.MrInefficientTree;
 import visualisation.Visualisation;
@@ -80,13 +81,13 @@ public class Sogo {
 			
 			if (rounds % 2 == 0)
 			{
-				p1 = new MrNovice();
+				p1 = new MrNoviceBit();
 				p2 = new BadPlayer();
 			}
 			else
 			{
 				p1 = new BadPlayer();
-				p2 = new MrNovice();
+				p2 = new MrNoviceBit();
 			}
 			
 			p1.initialize(Player.P1);
@@ -168,30 +169,30 @@ public class Sogo {
 			}
 
 
-			//visualisation.Visualize(g);
+			visualisation.Visualize(g);
 
 			switch (g.result()) {
 			case P1:
 				if (rounds % 2 == 0)
 				{
-					System.out.println("Player 1 (X) wins");
+					System.out.println("Player wins: " + p1.toString());
 					p1Won++;
 				}
 				else
 				{
-					System.out.println("Player 2 (O) wins");
+					System.out.println("Player wins: " + p1.toString());
 					p2Won++;
 				}
 				break;
 			case P2:
 				if (rounds % 2 == 0)
 				{
-					System.out.println("Player 2 (O) wins");
+					System.out.println("Player wins: " + p2.toString());
 					p2Won++;
 				}
 				else
 				{
-					System.out.println("Player 1 (X) wins");
+					System.out.println("Player wins: " + p2.toString());
 					p1Won++;
 				}
 				break;
