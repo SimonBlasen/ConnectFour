@@ -204,7 +204,7 @@ stonesAmountRound = countStones(bp1, bp2);
 					
 					if (stonesAmountRound == 6 || stonesAmountRound == 7)
 					{
-						return;
+						//return;
 					}
 					
 					for (int x = 0; x < 4; x++)

@@ -140,7 +140,8 @@ public class MrBitwiseTree implements SogoPlayer {
 		}
 		else if (depth <= 0)
 		{
-			val = evaluateMilton(bp1, bp2, isMax);
+			//val = evaluateMilton(bp1, bp2, isMax);
+			val = evaluateGame(bp1, bp2);
 			return val;
 		}
 
