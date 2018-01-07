@@ -55,7 +55,7 @@ public class Sogo {
 		int draw = 0;
 		for (int rounds = 0; rounds < 1000; rounds++)
 		{
-			System.out.println("Round: " + rounds);
+			//System.out.println("Round: " + rounds);
 			
 			SogoGame g = new SogoGame();
 			/*
@@ -175,24 +175,24 @@ public class Sogo {
 			case P1:
 				if (rounds % 2 == 0)
 				{
-					System.out.println("Player wins: " + p1.toString());
+					//System.out.println("Player wins: " + p1.toString());
 					p1Won++;
 				}
 				else
 				{
-					System.out.println("Player wins: " + p1.toString());
+					//System.out.println("Player wins: " + p1.toString());
 					p2Won++;
 				}
 				break;
 			case P2:
 				if (rounds % 2 == 0)
 				{
-					System.out.println("Player wins: " + p2.toString());
+					//System.out.println("Player wins: " + p2.toString());
 					p2Won++;
 				}
 				else
 				{
-					System.out.println("Player wins: " + p2.toString());
+					//System.out.println("Player wins: " + p2.toString());
 					p1Won++;
 				}
 				break;
@@ -203,11 +203,14 @@ public class Sogo {
 			}
 			//System.out.print(g);
 
+			System.out.println("### [" + p1Won + ":" + p2Won + "] Draw: " + draw + " ###");
+			
+			/*
 			System.out.print("###############################");
 			System.out.print("###############################");
 			System.out.print("### [" + p1Won + ":" + p2Won + "] Draw: " + draw + " ######");
 			System.out.print("###############################");
-			System.out.print("###############################");
+			System.out.print("###############################");*/
 		}
 		
 		

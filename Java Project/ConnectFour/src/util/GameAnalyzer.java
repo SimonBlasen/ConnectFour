@@ -1,5 +1,7 @@
 package util;
 
+import java.nio.channels.FileLockInterruptionException;
+
 import de.cogsys.ai.sogo.game.SogoGame;
 import de.cogsys.ai.sogo.game.SogoGame.Player;
 
@@ -206,6 +208,503 @@ public class GameAnalyzer {
 				0x1000020000400008L,
 				0x0008004002001000L,
 				};
+		
+		
+
+		private static long[] oneWallKillerBoardsP1 = new long[]
+				{
+						// Der 9er Move
+						0x9000B, 0xB000BL, 0x1000B000BL, 0x2000B000BL, 0x8000B000BL, 0xA000B000BL, 0x9000B000BL, 0x3000B000BL, 0xA000B000BL, 0x9000B000BL, 0x3000B000BL, 0xB000B000BL, 0xB000B000BL, 0xB000B000BL, 0xF000B000BL, 0x8000B000B000BL, 0x2000B000B000BL, 0x1000B000B000BL, 
+						// Der 7er Killer
+						0x40006000CL, 0x4000E000CL, 0xC000E000CL, 0xE000E000CL, 0x1000E000E000CL, 
+						
+				};
+		private static long[] oneWallKillerBoardsP2 = new long[]
+				{
+					0xF000F00060004L, 0xF000F00040000L, 0xF000E00000000L, 0xF000D00000000L, 0xF000700000000L, 0x7000500000000L, 0x7000600000000L, 0xE000C00000000L, 0xD000500000000L, 0xE000600000000L, 0xD000C00000000L, 0xC000400000000L, 0x6000400000000L, 0x5000400000000L, 0x0L, 0x0L, 0x0L, 0x0L, 
+					0xF000B00090000L, 0xB000B00010000L, 0xB000300000000L, 0x3000100000000L, 0x0L, 
+						
+						
+						
+				};
+		
+		
+		public static long[] killerBoardsP1 = new long[]
+				{
+						
+						
+				};
+		public static long[] killerBoardsP2 = new long[]
+				{
+						
+						
+				};
+
+		
+		private static void fillKillerBoards()
+		{
+			killerBoardsP1 = new long[oneWallKillerBoardsP1.length * 20];
+			killerBoardsP2 = new long[oneWallKillerBoardsP1.length * 20];
+			for (int i = 0; i < oneWallKillerBoardsP1.length; i++)
+			{
+				killerBoardsP1[i * 20 + 0] = oneWallKillerBoardsP1[i];
+				killerBoardsP2[i * 20 + 0] = oneWallKillerBoardsP2[i];
+
+				long p1f0 = 0xFL & oneWallKillerBoardsP1[i];
+				long p1f1 = (0xF0000L & oneWallKillerBoardsP1[i]) >> 16;
+				long p1f2 = (0xF00000000L & oneWallKillerBoardsP1[i]) >> 32;
+				long p1f3 = (0xF000000000000L & oneWallKillerBoardsP1[i]) >> 48;
+				long p2f0 = 0xFL & oneWallKillerBoardsP2[i];
+				long p2f1 = (0xF0000L & oneWallKillerBoardsP2[i]) >> 16;
+				long p2f2 = (0xF00000000L & oneWallKillerBoardsP2[i]) >> 32;
+				long p2f3 = (0xF000000000000L & oneWallKillerBoardsP2[i]) >> 48;
+				
+				p1f0 = mirrorSingle(p1f0);
+				p1f1 = mirrorSingle(p1f1);
+				p1f2 = mirrorSingle(p1f2);
+				p1f3 = mirrorSingle(p1f3);
+				p2f0 = mirrorSingle(p2f0);
+				p2f1 = mirrorSingle(p2f1);
+				p2f2 = mirrorSingle(p2f2);
+				p2f3 = mirrorSingle(p2f3);
+
+				killerBoardsP1[i * 20 + 1] = p1f0 | (p1f1 << 16) | (p1f2 << 32) | (p1f3 << 48);
+				killerBoardsP2[i * 20 + 1] = p2f0 | (p2f1 << 16) | (p2f2 << 32) | (p2f3 << 48);
+
+				
+				
+				
+				
+				
+				
+				p1f0 = 0xFL & killerBoardsP1[i * 20 + 0];
+				p1f1 = (0xF0000L & killerBoardsP1[i * 20 + 0]) >> 16;
+				p1f2 = (0xF00000000L & killerBoardsP1[i * 20 + 0]) >> 32;
+				p1f3 = (0xF000000000000L & killerBoardsP1[i * 20 + 0]) >> 48;
+				p2f0 = 0xFL & killerBoardsP2[i * 20 + 0];
+				p2f1 = (0xF0000L & killerBoardsP2[i * 20 + 0]) >> 16;
+				p2f2 = (0xF00000000L & killerBoardsP2[i * 20 + 0]) >> 32;
+				p2f3 = (0xF000000000000L & killerBoardsP2[i * 20 + 0]) >> 48;
+
+				killerBoardsP1[i * 20 + 2] = (p1f0 << (4)) | (p1f1 << (16 + 4)) | (p1f2 << (32 + 4)) | (p1f3 << (48 + 4));
+				killerBoardsP2[i * 20 + 2] = (p2f0 << (4)) | (p2f1 << (16 + 4)) | (p2f2 << (32 + 4)) | (p2f3 << (48 + 4));
+
+				p1f0 = 0xFL & killerBoardsP1[i * 20 + 1];
+				p1f1 = (0xF0000L & killerBoardsP1[i * 20 + 1]) >> 16;
+				p1f2 = (0xF00000000L & killerBoardsP1[i * 20 + 1]) >> 32;
+				p1f3 = (0xF000000000000L & killerBoardsP1[i * 20 + 1]) >> 48;
+				p2f0 = 0xFL & killerBoardsP2[i * 20 + 1];
+				p2f1 = (0xF0000L & killerBoardsP2[i * 20 + 1]) >> 16;
+				p2f2 = (0xF00000000L & killerBoardsP2[i * 20 + 1]) >> 32;
+				p2f3 = (0xF000000000000L & killerBoardsP2[i * 20 + 1]) >> 48;
+
+				killerBoardsP1[i * 20 + 3] = (p1f0 << (4)) | (p1f1 << (16 + 4)) | (p1f2 << (32 + 4)) | (p1f3 << (48 + 4));
+				killerBoardsP2[i * 20 + 3] = (p2f0 << (4)) | (p2f1 << (16 + 4)) | (p2f2 << (32 + 4)) | (p2f3 << (48 + 4));
+
+				
+				
+				
+				
+				
+				
+				p1f0 = 0xFL & killerBoardsP1[i * 20 + 0];
+				p1f1 = (0xF0000L & killerBoardsP1[i * 20 + 0]) >> 16;
+				p1f2 = (0xF00000000L & killerBoardsP1[i * 20 + 0]) >> 32;
+				p1f3 = (0xF000000000000L & killerBoardsP1[i * 20 + 0]) >> 48;
+				p2f0 = 0xFL & killerBoardsP2[i * 20 + 0];
+				p2f1 = (0xF0000L & killerBoardsP2[i * 20 + 0]) >> 16;
+				p2f2 = (0xF00000000L & killerBoardsP2[i * 20 + 0]) >> 32;
+				p2f3 = (0xF000000000000L & killerBoardsP2[i * 20 + 0]) >> 48;
+
+				killerBoardsP1[i * 20 + 4] = (p1f0 << (8)) | (p1f1 << (16 + 8)) | (p1f2 << (32 + 8)) | (p1f3 << (48 + 8));
+				killerBoardsP2[i * 20 + 4] = (p2f0 << (8)) | (p2f1 << (16 + 8)) | (p2f2 << (32 + 8)) | (p2f3 << (48 + 8));
+
+				p1f0 = 0xFL & killerBoardsP1[i * 20 + 1];
+				p1f1 = (0xF0000L & killerBoardsP1[i * 20 + 1]) >> 16;
+				p1f2 = (0xF00000000L & killerBoardsP1[i * 20 + 1]) >> 32;
+				p1f3 = (0xF000000000000L & killerBoardsP1[i * 20 + 1]) >> 48;
+				p2f0 = 0xFL & killerBoardsP2[i * 20 + 1];
+				p2f1 = (0xF0000L & killerBoardsP2[i * 20 + 1]) >> 16;
+				p2f2 = (0xF00000000L & killerBoardsP2[i * 20 + 1]) >> 32;
+				p2f3 = (0xF000000000000L & killerBoardsP2[i * 20 + 1]) >> 48;
+
+				killerBoardsP1[i * 20 + 5] = (p1f0 << (8)) | (p1f1 << (16 + 8)) | (p1f2 << (32 + 8)) | (p1f3 << (48 + 8));
+				killerBoardsP2[i * 20 + 5] = (p2f0 << (8)) | (p2f1 << (16 + 8)) | (p2f2 << (32 + 8)) | (p2f3 << (48 + 8));
+
+				
+				
+				
+				
+				
+				
+				p1f0 = 0xFL & killerBoardsP1[i * 20 + 0];
+				p1f1 = (0xF0000L & killerBoardsP1[i * 20 + 0]) >> 16;
+				p1f2 = (0xF00000000L & killerBoardsP1[i * 20 + 0]) >> 32;
+				p1f3 = (0xF000000000000L & killerBoardsP1[i * 20 + 0]) >> 48;
+				p2f0 = 0xFL & killerBoardsP2[i * 20 + 0];
+				p2f1 = (0xF0000L & killerBoardsP2[i * 20 + 0]) >> 16;
+				p2f2 = (0xF00000000L & killerBoardsP2[i * 20 + 0]) >> 32;
+				p2f3 = (0xF000000000000L & killerBoardsP2[i * 20 + 0]) >> 48;
+
+				killerBoardsP1[i * 20 + 6] = (p1f0 << (12)) | (p1f1 << (16 + 12)) | (p1f2 << (32 + 12)) | (p1f3 << (48 + 12));
+				killerBoardsP2[i * 20 + 6] = (p2f0 << (12)) | (p2f1 << (16 + 12)) | (p2f2 << (32 + 12)) | (p2f3 << (48 + 12));
+
+				p1f0 = 0xFL & killerBoardsP1[i * 20 + 1];
+				p1f1 = (0xF0000L & killerBoardsP1[i * 20 + 1]) >> 16;
+				p1f2 = (0xF00000000L & killerBoardsP1[i * 20 + 1]) >> 32;
+				p1f3 = (0xF000000000000L & killerBoardsP1[i * 20 + 1]) >> 48;
+				p2f0 = 0xFL & killerBoardsP2[i * 20 + 1];
+				p2f1 = (0xF0000L & killerBoardsP2[i * 20 + 1]) >> 16;
+				p2f2 = (0xF00000000L & killerBoardsP2[i * 20 + 1]) >> 32;
+				p2f3 = (0xF000000000000L & killerBoardsP2[i * 20 + 1]) >> 48;
+
+				killerBoardsP1[i * 20 + 7] = (p1f0 << (12)) | (p1f1 << (16 + 12)) | (p1f2 << (32 + 12)) | (p1f3 << (48 + 12));
+				killerBoardsP2[i * 20 + 7] = (p2f0 << (12)) | (p2f1 << (16 + 12)) | (p2f2 << (32 + 12)) | (p2f3 << (48 + 12));
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+				p1f0 = 0xFL & killerBoardsP1[i * 20 + 0];
+				p1f1 = (0xF0000L & killerBoardsP1[i * 20 + 0]) >> 16;
+				p1f2 = (0xF00000000L & killerBoardsP1[i * 20 + 0]) >> 32;
+				p1f3 = (0xF000000000000L & killerBoardsP1[i * 20 + 0]) >> 48;
+				p2f0 = 0xFL & killerBoardsP2[i * 20 + 0];
+				p2f1 = (0xF0000L & killerBoardsP2[i * 20 + 0]) >> 16;
+				p2f2 = (0xF00000000L & killerBoardsP2[i * 20 + 0]) >> 32;
+				p2f3 = (0xF000000000000L & killerBoardsP2[i * 20 + 0]) >> 48;
+
+				killerBoardsP1[i * 20 + 8] = ((0x1L & p1f0) << (0)) | ((0x2L & p1f0) << (4 - 1)) | ((0x4L & p1f0) << (8 - 2)) | ((0x8L & p1f0) << (12 - 3))
+						| ((0x1L & p1f1) << (16 + 0)) | ((0x2L & p1f1) << (16 + 4 - 1)) | ((0x4L & p1f1) << (16 + 8 - 2)) | ((0x8L & p1f1) << (16 + 12 - 3))
+						| ((0x1L & p1f2) << (32 + 0)) | ((0x2L & p1f2) << (32 + 4 - 1)) | ((0x4L & p1f2) << (32 + 8 - 2)) | ((0x8L & p1f2) << (32 + 12 - 3))
+						| ((0x1L & p1f3) << (48 + 0)) | ((0x2L & p1f3) << (48 + 4 - 1)) | ((0x4L & p1f3) << (48 + 8 - 2)) | ((0x8L & p1f3) << (48 + 12 - 3));
+				killerBoardsP2[i * 20 + 8] = ((0x1L & p2f0) << (0)) | ((0x2L & p2f0) << (4)) | ((0x4L & p2f0) << (8 - 2)) | ((0x8L & p2f0) << (12 - 3))
+						| ((0x1L & p2f1) << (16 + 0)) | ((0x2L & p2f1) << (16 + 4 - 1)) | ((0x4L & p2f1) << (16 + 8 - 2)) | ((0x8L & p2f1) << (16 + 12 - 3))
+						| ((0x1L & p2f2) << (32 + 0)) | ((0x2L & p2f2) << (32 + 4 - 1)) | ((0x4L & p2f2) << (32 + 8 - 2)) | ((0x8L & p2f2) << (32 + 12 - 3))
+						| ((0x1L & p2f3) << (48 + 0)) | ((0x2L & p2f3) << (48 + 4 - 1)) | ((0x4L & p2f3) << (48 + 8 - 2)) | ((0x8L & p2f3) << (48 + 12 - 3));
+
+				p1f0 = 0xFL & killerBoardsP1[i * 20 + 1];
+				p1f1 = (0xF0000L & killerBoardsP1[i * 20 + 1]) >> 16;
+				p1f2 = (0xF00000000L & killerBoardsP1[i * 20 + 1]) >> 32;
+				p1f3 = (0xF000000000000L & killerBoardsP1[i * 20 + 1]) >> 48;
+				p2f0 = 0xFL & killerBoardsP2[i * 20 + 1];
+				p2f1 = (0xF0000L & killerBoardsP2[i * 20 + 1]) >> 16;
+				p2f2 = (0xF00000000L & killerBoardsP2[i * 20 + 1]) >> 32;
+				p2f3 = (0xF000000000000L & killerBoardsP2[i * 20 + 1]) >> 48;
+
+				killerBoardsP1[i * 20 + 9] = ((0x1L & p1f0) << (0)) | ((0x2L & p1f0) << (4 - 1)) | ((0x4L & p1f0) << (8 - 2)) | ((0x8L & p1f0) << (12 - 3))
+						| ((0x1L & p1f1) << (16 + 0)) | ((0x2L & p1f1) << (16 + 4 - 1)) | ((0x4L & p1f1) << (16 + 8 - 2)) | ((0x8L & p1f1) << (16 + 12 - 3))
+						| ((0x1L & p1f2) << (32 + 0)) | ((0x2L & p1f2) << (32 + 4 - 1)) | ((0x4L & p1f2) << (32 + 8 - 2)) | ((0x8L & p1f2) << (32 + 12 - 3))
+						| ((0x1L & p1f3) << (48 + 0)) | ((0x2L & p1f3) << (48 + 4 - 1)) | ((0x4L & p1f3) << (48 + 8 - 2)) | ((0x8L & p1f3) << (48 + 12 - 3));
+				killerBoardsP2[i * 20 + 9] = ((0x1L & p2f0) << (0)) | ((0x2L & p2f0) << (4 - 1)) | ((0x4L & p2f0) << (8 - 2)) | ((0x8L & p2f0) << (12 - 3))
+						| ((0x1L & p2f1) << (16 + 0)) | ((0x2L & p2f1) << (16 + 4 - 1)) | ((0x4L & p2f1) << (16 + 8 - 2)) | ((0x8L & p2f1) << (16 + 12 - 3))
+						| ((0x1L & p2f2) << (32 + 0)) | ((0x2L & p2f2) << (32 + 4 - 1)) | ((0x4L & p2f2) << (32 + 8 - 2)) | ((0x8L & p2f2) << (32 + 12 - 3))
+						| ((0x1L & p2f3) << (48 + 0)) | ((0x2L & p2f3) << (48 + 4 - 1)) | ((0x4L & p2f3) << (48 + 8 - 2)) | ((0x8L & p2f3) << (48 + 12 - 3));
+
+
+
+
+
+
+
+
+
+
+
+
+				p1f0 = 0xFL & killerBoardsP1[i * 20 + 0];
+				p1f1 = (0xF0000L & killerBoardsP1[i * 20 + 0]) >> 16;
+				p1f2 = (0xF00000000L & killerBoardsP1[i * 20 + 0]) >> 32;
+				p1f3 = (0xF000000000000L & killerBoardsP1[i * 20 + 0]) >> 48;
+				p2f0 = 0xFL & killerBoardsP2[i * 20 + 0];
+				p2f1 = (0xF0000L & killerBoardsP2[i * 20 + 0]) >> 16;
+				p2f2 = (0xF00000000L & killerBoardsP2[i * 20 + 0]) >> 32;
+				p2f3 = (0xF000000000000L & killerBoardsP2[i * 20 + 0]) >> 48;
+
+				killerBoardsP1[i * 20 + 10] = ((0x1L & p1f0) << (0 + 1)) | ((0x2L & p1f0) << (4 - 1 + 1)) | ((0x4L & p1f0) << (8 - 2 + 1)) | ((0x8L & p1f0) << (12 - 3 + 1))
+						| ((0x1L & p1f1) << (16 + 0 + 1)) | ((0x2L & p1f1) << (16 + 4 - 1 + 1)) | ((0x4L & p1f1) << (16 + 8 - 2 + 1)) | ((0x8L & p1f1) << (16 + 12 - 3 + 1))
+						| ((0x1L & p1f2) << (32 + 0 + 1)) | ((0x2L & p1f2) << (32 + 4 - 1 + 1)) | ((0x4L & p1f2) << (32 + 8 - 2 + 1)) | ((0x8L & p1f2) << (32 + 12 - 3 + 1))
+						| ((0x1L & p1f3) << (48 + 0 + 1)) | ((0x2L & p1f3) << (48 + 4 - 1 + 1)) | ((0x4L & p1f3) << (48 + 8 - 2 + 1)) | ((0x8L & p1f3) << (48 + 12 - 3 + 1));
+				killerBoardsP2[i * 20 + 10] = ((0x1L & p2f0) << (0 + 1)) | ((0x2L & p2f0) << (4 - 1 + 1)) | ((0x4L & p2f0) << (8 - 2 + 1)) | ((0x8L & p2f0) << (12 - 3 + 1))
+						| ((0x1L & p2f1) << (16 + 0 + 1)) | ((0x2L & p2f1) << (16 + 4 - 1 + 1)) | ((0x4L & p2f1) << (16 + 8 - 2 + 1)) | ((0x8L & p2f1) << (16 + 12 - 3 + 1))
+						| ((0x1L & p2f2) << (32 + 0 + 1)) | ((0x2L & p2f2) << (32 + 4 - 1 + 1)) | ((0x4L & p2f2) << (32 + 8 - 2 + 1)) | ((0x8L & p2f2) << (32 + 12 - 3 + 1))
+						| ((0x1L & p2f3) << (48 + 0 + 1)) | ((0x2L & p2f3) << (48 + 4 - 1 + 1)) | ((0x4L & p2f3) << (48 + 8 - 2 + 1)) | ((0x8L & p2f3) << (48 + 12 - 3 + 1));
+
+				p1f0 = 0xFL & killerBoardsP1[i * 20 + 1];
+				p1f1 = (0xF0000L & killerBoardsP1[i * 20 + 1]) >> 16;
+				p1f2 = (0xF00000000L & killerBoardsP1[i * 20 + 1]) >> 32;
+				p1f3 = (0xF000000000000L & killerBoardsP1[i * 20 + 1]) >> 48;
+				p2f0 = 0xFL & killerBoardsP2[i * 20 + 1];
+				p2f1 = (0xF0000L & killerBoardsP2[i * 20 + 1]) >> 16;
+				p2f2 = (0xF00000000L & killerBoardsP2[i * 20 + 1]) >> 32;
+				p2f3 = (0xF000000000000L & killerBoardsP2[i * 20 + 1]) >> 48;
+
+				killerBoardsP1[i * 20 + 11] = ((0x1L & p1f0) << (0 + 1)) | ((0x2L & p1f0) << (4 - 1 + 1)) | ((0x4L & p1f0) << (8 - 2 + 1)) | ((0x8L & p1f0) << (12 - 3 + 1))
+						| ((0x1L & p1f1) << (16 + 0 + 1)) | ((0x2L & p1f1) << (16 + 4 - 1 + 1)) | ((0x4L & p1f1) << (16 + 8 - 2 + 1)) | ((0x8L & p1f1) << (16 + 12 - 3 + 1))
+						| ((0x1L & p1f2) << (32 + 0 + 1)) | ((0x2L & p1f2) << (32 + 4 - 1 + 1)) | ((0x4L & p1f2) << (32 + 8 - 2 + 1)) | ((0x8L & p1f2) << (32 + 12 - 3 + 1))
+						| ((0x1L & p1f3) << (48 + 0 + 1)) | ((0x2L & p1f3) << (48 + 4 - 1 + 1)) | ((0x4L & p1f3) << (48 + 8 - 2 + 1)) | ((0x8L & p1f3) << (48 + 12 - 3 + 1));
+				killerBoardsP2[i * 20 + 11] = ((0x1L & p2f0) << (0 + 1)) | ((0x2L & p2f0) << (4 + 1)) | ((0x4L & p2f0) << (8 - 2 + 1)) | ((0x8L & p2f0) << (12 - 3 + 1))
+						| ((0x1L & p2f1) << (16 + 0 + 1)) | ((0x2L & p2f1) << (16 + 4 - 1 + 1)) | ((0x4L & p2f1) << (16 + 8 - 2 + 1)) | ((0x8L & p2f1) << (16 + 12 - 3 + 1))
+						| ((0x1L & p2f2) << (32 + 0 + 1)) | ((0x2L & p2f2) << (32 + 4 - 1 + 1)) | ((0x4L & p2f2) << (32 + 8 - 2 + 1)) | ((0x8L & p2f2) << (32 + 12 - 3 + 1))
+						| ((0x1L & p2f3) << (48 + 0 + 1)) | ((0x2L & p2f3) << (48 + 4 - 1 + 1)) | ((0x4L & p2f3) << (48 + 8 - 2 + 1)) | ((0x8L & p2f3) << (48 + 12 - 3 + 1));
+
+
+
+
+
+
+
+
+
+
+
+
+				p1f0 = 0xFL & killerBoardsP1[i * 20 + 0];
+				p1f1 = (0xF0000L & killerBoardsP1[i * 20 + 0]) >> 16;
+				p1f2 = (0xF00000000L & killerBoardsP1[i * 20 + 0]) >> 32;
+				p1f3 = (0xF000000000000L & killerBoardsP1[i * 20 + 0]) >> 48;
+				p2f0 = 0xFL & killerBoardsP2[i * 20 + 0];
+				p2f1 = (0xF0000L & killerBoardsP2[i * 20 + 0]) >> 16;
+				p2f2 = (0xF00000000L & killerBoardsP2[i * 20 + 0]) >> 32;
+				p2f3 = (0xF000000000000L & killerBoardsP2[i * 20 + 0]) >> 48;
+
+				killerBoardsP1[i * 20 + 12] = ((0x1L & p1f0) << (0 + 2)) | ((0x2L & p1f0) << (4 - 1 + 2)) | ((0x4L & p1f0) << (8 - 2 + 2)) | ((0x8L & p1f0) << (12 - 3 + 2))
+						| ((0x1L & p1f1) << (16 + 0 + 2)) | ((0x2L & p1f1) << (16 + 4 - 1 + 2)) | ((0x4L & p1f1) << (16 + 8 - 2 + 2)) | ((0x8L & p1f1) << (16 + 12 - 3 + 2))
+						| ((0x1L & p1f2) << (32 + 0 + 2)) | ((0x2L & p1f2) << (32 + 4 - 1 + 2)) | ((0x4L & p1f2) << (32 + 8 - 2 + 2)) | ((0x8L & p1f2) << (32 + 12 - 3 + 2))
+						| ((0x1L & p1f3) << (48 + 0 + 2)) | ((0x2L & p1f3) << (48 + 4 - 1 + 2)) | ((0x4L & p1f3) << (48 + 8 - 2 + 2)) | ((0x8L & p1f3) << (48 + 12 - 3 + 2));
+				killerBoardsP2[i * 20 + 12] = ((0x1L & p2f0) << (0 + 2)) | ((0x2L & p2f0) << (4 - 1 + 2)) | ((0x4L & p2f0) << (8 - 2 + 2)) | ((0x8L & p2f0) << (12 - 3 + 2))
+						| ((0x1L & p2f1) << (16 + 0 + 2)) | ((0x2L & p2f1) << (16 + 4 - 1 + 2)) | ((0x4L & p2f1) << (16 + 8 - 2 + 2)) | ((0x8L & p2f1) << (16 + 12 - 3 + 2))
+						| ((0x1L & p2f2) << (32 + 0 + 2)) | ((0x2L & p2f2) << (32 + 4 - 1 + 2)) | ((0x4L & p2f2) << (32 + 8 - 2 + 2)) | ((0x8L & p2f2) << (32 + 12 - 3 + 2))
+						| ((0x1L & p2f3) << (48 + 0 + 2)) | ((0x2L & p2f3) << (48 + 4 - 1 + 2)) | ((0x4L & p2f3) << (48 + 8 - 2 + 2)) | ((0x8L & p2f3) << (48 + 12 - 3 + 2));
+
+				p1f0 = 0xFL & killerBoardsP1[i * 20 + 1];
+				p1f1 = (0xF0000L & killerBoardsP1[i * 20 + 1]) >> 16;
+				p1f2 = (0xF00000000L & killerBoardsP1[i * 20 + 1]) >> 32;
+				p1f3 = (0xF000000000000L & killerBoardsP1[i * 20 + 1]) >> 48;
+				p2f0 = 0xFL & killerBoardsP2[i * 20 + 1];
+				p2f1 = (0xF0000L & killerBoardsP2[i * 20 + 1]) >> 16;
+				p2f2 = (0xF00000000L & killerBoardsP2[i * 20 + 1]) >> 32;
+				p2f3 = (0xF000000000000L & killerBoardsP2[i * 20 + 1]) >> 48;
+
+				killerBoardsP1[i * 20 + 13] = ((0x1L & p1f0) << (0 + 2)) | ((0x2L & p1f0) << (4 - 1 + 2)) | ((0x4L & p1f0) << (8 - 2 + 2)) | ((0x8L & p1f0) << (12 - 3 + 2))
+						| ((0x1L & p1f1) << (16 + 0 + 2)) | ((0x2L & p1f1) << (16 + 4 - 1 + 2)) | ((0x4L & p1f1) << (16 + 8 - 2 + 2)) | ((0x8L & p1f1) << (16 + 12 - 3 + 2))
+						| ((0x1L & p1f2) << (32 + 0 + 2)) | ((0x2L & p1f2) << (32 + 4 - 1 + 2)) | ((0x4L & p1f2) << (32 + 8 - 2 + 2)) | ((0x8L & p1f2) << (32 + 12 - 3 + 2))
+						| ((0x1L & p1f3) << (48 + 0 + 2)) | ((0x2L & p1f3) << (48 + 4 - 1 + 2)) | ((0x4L & p1f3) << (48 + 8 - 2 + 2)) | ((0x8L & p1f3) << (48 + 12 - 3 + 2));
+				killerBoardsP2[i * 20 + 13] = ((0x1L & p2f0) << (0 + 2)) | ((0x2L & p2f0) << (4 - 1 + 2)) | ((0x4L & p2f0) << (8 - 2 + 2)) | ((0x8L & p2f0) << (12 - 3 + 2))
+						| ((0x1L & p2f1) << (16 + 0 + 2)) | ((0x2L & p2f1) << (16 + 4 - 1 + 2)) | ((0x4L & p2f1) << (16 + 8 - 2 + 2)) | ((0x8L & p2f1) << (16 + 12 - 3 + 2))
+						| ((0x1L & p2f2) << (32 + 0 + 2)) | ((0x2L & p2f2) << (32 + 4 - 1 + 2)) | ((0x4L & p2f2) << (32 + 8 - 2 + 2)) | ((0x8L & p2f2) << (32 + 12 - 3 + 2))
+						| ((0x1L & p2f3) << (48 + 0 + 2)) | ((0x2L & p2f3) << (48 + 4 - 1 + 2)) | ((0x4L & p2f3) << (48 + 8 - 2 + 2)) | ((0x8L & p2f3) << (48 + 12 - 3 + 2));
+
+
+
+
+
+
+
+
+
+
+
+
+				p1f0 = 0xFL & killerBoardsP1[i * 20 + 0];
+				p1f1 = (0xF0000L & killerBoardsP1[i * 20 + 0]) >> 16;
+				p1f2 = (0xF00000000L & killerBoardsP1[i * 20 + 0]) >> 32;
+				p1f3 = (0xF000000000000L & killerBoardsP1[i * 20 + 0]) >> 48;
+				p2f0 = 0xFL & killerBoardsP2[i * 20 + 0];
+				p2f1 = (0xF0000L & killerBoardsP2[i * 20 + 0]) >> 16;
+				p2f2 = (0xF00000000L & killerBoardsP2[i * 20 + 0]) >> 32;
+				p2f3 = (0xF000000000000L & killerBoardsP2[i * 20 + 0]) >> 48;
+
+				killerBoardsP1[i * 20 + 14] = ((0x1L & p1f0) << (0 + 3)) | ((0x2L & p1f0) << (4 - 1 + 3)) | ((0x4L & p1f0) << (8 - 2 + 3)) | ((0x8L & p1f0) << (12 - 3 + 3))
+						| ((0x1L & p1f1) << (16 + 0 + 3)) | ((0x2L & p1f1) << (16 + 4 - 1 + 3)) | ((0x4L & p1f1) << (16 + 8 - 2 + 3)) | ((0x8L & p1f1) << (16 + 12 - 3 + 3))
+						| ((0x1L & p1f2) << (32 + 0 + 3)) | ((0x2L & p1f2) << (32 + 4 - 1 + 3)) | ((0x4L & p1f2) << (32 + 8 - 2 + 3)) | ((0x8L & p1f2) << (32 + 12 - 3 + 3))
+						| ((0x1L & p1f3) << (48 + 0 + 3)) | ((0x2L & p1f3) << (48 + 4 - 1 + 3)) | ((0x4L & p1f3) << (48 + 8 - 2 + 3)) | ((0x8L & p1f3) << (48 + 12 - 3 + 3));
+				killerBoardsP2[i * 20 + 14] = ((0x1L & p2f0) << (0 + 3)) | ((0x2L & p2f0) << (4 - 1 + 3)) | ((0x4L & p2f0) << (8 - 2 + 3)) | ((0x8L & p2f0) << (12 - 3 + 3))
+						| ((0x1L & p2f1) << (16 + 0 + 3)) | ((0x2L & p2f1) << (16 + 4 - 1 + 3)) | ((0x4L & p2f1) << (16 + 8 - 2 + 3)) | ((0x8L & p2f1) << (16 + 12 - 3 + 3))
+						| ((0x1L & p2f2) << (32 + 0 + 3)) | ((0x2L & p2f2) << (32 + 4 - 1 + 3)) | ((0x4L & p2f2) << (32 + 8 - 2 + 3)) | ((0x8L & p2f2) << (32 + 12 - 3 + 3))
+						| ((0x1L & p2f3) << (48 + 0 + 3)) | ((0x2L & p2f3) << (48 + 4 - 1 + 3)) | ((0x4L & p2f3) << (48 + 8 - 2 + 3)) | ((0x8L & p2f3) << (48 + 12 - 3 + 3));
+
+				p1f0 = 0xFL & killerBoardsP1[i * 20 + 1];
+				p1f1 = (0xF0000L & killerBoardsP1[i * 20 + 1]) >> 16;
+				p1f2 = (0xF00000000L & killerBoardsP1[i * 20 + 1]) >> 32;
+				p1f3 = (0xF000000000000L & killerBoardsP1[i * 20 + 1]) >> 48;
+				p2f0 = 0xFL & killerBoardsP2[i * 20 + 1];
+				p2f1 = (0xF0000L & killerBoardsP2[i * 20 + 1]) >> 16;
+				p2f2 = (0xF00000000L & killerBoardsP2[i * 20 + 1]) >> 32;
+				p2f3 = (0xF000000000000L & killerBoardsP2[i * 20 + 1]) >> 48;
+
+				killerBoardsP1[i * 20 + 15] = ((0x1L & p1f0) << (0 + 3)) | ((0x2L & p1f0) << (4 - 1 + 3)) | ((0x4L & p1f0) << (8 - 2 + 3)) | ((0x8L & p1f0) << (12 - 3 + 3))
+						| ((0x1L & p1f1) << (16 + 0 + 3)) | ((0x2L & p1f1) << (16 + 4 - 1 + 3)) | ((0x4L & p1f1) << (16 + 8 - 2 + 3)) | ((0x8L & p1f1) << (16 + 12 - 3 + 3))
+						| ((0x1L & p1f2) << (32 + 0 + 3)) | ((0x2L & p1f2) << (32 + 4 - 1 + 3)) | ((0x4L & p1f2) << (32 + 8 - 2 + 3)) | ((0x8L & p1f2) << (32 + 12 - 3 + 3))
+						| ((0x1L & p1f3) << (48 + 0 + 3)) | ((0x2L & p1f3) << (48 + 4 - 1 + 3)) | ((0x4L & p1f3) << (48 + 8 - 2 + 3)) | ((0x8L & p1f3) << (48 + 12 - 3 + 3));
+				killerBoardsP2[i * 20 + 15] = ((0x1L & p2f0) << (0 + 3)) | ((0x2L & p2f0) << (4 - 1 + 3)) | ((0x4L & p2f0) << (8 - 2 + 3)) | ((0x8L & p2f0) << (12 - 3 + 3))
+						| ((0x1L & p2f1) << (16 + 0 + 3)) | ((0x2L & p2f1) << (16 + 4 - 1 + 3)) | ((0x4L & p2f1) << (16 + 8 - 2 + 3)) | ((0x8L & p2f1) << (16 + 12 - 3 + 3))
+						| ((0x1L & p2f2) << (32 + 0 + 3)) | ((0x2L & p2f2) << (32 + 4 - 1 + 3)) | ((0x4L & p2f2) << (32 + 8 - 2 + 3)) | ((0x8L & p2f2) << (32 + 12 - 3 + 3))
+						| ((0x1L & p2f3) << (48 + 0 + 3)) | ((0x2L & p2f3) << (48 + 4 - 1 + 3)) | ((0x4L & p2f3) << (48 + 8 - 2 + 3)) | ((0x8L & p2f3) << (48 + 12 - 3 + 3));
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+
+				p1f0 = 0xFL & killerBoardsP1[i * 20 + 0];
+				p1f1 = (0xF0000L & killerBoardsP1[i * 20 + 0]) >> 16;
+				p1f2 = (0xF00000000L & killerBoardsP1[i * 20 + 0]) >> 32;
+				p1f3 = (0xF000000000000L & killerBoardsP1[i * 20 + 0]) >> 48;
+				p2f0 = 0xFL & killerBoardsP2[i * 20 + 0];
+				p2f1 = (0xF0000L & killerBoardsP2[i * 20 + 0]) >> 16;
+				p2f2 = (0xF00000000L & killerBoardsP2[i * 20 + 0]) >> 32;
+				p2f3 = (0xF000000000000L & killerBoardsP2[i * 20 + 0]) >> 48;
+
+				killerBoardsP1[i * 20 + 16] = ((0x1L & p1f0) << (0 + 0)) | ((0x2L & p1f0) << (4 - 1 + 1)) | ((0x4L & p1f0) << (8 - 2 + 2)) | ((0x8L & p1f0) << (12 - 3 + 3))
+						| ((0x1L & p1f1) << (16 + 0 + 0)) | ((0x2L & p1f1) << (16 + 4 - 1 + 1)) | ((0x4L & p1f1) << (16 + 8 - 2 + 2)) | ((0x8L & p1f1) << (16 + 12 - 3 + 3))
+						| ((0x1L & p1f2) << (32 + 0 + 0)) | ((0x2L & p1f2) << (32 + 4 - 1 + 1)) | ((0x4L & p1f2) << (32 + 8 - 2 + 2)) | ((0x8L & p1f2) << (32 + 12 - 3 + 3))
+						| ((0x1L & p1f3) << (48 + 0 + 0)) | ((0x2L & p1f3) << (48 + 4 - 1 + 1)) | ((0x4L & p1f3) << (48 + 8 - 2 + 2)) | ((0x8L & p1f3) << (48 + 12 - 3 + 3));
+				killerBoardsP2[i * 20 + 16] = ((0x1L & p2f0) << (0 + 0)) | ((0x2L & p2f0) << (4 - 1 + 1)) | ((0x4L & p2f0) << (8 - 2 + 2)) | ((0x8L & p2f0) << (12 - 3 + 3))
+						| ((0x1L & p2f1) << (16 + 0 + 0)) | ((0x2L & p2f1) << (16 + 4 - 1 + 1)) | ((0x4L & p2f1) << (16 + 8 - 2 + 2)) | ((0x8L & p2f1) << (16 + 12 - 3 + 3))
+						| ((0x1L & p2f2) << (32 + 0 + 0)) | ((0x2L & p2f2) << (32 + 4 - 1 + 1)) | ((0x4L & p2f2) << (32 + 8 - 2 + 2)) | ((0x8L & p2f2) << (32 + 12 - 3 + 3))
+						| ((0x1L & p2f3) << (48 + 0 + 0)) | ((0x2L & p2f3) << (48 + 4 - 1 + 1)) | ((0x4L & p2f3) << (48 + 8 - 2 + 2)) | ((0x8L & p2f3) << (48 + 12 - 3 + 3));
+
+				p1f0 = 0xFL & killerBoardsP1[i * 20 + 1];
+				p1f1 = (0xF0000L & killerBoardsP1[i * 20 + 1]) >> 16;
+				p1f2 = (0xF00000000L & killerBoardsP1[i * 20 + 1]) >> 32;
+				p1f3 = (0xF000000000000L & killerBoardsP1[i * 20 + 1]) >> 48;
+				p2f0 = 0xFL & killerBoardsP2[i * 20 + 1];
+				p2f1 = (0xF0000L & killerBoardsP2[i * 20 + 1]) >> 16;
+				p2f2 = (0xF00000000L & killerBoardsP2[i * 20 + 1]) >> 32;
+				p2f3 = (0xF000000000000L & killerBoardsP2[i * 20 + 1]) >> 48;
+
+				killerBoardsP1[i * 20 + 17] = ((0x1L & p1f0) << (0 + 0)) | ((0x2L & p1f0) << (4 - 1 + 1)) | ((0x4L & p1f0) << (8 - 2 + 2)) | ((0x8L & p1f0) << (12 - 3 + 3))
+						| ((0x1L & p1f1) << (16 + 0 + 0)) | ((0x2L & p1f1) << (16 + 4 - 1 + 1)) | ((0x4L & p1f1) << (16 + 8 - 2 + 2)) | ((0x8L & p1f1) << (16 + 12 - 3 + 3))
+						| ((0x1L & p1f2) << (32 + 0 + 0)) | ((0x2L & p1f2) << (32 + 4 - 1 + 1)) | ((0x4L & p1f2) << (32 + 8 - 2 + 2)) | ((0x8L & p1f2) << (32 + 12 - 3 + 3))
+						| ((0x1L & p1f3) << (48 + 0 + 0)) | ((0x2L & p1f3) << (48 + 4 - 1 + 1)) | ((0x4L & p1f3) << (48 + 8 - 2 + 2)) | ((0x8L & p1f3) << (48 + 12 - 3 + 3));
+				killerBoardsP2[i * 20 + 17] = ((0x1L & p2f0) << (0 + 0)) | ((0x2L & p2f0) << (4 - 1 + 1)) | ((0x4L & p2f0) << (8 - 2 + 2)) | ((0x8L & p2f0) << (12 - 3 + 3))
+						| ((0x1L & p2f1) << (16 + 0 + 0)) | ((0x2L & p2f1) << (16 + 4 - 1 + 1)) | ((0x4L & p2f1) << (16 + 8 - 2 + 2)) | ((0x8L & p2f1) << (16 + 12 - 3 + 3))
+						| ((0x1L & p2f2) << (32 + 0 + 0)) | ((0x2L & p2f2) << (32 + 4 - 1 + 1)) | ((0x4L & p2f2) << (32 + 8 - 2 + 2)) | ((0x8L & p2f2) << (32 + 12 - 3 + 3))
+						| ((0x1L & p2f3) << (48 + 0 + 0)) | ((0x2L & p2f3) << (48 + 4 - 1 + 1)) | ((0x4L & p2f3) << (48 + 8 - 2 + 2)) | ((0x8L & p2f3) << (48 + 12 - 3 + 3));
+
+				
+				
+				
+
+				p1f0 = 0xFL & killerBoardsP1[i * 20 + 0];
+				p1f1 = (0xF0000L & killerBoardsP1[i * 20 + 0]) >> 16;
+				p1f2 = (0xF00000000L & killerBoardsP1[i * 20 + 0]) >> 32;
+				p1f3 = (0xF000000000000L & killerBoardsP1[i * 20 + 0]) >> 48;
+				p2f0 = 0xFL & killerBoardsP2[i * 20 + 0];
+				p2f1 = (0xF0000L & killerBoardsP2[i * 20 + 0]) >> 16;
+				p2f2 = (0xF00000000L & killerBoardsP2[i * 20 + 0]) >> 32;
+				p2f3 = (0xF000000000000L & killerBoardsP2[i * 20 + 0]) >> 48;
+
+				killerBoardsP1[i * 20 + 18] = ((0x1L & p1f0) << (0 + 3)) | ((0x2L & p1f0) << (4 - 1 + 2)) | ((0x4L & p1f0) << (8 - 2 + 1)) | ((0x8L & p1f0) << (12 - 3 + 0))
+						| ((0x1L & p1f1) << (16 + 0 + 3)) | ((0x2L & p1f1) << (16 + 4 - 1 + 2)) | ((0x4L & p1f1) << (16 + 8 - 2 + 1)) | ((0x8L & p1f1) << (16 + 12 - 3 + 0))
+						| ((0x1L & p1f2) << (32 + 0 + 3)) | ((0x2L & p1f2) << (32 + 4 - 1 + 2)) | ((0x4L & p1f2) << (32 + 8 - 2 + 1)) | ((0x8L & p1f2) << (32 + 12 - 3 + 0))
+						| ((0x1L & p1f3) << (48 + 0 + 3)) | ((0x2L & p1f3) << (48 + 4 - 1 + 2)) | ((0x4L & p1f3) << (48 + 8 - 2 + 1)) | ((0x8L & p1f3) << (48 + 12 - 3 + 0));
+				killerBoardsP2[i * 20 + 18] = ((0x1L & p2f0) << (0 + 3)) | ((0x2L & p2f0) << (4 - 1 + 2)) | ((0x4L & p2f0) << (8 - 2 + 1)) | ((0x8L & p2f0) << (12 - 3 + 0))
+						| ((0x1L & p2f1) << (16 + 0 + 3)) | ((0x2L & p2f1) << (16 + 4 - 1 + 2)) | ((0x4L & p2f1) << (16 + 8 - 2 + 1)) | ((0x8L & p2f1) << (16 + 12 - 3 + 0))
+						| ((0x1L & p2f2) << (32 + 0 + 3)) | ((0x2L & p2f2) << (32 + 4 - 1 + 2)) | ((0x4L & p2f2) << (32 + 8 - 2 + 1)) | ((0x8L & p2f2) << (32 + 12 - 3 + 0))
+						| ((0x1L & p2f3) << (48 + 0 + 3)) | ((0x2L & p2f3) << (48 + 4 - 1 + 2)) | ((0x4L & p2f3) << (48 + 8 - 2 + 1)) | ((0x8L & p2f3) << (48 + 12 - 3 + 0));
+
+				p1f0 = 0xFL & killerBoardsP1[i * 20 + 1];
+				p1f1 = (0xF0000L & killerBoardsP1[i * 20 + 1]) >> 16;
+				p1f2 = (0xF00000000L & killerBoardsP1[i * 20 + 1]) >> 32;
+				p1f3 = (0xF000000000000L & killerBoardsP1[i * 20 + 1]) >> 48;
+				p2f0 = 0xFL & killerBoardsP2[i * 20 + 1];
+				p2f1 = (0xF0000L & killerBoardsP2[i * 20 + 1]) >> 16;
+				p2f2 = (0xF00000000L & killerBoardsP2[i * 20 + 1]) >> 32;
+				p2f3 = (0xF000000000000L & killerBoardsP2[i * 20 + 1]) >> 48;
+
+				killerBoardsP1[i * 20 + 19] = ((0x1L & p1f0) << (0 + 3)) | ((0x2L & p1f0) << (4 - 1 + 2)) | ((0x4L & p1f0) << (8 - 2 + 1)) | ((0x8L & p1f0) << (12 - 3 + 0))
+						| ((0x1L & p1f1) << (16 + 0 + 3)) | ((0x2L & p1f1) << (16 + 4 - 1 + 2)) | ((0x4L & p1f1) << (16 + 8 - 2 + 1)) | ((0x8L & p1f1) << (16 + 12 - 3 + 0))
+						| ((0x1L & p1f2) << (32 + 0 + 3)) | ((0x2L & p1f2) << (32 + 4 - 1 + 2)) | ((0x4L & p1f2) << (32 + 8 - 2 + 1)) | ((0x8L & p1f2) << (32 + 12 - 3 + 0))
+						| ((0x1L & p1f3) << (48 + 0 + 3)) | ((0x2L & p1f3) << (48 + 4 - 1 + 2)) | ((0x4L & p1f3) << (48 + 8 - 2 + 1)) | ((0x8L & p1f3) << (48 + 12 - 3 + 0));
+				killerBoardsP2[i * 20 + 19] = ((0x1L & p2f0) << (0 + 3)) | ((0x2L & p2f0) << (4 - 1 + 2)) | ((0x4L & p2f0) << (8 - 2 + 1)) | ((0x8L & p2f0) << (12 - 3 + 0))
+						| ((0x1L & p2f1) << (16 + 0 + 3)) | ((0x2L & p2f1) << (16 + 4 - 1 + 2)) | ((0x4L & p2f1) << (16 + 8 - 2 + 1)) | ((0x8L & p2f1) << (16 + 12 - 3 + 0))
+						| ((0x1L & p2f2) << (32 + 0 + 3)) | ((0x2L & p2f2) << (32 + 4 - 1 + 2)) | ((0x4L & p2f2) << (32 + 8 - 2 + 1)) | ((0x8L & p2f2) << (32 + 12 - 3 + 0))
+						| ((0x1L & p2f3) << (48 + 0 + 3)) | ((0x2L & p2f3) << (48 + 4 - 1 + 2)) | ((0x4L & p2f3) << (48 + 8 - 2 + 1)) | ((0x8L & p2f3) << (48 + 12 - 3 + 0));
+
+
+
+
+
+
+
+
+
+
+
+			}
+		}
+		
+		private static long mirrorSingle(long single)
+		{
+			if (single == 0x0L)
+				return 0x0L;
+			else if (single == 0x1L)
+				return 0x8L;
+			else if (single == 0x2L)
+				return 0x4L;
+			else if (single == 0x3L)
+				return 0xCL;
+			else if (single == 0x4L)
+				return 0x2L;
+			else if (single == 0x5L)
+				return 0xAL;
+			else if (single == 0x6L)
+				return 0x6L;
+			else if (single == 0x7L)
+				return 0xEL;
+			else if (single == 0x8L)
+				return 0x1L;
+			else if (single == 0x9L)
+				return 0x9L;
+			else if (single == 0xAL)
+				return 0x5L;
+			else if (single == 0xBL)
+				return 0xDL;
+			else if (single == 0xCL)
+				return 0x3L;
+			else if (single == 0xDL)
+				return 0xBL;
+			else if (single == 0xEL)
+				return 0x7L;
+			else if (single == 0xFL)
+				return 0xFL;
+			else
+			{
+				System.out.println("Ey du Arschloch");
+				System.exit(-1);
+				return 0x0L;
+			}
+		}
+		
 	
 	public static int countFreeLine(Player[] line, Player player) {
 		int c = 0;
@@ -233,6 +732,29 @@ public class GameAnalyzer {
 		}
 		return false;
 	}
+	
+	public static boolean killerMove(long bp1, long bp2)
+	{
+		if (killerBoardsP1.length == 0)
+		{
+			fillKillerBoards();
+		}
+		
+		for (int i = 0; i < killerBoardsP1.length; i++)
+		{
+			long self = bp1 & killerBoardsP1[i];
+			long other = bp2 & killerBoardsP2[i];
+			
+			if (self == killerBoardsP1[i] && other == 0x0L)
+			{
+				return true;
+			}
+		}
+		
+		return false;
+	}
+	
+	
 	
 	
 	public static long getBP1FromGame(SogoGame g)

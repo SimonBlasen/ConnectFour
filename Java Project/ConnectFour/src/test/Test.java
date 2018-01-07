@@ -23,7 +23,13 @@ public class Test {
 	public static void main(String[] args) {
 		
 		
-		 
+		long bp1 = 0x10081228L;
+		long bp2 = 0x4208401L;
+		
+		System.out.println(GameAnalyzer.killerMove(bp1, bp2));
+		
+		
+		 /*
 		
 		MrBitwiseTree bit = new MrBitwiseTree();
 		
@@ -65,7 +71,7 @@ public class Test {
 				
 				return game;
 			}
-		});
+		});*/
 		
 		//double val = bit.evaluateMilton(bp1, bp2, false);
 		

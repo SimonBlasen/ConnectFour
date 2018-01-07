@@ -19,7 +19,7 @@ public class BadPlayer implements SogoPlayer {
 	private static final double single_p = 1;
 	private static int DEPTH = 5;
 	
-	private boolean debug_messages = false;
+	private boolean debug_messages = true;
 	
 	private int mDepth = 0;
 	private Random mRnd;
@@ -61,6 +61,8 @@ public class BadPlayer implements SogoPlayer {
 
 		stonesAmountRound = countStones(bp1, bp2);
 
+		
+		
 		takeMove = moves.get(0);
 		
 		for (int depth = 4; depth < 30; depth++)
@@ -196,8 +198,27 @@ public class BadPlayer implements SogoPlayer {
 								break;
 							}
 						}
+						
+						
+						// Check for killer boards
+						
+						boolean isKiller = GameAnalyzer.killerMove(alteredBp1, bp2);
+						
+						double value = 0.0;
+						
+						value = min_value(alteredBp1, bp2, alpha, beta, (remainingDepth-1), bp1);
 
-						final double value = min_value(alteredBp1, bp2, alpha, beta, (remainingDepth-1));
+						if (isKiller && value > -900.0)
+						{
+							value = 977.0;
+							System.out.println("Got a killer");
+						}
+						else
+						{
+						}
+						
+						
+
 						
 						if (debug_messages)
 							System.out.println(m.i + "," + m.j + " = " + value);
@@ -224,11 +245,11 @@ public class BadPlayer implements SogoPlayer {
 	}
 	
 
-	public double max_value(long bp1, long bp2, double alpha, double beta, int remainingDepth)
+	public double max_value(long bp1, long bp2, double alpha, double beta, int remainingDepth, long oldBp1)
 	{
 		if ((remainingDepth <= 0) || GameAnalyzer.hasGameEnded(bp2)) {
 			
-			return evaluateOddEven(bp1, bp2);
+			return evaluateOddEven(bp1, bp2, oldBp1);
 			//return evaluateMilton(bp1, bp2, true);
 		}
 		
@@ -255,7 +276,7 @@ public class BadPlayer implements SogoPlayer {
 					}
 				}
 
-				final double value = min_value(alteredBp1, bp2, alpha, beta, (remainingDepth-1));
+				final double value = min_value(alteredBp1, bp2, alpha, beta, (remainingDepth-1), bp1);
 				v = Math.max(v, value);
 				if (v >= beta) {
 					//System.out.println("pruning");
@@ -270,11 +291,11 @@ public class BadPlayer implements SogoPlayer {
 
 	}
 
-	public double min_value(long bp1, long bp2, double alpha, double beta, int remainingDepth)
+	public double min_value(long bp1, long bp2, double alpha, double beta, int remainingDepth, long oldBp1)
 	{
 		if ((remainingDepth <= 0) || GameAnalyzer.hasGameEnded(bp1))
 		{
-			return evaluateOddEven(bp1, bp2);
+			return evaluateOddEven(bp1, bp2, oldBp1);
 			//return evaluateMilton(bp1, bp2, false);
 	    }
 
@@ -306,7 +327,7 @@ public class BadPlayer implements SogoPlayer {
 	    			System.out.println("ARSCH");
 	    		}
 
-	    		final double value = max_value(bp1, alteredBp1, alpha, beta, (remainingDepth-1));
+	    		final double value = max_value(bp1, alteredBp1, alpha, beta, (remainingDepth-1), bp1);
 	    		v = Math.min(v, value);
 	    		if (v <= alpha) {
 	    			//System.out.println("pruning");
@@ -481,8 +502,17 @@ public class BadPlayer implements SogoPlayer {
 	
 	
 	
-	public double evaluateOddEven(long bp1, long bp2)
+	public double evaluateOddEven(long bp1, long bp2, long oldBp1)
 	{
+		boolean isEnemyKiller = GameAnalyzer.killerMove(bp2, oldBp1);
+		
+		if (isEnemyKiller)
+		{
+			return -977.0;
+		}
+
+		//else -->
+		
 		boolean didIBegin = (stonesAmountRound % 2) == 0;
 		int p1ThreatsOdd = 0;
 		int p1ThreatsEven = 0;
@@ -592,7 +622,7 @@ public class BadPlayer implements SogoPlayer {
 			difference = p1ThreatsOdd - p2ThreatsEven;
 		}
 		
-		return (difference * 100.0) + evaluateGame(bp1, bp2);
+		return (difference * 100.0) + evaluateGame(bp1, bp2) * 0.06;
 	}
 	
 	
