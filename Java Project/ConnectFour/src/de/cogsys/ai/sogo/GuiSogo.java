@@ -17,6 +17,7 @@ import de.cogsys.ai.sogo.gui.MainFrame;
 import de.cogsys.ai.sogo.gui.SogoGamePanel;
 import de.cogsys.ai.sogo.gui.SogoGamePanelListener;
 import de.cogsys.ai.sogo.gui.StatusPanel;
+import de.cogsys.ai.sogo.player.BadPlayer;
 import de.cogsys.ai.sogo.player.GuiPlayer;
 import de.cogsys.ai.sogo.player.MrNovice;
 import de.cogsys.ai.sogo.player.MrRandom;
@@ -46,6 +47,7 @@ public class GuiSogo {
 		"MrNovice (depth 4)",
 		"MrRandom",
 		"MrBitwiseTree",
+		"BadPlayer",
 	};
 
 	public static SogoPlayer createAgent(final String agent) {
@@ -55,6 +57,7 @@ public class GuiSogo {
 		if (agent.equals(agents[3])) return new MrNovice(4);
 		if (agent.equals(agents[4])) return new MrRandom();
 		if (agent.equals(agents[5])) return new MrBitwiseTree();
+		if (agent.equals(agents[6])) return new BadPlayer();
 		return null;
 	}
 
@@ -93,7 +96,7 @@ public class GuiSogo {
 		System.exit(0);
 	}
 
-	public static final long PLAYER_TIMEOUT = 10000;
+	public static final long PLAYER_TIMEOUT = 1000000;
 	public static final long TIMEOUT_CULANCE = 500;
 
 	private MainFrame mainframe;
@@ -280,16 +283,22 @@ public class GuiSogo {
 				this.game = this.game.performMove(selectedMove);
 				this.lastmove = selectedMove;
 				
-				long bp1 = GameAnalyzer.getBP1FromGame(this.game);
-				long bp2 = GameAnalyzer.getBP2FromGame(this.game);
+				if (this.game.getCurrentPlayer() == Player.P2)
+				{
+					long bp1 = GameAnalyzer.getBP1FromGame(this.game);
+					long bp2 = GameAnalyzer.getBP2FromGame(this.game);
+					
+					//MrBitwiseTree mrbt = new MrBitwiseTree();
+					//double valval = mrbt.evaluateMilton(bp1, bp2, game.getCurrentPlayer() == Player.P1);
+					double valval = BadPlayer.evaluateOddEven(bp1, bp2, false);
+					
+					
+					
+					System.out.println("########################");
+					System.out.println("## " + valval);
+					System.out.println("########################");
+				}
 				
-				MrBitwiseTree mrbt = new MrBitwiseTree();
-
-				double valval = mrbt.evaluateMilton(bp1, bp2, game.getCurrentPlayer() == Player.P1);
-				
-				System.out.println("########################");
-				System.out.println("## " + valval);
-				System.out.println("########################");
 			}
 		}
 

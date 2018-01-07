@@ -53,7 +53,7 @@ public class Sogo {
 		int p1Won = 0;
 		int p2Won = 0;
 		int draw = 0;
-		for (int rounds = 0; rounds < 100; rounds++)
+		for (int rounds = 0; rounds < 1000; rounds++)
 		{
 			System.out.println("Round: " + rounds);
 			

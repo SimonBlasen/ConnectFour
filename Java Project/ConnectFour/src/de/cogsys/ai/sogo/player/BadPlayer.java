@@ -151,8 +151,8 @@ public class BadPlayer implements SogoPlayer {
 
 				c.updateMove(takeMove);
 				//c.updateMove(bestmoves.get((new Random()).nextInt(bestmoves.size())));
-				if (debug_messages)
-					System.out.println("Depth " + depth + " done, took: [" + takeMove.i + "," + takeMove.j + "]");
+				if (debug_messages && depth >= 6)
+					System.out.println("Depth " + depth + " done, took: [" + takeMove.i + "," + takeMove.j + "]" + " Did I begin? " + ((stonesAmountRound % 2) == 0));
 				
 			}
 		}
@@ -228,7 +228,8 @@ public class BadPlayer implements SogoPlayer {
 	{
 		if ((remainingDepth <= 0) || GameAnalyzer.hasGameEnded(bp2)) {
 			
-			return evaluateMilton(bp1, bp2, true);
+			return evaluateOddEven(bp1, bp2);
+			//return evaluateMilton(bp1, bp2, true);
 		}
 		
 
@@ -273,7 +274,8 @@ public class BadPlayer implements SogoPlayer {
 	{
 		if ((remainingDepth <= 0) || GameAnalyzer.hasGameEnded(bp1))
 		{
-			return evaluateMilton(bp1, bp2, false);
+			return evaluateOddEven(bp1, bp2);
+			//return evaluateMilton(bp1, bp2, false);
 	    }
 
 	    double v = Double.POSITIVE_INFINITY;
@@ -365,7 +367,7 @@ public class BadPlayer implements SogoPlayer {
 	}
 	
 	
-	public double evaluateGame(long bp1, long bp2)
+	public static double evaluateGame(long bp1, long bp2)
 	{
 		double res = 0.0;
 		
@@ -476,6 +478,239 @@ public class BadPlayer implements SogoPlayer {
 	 * 
 	 */
 	private byte[][] threats = new byte[16][4];
+	
+	
+	
+	public double evaluateOddEven(long bp1, long bp2)
+	{
+		boolean didIBegin = (stonesAmountRound % 2) == 0;
+		int p1ThreatsOdd = 0;
+		int p1ThreatsEven = 0;
+		int p2ThreatsOdd = 0;
+		int p2ThreatsEven = 0;
+
+		for (int i = 0; i < GameAnalyzer.longLines.length; i++)
+		{
+			long hereP1 = (bp1 & GameAnalyzer.longLines[i]) ^ GameAnalyzer.longLines[i];
+			long hereP2 = (bp2 & GameAnalyzer.longLines[i]) ^ GameAnalyzer.longLines[i];
+			
+			if (hereP1 == 0x0L)
+			{
+				return win_p;
+			}
+			else if (hereP2 == 0x0L)
+			{
+				return -win_p;
+			}
+			
+			int p1Amounts = 0;
+			long p1Counter = hereP1;
+			while (p1Counter != 0x0L)
+			{
+				p1Counter &= (p1Counter - 1);
+				p1Amounts++;
+			}
+			int p2Amounts = 0;
+			long p2Counter = hereP2;
+			while (p2Counter != 0x0L)
+			{
+				p2Counter &= (p2Counter - 1);
+				p2Amounts++;
+			}
+			
+			
+			
+			if (p1Amounts == 1 && p2Amounts == 4)
+			{
+				if (hereP1 > 0xFFFFL)
+				{
+					long oneBelowP1 = (hereP1 >> 16);
+					if (((oneBelowP1 & bp1) == 0x0L) && ((oneBelowP1 & bp2) == 0x0L))
+					{
+						// Floor number 2
+						if (hereP1 <= 0xFFFFFFFFL)
+						{
+							p1ThreatsOdd++;
+						}
+						// Floor number 3
+						else if (hereP1 <= 0xFFFFFFFFFFFFL)
+						{
+							p1ThreatsEven++;
+						}
+						// Floor number 4
+						else if (hereP1 <= 0xFFFFFFFFFFFFFFFFL)
+						{
+							p1ThreatsOdd++;
+						}
+					}
+				}
+			}
+			else if (p2Amounts == 1 && p1Amounts == 4)
+			{
+				if (hereP2 > 0xFFFFL)
+				{
+					long oneBelowP2 = (hereP2 >> 16);
+					if (((oneBelowP2 & bp1) == 0x0L) && ((oneBelowP2 & bp2) == 0x0L))
+					{
+						// Floor number 2
+						if (hereP2 <= 0xFFFFFFFFL)
+						{
+							p2ThreatsOdd++;
+						}
+						// Floor number 3
+						else if (hereP2 <= 0xFFFFFFFFFFFFL)
+						{
+							p2ThreatsEven++;
+						}
+						// Floor number 4
+						else if (hereP2 <= 0xFFFFFFFFFFFFFFFFL)
+						{
+							p2ThreatsOdd++;
+						}
+					}
+				}
+			}
+		}
+		
+		
+		/*
+		 * Floor
+		 * 4   	  Odd
+		 * 3   	  Even
+		 * 2   	  Odd
+		 * 1      Even
+		 * 
+		 */
+		
+		int difference = 0;
+		if (didIBegin)
+		{
+			difference = p1ThreatsEven - p2ThreatsOdd;			
+		}
+		else
+		{
+			difference = p1ThreatsOdd - p2ThreatsEven;
+		}
+		
+		return (difference * 100.0) + evaluateGame(bp1, bp2);
+	}
+	
+	
+	public static double evaluateOddEven(long bp1, long bp2, boolean didIBegin)
+	{
+		int p1ThreatsOdd = 0;
+		int p1ThreatsEven = 0;
+		int p2ThreatsOdd = 0;
+		int p2ThreatsEven = 0;
+
+		for (int i = 0; i < GameAnalyzer.longLines.length; i++)
+		{
+			long hereP1 = (bp1 & GameAnalyzer.longLines[i]) ^ GameAnalyzer.longLines[i];
+			long hereP2 = (bp2 & GameAnalyzer.longLines[i]) ^ GameAnalyzer.longLines[i];
+			
+			if (hereP1 == 0x0L)
+			{
+				return win_p;
+			}
+			else if (hereP2 == 0x0L)
+			{
+				return -win_p;
+			}
+			
+			int p1Amounts = 0;
+			long p1Counter = hereP1;
+			while (p1Counter != 0x0L)
+			{
+				p1Counter &= (p1Counter - 1);
+				p1Amounts++;
+			}
+			int p2Amounts = 0;
+			long p2Counter = hereP2;
+			while (p2Counter != 0x0L)
+			{
+				p2Counter &= (p2Counter - 1);
+				p2Amounts++;
+			}
+			
+			
+			
+			if (p1Amounts == 1 && p2Amounts == 4)
+			{
+				if (hereP1 > 0xFFFFL)
+				{
+					long oneBelowP1 = (hereP1 >> 16);
+					if (((oneBelowP1 & bp1) == 0x0L) && ((oneBelowP1 & bp2) == 0x0L))
+					{
+						// Floor number 2
+						if (hereP1 <= 0xFFFFFFFFL)
+						{
+							p1ThreatsOdd++;
+						}
+						// Floor number 3
+						else if (hereP1 <= 0xFFFFFFFFFFFFL)
+						{
+							p1ThreatsEven++;
+						}
+						// Floor number 4
+						else if (hereP1 <= 0xFFFFFFFFFFFFFFFFL)
+						{
+							p1ThreatsOdd++;
+						}
+					}
+				}
+			}
+			else if (p2Amounts == 1 && p1Amounts == 4)
+			{
+				if (hereP2 > 0xFFFFL)
+				{
+					long oneBelowP2 = (hereP2 >> 16);
+					if (((oneBelowP2 & bp1) == 0x0L) && ((oneBelowP2 & bp2) == 0x0L))
+					{
+						// Floor number 2
+						if (hereP2 <= 0xFFFFFFFFL)
+						{
+							p2ThreatsOdd++;
+						}
+						// Floor number 3
+						else if (hereP2 <= 0xFFFFFFFFFFFFL)
+						{
+							p2ThreatsEven++;
+						}
+						// Floor number 4
+						else if (hereP2 <= 0xFFFFFFFFFFFFFFFFL)
+						{
+							p2ThreatsOdd++;
+						}
+					}
+				}
+			}
+		}
+		
+		
+		/*
+		 * Floor
+		 * 4   	  Odd
+		 * 3   	  Even
+		 * 2   	  Odd
+		 * 1      Even
+		 * 
+		 */
+		
+		int difference = 0;
+		if (didIBegin)
+		{
+			difference = p1ThreatsEven - p2ThreatsOdd;			
+		}
+		else
+		{
+			difference = p1ThreatsOdd - p2ThreatsEven;
+		}
+		
+		return (difference * 100.0) + evaluateGame(bp1, bp2);
+	}
+	
+	
+	
 	
 	
 	
@@ -689,6 +924,12 @@ public class BadPlayer implements SogoPlayer {
 		double[] floors = new double[] {1.0, 300.0, 90.0, 10.0};
 		//double[] floors = new double[] {Sogo.weight1, Sogo.weight2, Sogo.weight3, Sogo.weight4};
 		
+		
+		boolean didP1Begin = (stonesAmountRound % 2) == 0;
+		
+		boolean useOddEven = true;
+		
+		
 		for (int i = 0; i < threatPoses.length; i++)
 		{
 			if (threatPoses[i])
@@ -709,81 +950,176 @@ public class BadPlayer implements SogoPlayer {
 				
 				for (int j = 0; j < threats[i].length; j++)
 				{
-					if (threats[i][j] == 1)
+					if (useOddEven)
 					{
-						if (turnP1 && j == 0) 
+						if (threats[i][j] == 1)
 						{
-							return win_p;
+							if (((j % 2) == 0) == didP1Begin)
+							{
+								if (turnP1 && j == 0) 
+								{
+									return win_p;
+								}
+								else if (turnP1 == false && j == 0)
+								{
+									
+								}
+								else if (turnP1 == false && j > 0)
+								{
+									if (threats[i][j - 1] == 3)
+									{
+										
+									}
+									else if (threats[i][j - 1] == 0)
+									{
+										amountsP1++;
+									}
+									else if (threats[i][j - 1] == 2)
+									{
+
+									}
+									else if (threats[i][j - 1] == 1)
+									{
+										amountsP1++;
+									}
+								}
+								else if (turnP1 && j > 0)
+								{
+									amountsP1++;
+								}
+								
+								
+								
+								/*if (j == 0 || (threats[i][j - 1] != 2))
+								{
+									amountsP1++;
+								}*/
+							}
 						}
-						else if (turnP1 == false && j == 0)
+						else if (threats[i][j] == 2)
 						{
-							
+							if (((j % 2) == 1) == didP1Begin)
+							{
+								if (turnP1 == false && j == 0) 
+								{
+									return -win_p;
+								}
+								else if (turnP1 && j == 0)
+								{
+
+								}
+								else if (turnP1 && j > 0)
+								{
+									if (threats[i][j - 1] == 3)
+									{
+
+									}
+									else if (threats[i][j - 1] == 0)
+									{
+										amountsP2++;
+									}
+									else if (threats[i][j - 1] == 1)
+									{
+
+									}
+									else if (threats[i][j - 1] == 2)
+									{
+										amountsP2++;
+
+									}
+								}
+								else if (turnP1 == false && j > 0)
+								{
+									amountsP2++;
+								}
+								
+								/*if (j == 0 || (threats[i][j - 1] != 1))
+								{
+									amountsP2++;
+								}*/
+							}
 						}
-						else if (turnP1 == false && j > 0)
+					}
+					else
+					{
+						if (threats[i][j] == 1)
 						{
-							if (threats[i][j - 1] == 3)
+							if (turnP1 && j == 0) 
+							{
+								return win_p;
+							}
+							else if (turnP1 == false && j == 0)
 							{
 								
 							}
-							else if (threats[i][j - 1] == 0)
+							else if (turnP1 == false && j > 0)
+							{
+								if (threats[i][j - 1] == 3)
+								{
+									
+								}
+								else if (threats[i][j - 1] == 0)
+								{
+									amountsP1++;
+									resultP1 += floors[j];
+								}
+								else if (threats[i][j - 1] == 2)
+								{
+
+								}
+								else if (threats[i][j - 1] == 1)
+								{
+									amountsP1++;
+									resultP1 += floors[j];
+								}
+							}
+							else if (turnP1 && j > 0)
 							{
 								amountsP1++;
 								resultP1 += floors[j];
 							}
-							else if (threats[i][j - 1] == 2)
-							{
-								
-							}
-							else if (threats[i][j - 1] == 1)
-							{
-								amountsP1++;
-								resultP1 += floors[j];
-							}
 						}
-						else if (turnP1 && j > 0)
+
+						else if (threats[i][j] == 2)
 						{
-							amountsP1++;
-							resultP1 += floors[j];
+							if (turnP1 == false && j == 0) 
+							{
+								return -win_p;
+							}
+							else if (turnP1 && j == 0)
+							{
+
+							}
+							else if (turnP1 && j > 0)
+							{
+								if (threats[i][j - 1] == 3)
+								{
+
+								}
+								else if (threats[i][j - 1] == 0)
+								{
+									amountsP2++;
+									resultP2 += floors[j];
+								}
+								else if (threats[i][j - 1] == 1)
+								{
+
+								}
+								else if (threats[i][j - 1] == 2)
+								{
+									amountsP2++;
+									resultP2 += floors[j];
+
+								}
+							}
+							else if (turnP1 == false && j > 0)
+							{
+								amountsP2++;
+								resultP2 += floors[j];
+							}
 						}
 					}
 					
-					else if (threats[i][j] == 2)
-					{
-						if (turnP1 == false && j == 0) 
-						{
-							return -win_p;
-						}
-						else if (turnP1 && j == 0)
-						{
-							
-						}
-						else if (turnP1 && j > 0)
-						{
-							if (threats[i][j - 1] == 3)
-							{
-								
-							}
-							else if (threats[i][j - 1] == 0)
-							{
-								amountsP2++;
-								resultP2 += floors[j];
-							}
-							else if (threats[i][j - 1] == 1)
-							{
-								
-							}
-							else if (threats[i][j - 1] == 2)
-							{
-								amountsP2++;
-								resultP2 += floors[j];
-							}
-						}
-						else if (turnP1 == false && j > 0)
-						{
-							amountsP2++;
-							resultP2 += floors[j];
-						}
-					}
 					/*if (threats[i][j] == 1 && (j == 0 || threats[i][j - 1] != 2) && (turnP1 == true || (j >= 1 && (threats[i][j - 1] != 3))))
 					{
 						amountsP1++;
@@ -832,7 +1168,7 @@ public class BadPlayer implements SogoPlayer {
 				
 				//double toP1Advantage = (p1Own - p2Own);
 				
-				return (amountsP1 * 80.0 - amountsP2 * 60.0) + evaluateGame(bp1, bp2) * 0.06;
+				return (amountsP1 * 80.0 - amountsP2 * 80.0) + evaluateGame(bp1, bp2) * 0.06;
 				//return (amountsP1 * 80.0 - amountsP2 * 60.0) + toP1Advantage;
 			}
 			
