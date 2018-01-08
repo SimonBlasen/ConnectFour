@@ -101,8 +101,8 @@ public class Sogo {
 			}
 			else
 			{
-				p1 = new BadPlayerBit();
-				p2 = new MrNovice();
+				p1 = new BadPlayer();
+				p2 = new MrNoviceBit();
 				weStarted = true;
 			}
 			
