@@ -22,7 +22,7 @@ import visualisation.Visualisation;
 
 public class Sogo {
 
-	public static final long PLAYER_TIMEOUT = 10000;
+	public static final long PLAYER_TIMEOUT = 4000;
 	public static final long TIMEOUT_CULANCE = 1000;
 
 	public static double weight1 = 0.0;
@@ -32,6 +32,20 @@ public class Sogo {
 
 	public static int depthStart = 2;
 	public static int depthAdd = 1;
+	
+	
+
+	public static int c_weStartedDiagonalTrueWin = 0;
+	public static int c_weStartedDiagonalTrueLose = 0;
+	public static int c_weStartedDiagonalFalseWin = 0;
+	public static int c_weStartedDiagonalFalseLose = 0;
+	public static int c_otherStartedDiagonalTrueWin = 0;
+	public static int c_otherStartedDiagonalTrueLose = 0;
+	public static int c_otherStartedDiagonalFalseWin = 0;
+	public static int c_otherStartedDiagonalFalseLose = 0;
+	
+	public static boolean weStarted = false;
+	public static boolean isDiagonal = false;
 	
 	public static void main(String[] args) {
 
@@ -81,14 +95,18 @@ public class Sogo {
 			
 			if (rounds % 2 == 0)
 			{
-				p1 = new MrNovice();
+				p1 = new MrNoviceBit();
 				p2 = new BadPlayer();
+				weStarted = false;
 			}
 			else
 			{
-				p1 = new BadPlayer();
+				p1 = new BadPlayerBit();
 				p2 = new MrNovice();
+				weStarted = true;
 			}
+			
+			isDiagonal = false;
 			
 			p1.initialize(Player.P1);
 			p2.initialize(Player.P2);
@@ -104,6 +122,26 @@ public class Sogo {
 			final TimeCounter tc = new TimeCounter();
 			tc.reset();
 			while (playing) {
+				
+				
+				if (g.board[0][0][0] == Player.P1 && g.board[3][3][0] == Player.P1)
+				{
+					isDiagonal = true;
+				}
+				if (g.board[0][0][0] == Player.P2 && g.board[3][3][0] == Player.P2)
+				{
+					isDiagonal = true;
+				}
+				if (g.board[3][0][0] == Player.P2 && g.board[0][3][0] == Player.P2)
+				{
+					isDiagonal = true;
+				}
+				if (g.board[3][0][0] == Player.P1 && g.board[0][3][0] == Player.P1)
+				{
+					isDiagonal = true;
+				}
+				
+				
 				turn++;
 				//System.out.println("Turn " + turn + ":");
 				//System.out.print(g);
@@ -176,11 +214,47 @@ public class Sogo {
 				if (rounds % 2 == 0)
 				{
 					//System.out.println("Player wins: " + p1.toString());
+					
+					if (isDiagonal && weStarted)
+					{
+						c_weStartedDiagonalTrueLose++;
+					}
+					else if (isDiagonal == false && weStarted)
+					{
+						c_weStartedDiagonalFalseLose++;
+					}
+					else if (isDiagonal && weStarted == false)
+					{
+						c_otherStartedDiagonalTrueLose++;
+					}
+					else if (isDiagonal == false && weStarted == false)
+					{
+						c_otherStartedDiagonalFalseLose++;
+					}
+					
 					p1Won++;
 				}
 				else
 				{
 					//System.out.println("Player wins: " + p1.toString());
+
+					if (isDiagonal && weStarted)
+					{
+						c_weStartedDiagonalTrueWin++;
+					}
+					else if (isDiagonal == false && weStarted)
+					{
+						c_weStartedDiagonalFalseWin++;
+					}
+					else if (isDiagonal && weStarted == false)
+					{
+						c_otherStartedDiagonalTrueWin++;
+					}
+					else if (isDiagonal == false && weStarted == false)
+					{
+						c_otherStartedDiagonalFalseWin++;
+					}
+					
 					p2Won++;
 				}
 				break;
@@ -188,11 +262,47 @@ public class Sogo {
 				if (rounds % 2 == 0)
 				{
 					//System.out.println("Player wins: " + p2.toString());
+					
+					if (isDiagonal && weStarted)
+					{
+						c_weStartedDiagonalTrueWin++;
+					}
+					else if (isDiagonal == false && weStarted)
+					{
+						c_weStartedDiagonalFalseWin++;
+					}
+					else if (isDiagonal && weStarted == false)
+					{
+						c_otherStartedDiagonalTrueWin++;
+					}
+					else if (isDiagonal == false && weStarted == false)
+					{
+						c_otherStartedDiagonalFalseWin++;
+					}
+					
 					p2Won++;
 				}
 				else
 				{
 					//System.out.println("Player wins: " + p2.toString());
+					
+					if (isDiagonal && weStarted)
+					{
+						c_weStartedDiagonalTrueLose++;
+					}
+					else if (isDiagonal == false && weStarted)
+					{
+						c_weStartedDiagonalFalseLose++;
+					}
+					else if (isDiagonal && weStarted == false)
+					{
+						c_otherStartedDiagonalTrueLose++;
+					}
+					else if (isDiagonal == false && weStarted == false)
+					{
+						c_otherStartedDiagonalFalseLose++;
+					}
+					
 					p1Won++;
 				}
 				break;
@@ -204,6 +314,15 @@ public class Sogo {
 			//System.out.print(g);
 
 			System.out.println("### [" + p1Won + ":" + p2Won + "] Draw: " + draw + " ###");
+			
+			System.out.println("### ODW: " + c_otherStartedDiagonalTrueWin);
+			System.out.println("### ODL: " + c_otherStartedDiagonalTrueLose);
+			System.out.println("### ONW: " + c_otherStartedDiagonalFalseWin);
+			System.out.println("### ONL: " + c_otherStartedDiagonalFalseLose);
+			System.out.println("### SDW: " + c_weStartedDiagonalTrueWin);
+			System.out.println("### SDL: " + c_weStartedDiagonalTrueLose);
+			System.out.println("### SNW: " + c_weStartedDiagonalFalseWin);
+			System.out.println("### SNL: " + c_weStartedDiagonalFalseLose);
 			
 			/*
 			System.out.print("###############################");

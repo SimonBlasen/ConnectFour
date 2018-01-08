@@ -19,7 +19,7 @@ public class BadPlayer implements SogoPlayer {
 	private static final double single_p = 1;
 	private static int DEPTH = 5;
 	
-	private boolean debug_messages = true;
+	private boolean debug_messages = false;
 	
 	private int mDepth = 0;
 	private Random mRnd;
