@@ -5,6 +5,8 @@ import java.util.List;
 import de.cogsys.ai.sogo.control.SogoGameConsole;
 import de.cogsys.ai.sogo.game.SogoGame.Player;
 import util.GameAnalyzer;
+import util.OpeningDatabase;
+import util.OpeningStrategy;
 import de.cogsys.ai.sogo.game.SogoGame;
 import de.cogsys.ai.sogo.game.SogoMove;
 
@@ -19,13 +21,17 @@ public class BadPlayer implements SogoPlayer {
 	
 	private SogoGameConsole c;
 	
+	private Player selfPlayer;
+	
 	public BadPlayer() {
 		
 	}
 
 	@Override
-	public void initialize(Player p) {
-		
+	public void initialize(Player p)
+	{
+		selfPlayer = p;
+		OpeningDatabase.setStrategy(OpeningStrategy.DIAGONAL_FORCATION);
 	}
 	
 	private int stonesAmountRound = 0;
@@ -43,10 +49,25 @@ public class BadPlayer implements SogoPlayer {
 		long bp2 = GameAnalyzer.getBP2FromGame(g);
 
 		stonesAmountRound = countStones(bp1, bp2);
+		
+		
+		if (stonesAmountRound <= 5)
+		{
+			SogoMove opening = OpeningDatabase.getMove(g, selfPlayer);
+			
+			if (opening != null)
+			{
+				c.updateMove(opening);
+				return;
+			}
+		}
+		
+		
+		
 
 		takeMove = moves.get(0);
 		
-		for (int depth = 4; depth < 7; depth++)
+		for (int depth = 4; depth < 10; depth++)
 		{
 			max_value_toplevel(moves, bp1, bp2, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, depth);
 			

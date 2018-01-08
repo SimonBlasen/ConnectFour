@@ -20,6 +20,8 @@ public class MrNoviceBit implements SogoPlayer {
 	private static final double single_p = 1;
 	private static int DEPTH = 5;
 	
+	private static boolean debug_messages = false;
+	
 	private int mDepth = 0;
 	private Random mRnd;
 	private SogoGameConsole c;
@@ -58,6 +60,11 @@ public class MrNoviceBit implements SogoPlayer {
 
 		stonesAmountRound = countStones(bp1, bp2);
 
+		if (debug_messages)
+		{
+			System.out.println("MrNoviceBit does a move");
+		}
+		
 		for (int depth = 4; depth < 6; depth++)
 		{
 			double maxscore = Double.NEGATIVE_INFINITY;
@@ -90,7 +97,10 @@ public class MrNoviceBit implements SogoPlayer {
 						final double score = min_value(alteredBp1, bp2, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, depth);
 
 
-						//System.out.println(m.i + "," + m.j + " = " + score);
+						if (debug_messages)
+						{
+							System.out.println(m.i + "," + m.j + " = " + score);
+						}
 
 						if (score > maxscore) {
 							bestmoves.clear();
@@ -267,7 +277,7 @@ public class MrNoviceBit implements SogoPlayer {
 	}
 	
 	
-	public double evaluateGame(long bp1, long bp2)
+	public static double evaluateGame(long bp1, long bp2)
 	{
 		double res = 0.0;
 		

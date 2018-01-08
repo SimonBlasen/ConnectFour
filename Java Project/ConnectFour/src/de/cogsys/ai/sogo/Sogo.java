@@ -1,5 +1,7 @@
 package de.cogsys.ai.sogo;
 
+import java.util.Random;
+
 import de.cogsys.ai.sogo.control.SogoGameConsole;
 import de.cogsys.ai.sogo.control.TimeCounter;
 import de.cogsys.ai.sogo.game.SogoGame;
@@ -72,23 +74,28 @@ public class Sogo {
 			//System.out.println("Round: " + rounds);
 			
 			SogoGame g = new SogoGame();
-			/*
-			g = g.performMove(new SogoMove(2, 0));//
-			g = g.performMove(new SogoMove(3, 0));
-			g = g.performMove(new SogoMove(3, 0));//
-			g = g.performMove(new SogoMove(0, 0));
-			g = g.performMove(new SogoMove(0, 3));//
-			g = g.performMove(new SogoMove(0, 0));
-			g = g.performMove(new SogoMove(0, 3));//
-			g = g.performMove(new SogoMove(2, 0));
-			g = g.performMove(new SogoMove(3, 3));//
-			g = g.performMove(new SogoMove(2, 3));
-			g = g.performMove(new SogoMove(2, 3));//
-			g = g.performMove(new SogoMove(2, 3));
-			g = g.performMove(new SogoMove(3, 3));//
-			g = g.performMove(new SogoMove(3, 3));
-			g = g.performMove(new SogoMove(1, 3));//
-			*/
+			
+			/*boolean makeDiag = (new Random()).nextBoolean();
+			
+			if (makeDiag)
+			{
+				g = g.performMove(new SogoMove(0, 0));//
+				g = g.performMove(new SogoMove(3, 0));
+				g = g.performMove(new SogoMove(3, 3));//
+				g = g.performMove(new SogoMove(0, 3));
+				
+				System.out.println("Made Diagonal");
+			}
+			else
+			{
+				g = g.performMove(new SogoMove(0, 0));//
+				g = g.performMove(new SogoMove(3, 3));
+				g = g.performMove(new SogoMove(0, 3));//
+				g = g.performMove(new SogoMove(3, 0));
+
+				System.out.println("Not Diagonal");
+			}*/
+			
 			
 			final SogoPlayer p1;// = new MrNovice(); // new ConsolePlayer(br);
 			final SogoPlayer p2;// = new MrInefficientTree(); // new ConsolePlayer(br);
