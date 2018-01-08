@@ -81,13 +81,13 @@ public class Sogo {
 			
 			if (rounds % 2 == 0)
 			{
-				p1 = new MrNoviceBit();
+				p1 = new MrNovice();
 				p2 = new BadPlayer();
 			}
 			else
 			{
 				p1 = new BadPlayer();
-				p2 = new MrNoviceBit();
+				p2 = new MrNovice();
 			}
 			
 			p1.initialize(Player.P1);

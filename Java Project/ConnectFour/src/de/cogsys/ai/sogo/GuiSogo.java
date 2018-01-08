@@ -96,7 +96,7 @@ public class GuiSogo {
 		System.exit(0);
 	}
 
-	public static final long PLAYER_TIMEOUT = 1000000;
+	public static final long PLAYER_TIMEOUT = 10000;
 	public static final long TIMEOUT_CULANCE = 500;
 
 	private MainFrame mainframe;
