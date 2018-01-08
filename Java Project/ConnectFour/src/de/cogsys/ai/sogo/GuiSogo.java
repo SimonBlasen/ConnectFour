@@ -96,7 +96,7 @@ public class GuiSogo {
 		System.exit(0);
 	}
 
-	public static final long PLAYER_TIMEOUT = 10000;
+	public static final long PLAYER_TIMEOUT = 1000000;
 	public static final long TIMEOUT_CULANCE = 500;
 
 	private MainFrame mainframe;
@@ -290,13 +290,13 @@ public class GuiSogo {
 					
 					//MrBitwiseTree mrbt = new MrBitwiseTree();
 					//double valval = mrbt.evaluateMilton(bp1, bp2, game.getCurrentPlayer() == Player.P1);
-					double valval = BadPlayer.evaluateOddEven(bp1, bp2, false);
+					//double valval = BadPlayer.evaluateOddEven(bp1, bp2, false);
 					
 					
 					
-					System.out.println("########################");
-					System.out.println("## " + valval);
-					System.out.println("########################");
+					//System.out.println("########################");
+					//System.out.println("## " + valval);
+					//System.out.println("########################");
 				}
 				
 			}

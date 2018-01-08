@@ -558,7 +558,7 @@ stonesAmountRound = countStones(bp1, bp2);
 					floor++;
 				}
 				
-				for (int j = 0; j < GameAnalyzer.bottomLines.length; j++)
+				/*for (int j = 0; j < GameAnalyzer.bottomLines.length; j++)
 				{
 					if (threatPos == GameAnalyzer.bottomLines[j])
 					{
@@ -583,7 +583,7 @@ stonesAmountRound = countStones(bp1, bp2);
 						threats[j][floor] = pThreat ? (byte)1 : (byte)2;
 						break;
 					}
-				}
+				}*/
 			}
 		}
 		

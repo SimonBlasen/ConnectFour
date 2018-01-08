@@ -58,7 +58,7 @@ public class MrNoviceBit implements SogoPlayer {
 
 		stonesAmountRound = countStones(bp1, bp2);
 
-		for (int depth = 4; depth < 30; depth++)
+		for (int depth = 4; depth < 6; depth++)
 		{
 			double maxscore = Double.NEGATIVE_INFINITY;
 			
@@ -430,7 +430,7 @@ public class MrNoviceBit implements SogoPlayer {
 					floor++;
 				}
 				
-				for (int j = 0; j < GameAnalyzer.bottomLines.length; j++)
+				/*for (int j = 0; j < GameAnalyzer.bottomLines.length; j++)
 				{
 					if (threatPos == GameAnalyzer.bottomLines[j])
 					{
@@ -455,7 +455,7 @@ public class MrNoviceBit implements SogoPlayer {
 						threats[j][floor] = pThreat ? (byte)1 : (byte)2;
 						break;
 					}
-				}
+				}*/
 			}
 			/*else if (threatPos2_0 != 0x0L)
 			{

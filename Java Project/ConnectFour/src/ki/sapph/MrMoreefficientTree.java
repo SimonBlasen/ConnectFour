@@ -217,7 +217,7 @@ public class MrMoreefficientTree implements SogoPlayer {
 	{
 		double res = 0.0;
 		
-		for (int i = 0; i < GameAnalyzer.lines.length; i++)
+		/*for (int i = 0; i < GameAnalyzer.lines.length; i++)
 		{
 			int self = 0;
 			int other = 0;
@@ -263,7 +263,7 @@ public class MrMoreefficientTree implements SogoPlayer {
 				}
 			}
 		}
-		
+		*/
 		return res;
 	}
 

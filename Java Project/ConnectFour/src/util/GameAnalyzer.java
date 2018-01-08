@@ -1,122 +1,14 @@
 package util;
 
-import java.nio.channels.FileLockInterruptionException;
-
 import de.cogsys.ai.sogo.game.SogoGame;
-import de.cogsys.ai.sogo.game.SogoGame.Player;
 
+
+/*
+ * Class containing database for heuristic and finishing moves (winning constellations, killer moves and dilemmas
+ */
 public class GameAnalyzer {
 
-	
-	public static final int[][][] lines = new int[][][] {{{0,0,0},{0,0,1},{0,0,2},{0,0,3}},
-		{{1,0,0},{1,0,1},{1,0,2},{1,0,3}},
-		{{2,0,0},{2,0,1},{2,0,2},{2,0,3}},
-		{{3,0,0},{3,0,1},{3,0,2},{3,0,3}},
-		{{0,1,0},{0,1,1},{0,1,2},{0,1,3}},
-		{{1,1,0},{1,1,1},{1,1,2},{1,1,3}},
-		{{2,1,0},{2,1,1},{2,1,2},{2,1,3}},
-		{{3,1,0},{3,1,1},{3,1,2},{3,1,3}},
-		{{0,2,0},{0,2,1},{0,2,2},{0,2,3}},
-		{{1,2,0},{1,2,1},{1,2,2},{1,2,3}},
-		{{2,2,0},{2,2,1},{2,2,2},{2,2,3}},
-		{{3,2,0},{3,2,1},{3,2,2},{3,2,3}},
-		{{0,3,0},{0,3,1},{0,3,2},{0,3,3}},
-		{{1,3,0},{1,3,1},{1,3,2},{1,3,3}},
-		{{2,3,0},{2,3,1},{2,3,2},{2,3,3}},
-		{{3,3,0},{3,3,1},{3,3,2},{3,3,3}},
-		
-		{{0,0,0},{0,1,0},{0,2,0},{0,3,0}},
-		{{1,0,0},{1,1,0},{1,2,0},{1,3,0}},
-		{{2,0,0},{2,1,0},{2,2,0},{2,3,0}},
-		{{3,0,0},{3,1,0},{3,2,0},{3,3,0}},
-		{{0,0,1},{0,1,1},{0,2,1},{0,3,1}},
-		{{1,0,1},{1,1,1},{1,2,1},{1,3,1}},
-		{{2,0,1},{2,1,1},{2,2,1},{2,3,1}},
-		{{3,0,1},{3,1,1},{3,2,1},{3,3,1}},
-		{{0,0,2},{0,1,2},{0,2,2},{0,3,2}},
-		{{1,0,2},{1,1,2},{1,2,2},{1,3,2}},
-		{{2,0,2},{2,1,2},{2,2,2},{2,3,2}},
-		{{3,0,2},{3,1,2},{3,2,2},{3,3,2}},
-		{{0,0,3},{0,1,3},{0,2,3},{0,3,3}},
-		{{1,0,3},{1,1,3},{1,2,3},{1,3,3}},
-		{{2,0,3},{2,1,3},{2,2,3},{2,3,3}},
-		{{3,0,3},{3,1,3},{3,2,3},{3,3,3}},
-		
-		{{0,0,0},{1,0,0},{2,0,0},{3,0,0}},
-		{{0,1,0},{1,1,0},{2,1,0},{3,1,0}},
-		{{0,2,0},{1,2,0},{2,2,0},{3,2,0}},
-		{{0,3,0},{1,3,0},{2,3,0},{3,3,0}},
-		{{0,0,1},{1,0,1},{2,0,1},{3,0,1}},
-		{{0,1,1},{1,1,1},{2,1,1},{3,1,1}},
-		{{0,2,1},{1,2,1},{2,2,1},{3,2,1}},
-		{{0,3,1},{1,3,1},{2,3,1},{3,3,1}},
-		{{0,0,2},{1,0,2},{2,0,2},{3,0,2}},
-		{{0,1,2},{1,1,2},{2,1,2},{3,1,2}},
-		{{0,2,2},{1,2,2},{2,2,2},{3,2,2}},
-		{{0,3,2},{1,3,2},{2,3,2},{3,3,2}},
-		{{0,0,3},{1,0,3},{2,0,3},{3,0,3}},
-		{{0,1,3},{1,1,3},{2,1,3},{3,1,3}},
-		{{0,2,3},{1,2,3},{2,2,3},{3,2,3}},
-		{{0,3,3},{1,3,3},{2,3,3},{3,3,3}},
-		
-	
-	
-
-		{{0,0,0},{0,1,1},{0,2,2},{0,3,3}},
-		{{1,0,0},{1,1,1},{1,2,2},{1,3,3}},
-		{{2,0,0},{2,1,1},{2,2,2},{2,3,3}},
-		{{3,0,0},{3,1,1},{3,2,2},{3,3,3}},
-		{{0,0,3},{0,1,2},{0,2,1},{0,3,0}},
-		{{1,0,3},{1,1,2},{1,2,1},{1,3,0}},
-		{{2,0,3},{2,1,2},{2,2,1},{2,3,0}},
-		{{3,0,3},{3,1,2},{3,2,1},{3,3,0}},
-
-		{{0,0,0},{1,0,1},{2,0,2},{3,0,3}},
-		{{0,1,0},{1,1,1},{2,1,2},{3,1,3}},
-		{{0,2,0},{1,2,1},{2,2,2},{3,2,3}},
-		{{0,3,0},{1,3,1},{2,3,2},{3,3,3}},
-		{{0,0,3},{1,0,2},{2,0,1},{3,0,0}},
-		{{0,1,3},{1,1,2},{2,1,1},{3,1,0}},
-		{{0,2,3},{1,2,2},{2,2,1},{3,2,0}},
-		{{0,3,3},{1,3,2},{2,3,1},{3,3,0}},
-
-		{{0,0,0},{1,1,0},{2,2,0},{3,3,0}},
-		{{0,0,1},{1,1,1},{2,2,1},{3,3,1}},
-		{{0,0,2},{1,1,2},{2,2,2},{3,3,2}},
-		{{0,0,3},{1,1,3},{2,2,3},{3,3,3}},
-		{{3,0,0},{2,1,0},{1,2,0},{0,3,0}},
-		{{3,0,1},{2,1,1},{1,2,1},{0,3,1}},
-		{{3,0,2},{2,1,2},{1,2,2},{0,3,2}},
-		{{3,0,3},{2,1,3},{1,2,3},{0,3,3}},
-		
-	
-
-		{{0,0,0},{1,1,1},{2,2,2},{3,3,3}},
-		{{0,0,3},{1,1,2},{2,2,1},{3,3,0}},
-		{{3,0,0},{2,1,1},{1,2,2},{0,3,3}},
-		{{3,0,3},{2,1,2},{1,2,1},{0,3,0}},};
-		
-		public static final long[] bottomLines = new long[] {
-				0x0000000000000001L,
-				0x0000000000000002L,
-				0x0000000000000004L,
-				0x0000000000000008L,
-				0x0000000000000010L,
-				0x0000000000000020L,
-				0x0000000000000040L,
-				0x0000000000000080L,
-				0x0000000000000100L,
-				0x0000000000000200L,
-				0x0000000000000400L,
-				0x0000000000000800L,
-				0x0000000000001000L,
-				0x0000000000002000L,
-				0x0000000000004000L,
-				0x0000000000008000L,
-				
-		};
-		
-		
+	    // lines that contain a win
 		public static final long[] longLines = new long[] {
 				0x000000000000000FL, //0
 				0x00000000000000F0L,
@@ -168,10 +60,6 @@ public class GameAnalyzer {
 				0x2000200020002000L,
 				0x4000400040004000L,
 				0x8000800080008000L, //47
-				
-				
-				
-				
 
 				0x0008000400020001L,
 				0x0080004000200010L,
@@ -199,9 +87,6 @@ public class GameAnalyzer {
 				0x0000000012480000L,
 				0x0000124800000000L,
 				0x1248000000000000L,
-				
-				
-				
 
 				0x8000040000200001L,
 				0x0001002004008000L,
@@ -215,20 +100,16 @@ public class GameAnalyzer {
 				{
 						// Der 9er Move
 						0x9000B, 0xB000BL, 0x1000B000BL, 0x2000B000BL, 0x8000B000BL, 0xA000B000BL, 0x9000B000BL, 0x3000B000BL, 0xA000B000BL, 0x9000B000BL, 0x3000B000BL, 0xB000B000BL, 0xB000B000BL, 0xB000B000BL, 0xF000B000BL, 0x8000B000B000BL, 0x2000B000B000BL, 0x1000B000B000BL, 
-						// Der 7er Killer
+						// Der 7er Killer v1
 						0x40006000CL, 0x4000E000CL, 0xC000E000CL, 0xE000E000CL, 0x1000E000E000CL, 0xF000E000CL, 
 						// Der 7er Killer v2
 						0x40006000DL, 0xC0006000DL, 0xE0006000DL, 0xF0006000DL, 0x1000E0006000DL, 
-						
 				};
 		private static long[] oneWallKillerBoardsP2 = new long[]
 				{
 					0xF000F00060004L, 0xF000F00040000L, 0xF000E00000000L, 0xF000D00000000L, 0xF000700000000L, 0x7000500000000L, 0x7000600000000L, 0xE000C00000000L, 0xD000500000000L, 0xE000600000000L, 0xD000C00000000L, 0xC000400000000L, 0x6000400000000L, 0x5000400000000L, 0x0L, 0x0L, 0x0L, 0x0L, 
 					0xF000B00090000L, 0xB000B00010000L, 0xB000300000000L, 0x3000100000000L, 0x0L, 0x0L, 
 					0xF000B00010000L, 0x3000300010000L, 0x1000100000000L, 0x0L, 0x0L, 
-						
-						
-						
 				};
 		
 		
@@ -275,11 +156,6 @@ public class GameAnalyzer {
 				killerBoardsP2[i * 20 + 1] = p2f0 | (p2f1 << 16) | (p2f2 << 32) | (p2f3 << 48);
 
 				
-				
-				
-				
-				
-				
 				p1f0 = 0xFL & killerBoardsP1[i * 20 + 0];
 				p1f1 = (0xF0000L & killerBoardsP1[i * 20 + 0]) >> 16;
 				p1f2 = (0xF00000000L & killerBoardsP1[i * 20 + 0]) >> 32;
@@ -303,11 +179,6 @@ public class GameAnalyzer {
 
 				killerBoardsP1[i * 20 + 3] = (p1f0 << (4)) | (p1f1 << (16 + 4)) | (p1f2 << (32 + 4)) | (p1f3 << (48 + 4));
 				killerBoardsP2[i * 20 + 3] = (p2f0 << (4)) | (p2f1 << (16 + 4)) | (p2f2 << (32 + 4)) | (p2f3 << (48 + 4));
-
-				
-				
-				
-				
 				
 				
 				p1f0 = 0xFL & killerBoardsP1[i * 20 + 0];
@@ -333,12 +204,7 @@ public class GameAnalyzer {
 
 				killerBoardsP1[i * 20 + 5] = (p1f0 << (8)) | (p1f1 << (16 + 8)) | (p1f2 << (32 + 8)) | (p1f3 << (48 + 8));
 				killerBoardsP2[i * 20 + 5] = (p2f0 << (8)) | (p2f1 << (16 + 8)) | (p2f2 << (32 + 8)) | (p2f3 << (48 + 8));
-
-				
-				
-				
-				
-				
+			
 				
 				p1f0 = 0xFL & killerBoardsP1[i * 20 + 0];
 				p1f1 = (0xF0000L & killerBoardsP1[i * 20 + 0]) >> 16;
@@ -363,22 +229,6 @@ public class GameAnalyzer {
 
 				killerBoardsP1[i * 20 + 7] = (p1f0 << (12)) | (p1f1 << (16 + 12)) | (p1f2 << (32 + 12)) | (p1f3 << (48 + 12));
 				killerBoardsP2[i * 20 + 7] = (p2f0 << (12)) | (p2f1 << (16 + 12)) | (p2f2 << (32 + 12)) | (p2f3 << (48 + 12));
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 				p1f0 = 0xFL & killerBoardsP1[i * 20 + 0];
@@ -419,15 +269,6 @@ public class GameAnalyzer {
 
 
 
-
-
-
-
-
-
-
-
-
 				p1f0 = 0xFL & killerBoardsP1[i * 20 + 0];
 				p1f1 = (0xF0000L & killerBoardsP1[i * 20 + 0]) >> 16;
 				p1f2 = (0xF00000000L & killerBoardsP1[i * 20 + 0]) >> 32;
@@ -463,16 +304,6 @@ public class GameAnalyzer {
 						| ((0x1L & p2f1) << (16 + 0 + 1)) | ((0x2L & p2f1) << (16 + 4 - 1 + 1)) | ((0x4L & p2f1) << (16 + 8 - 2 + 1)) | ((0x8L & p2f1) << (16 + 12 - 3 + 1))
 						| ((0x1L & p2f2) << (32 + 0 + 1)) | ((0x2L & p2f2) << (32 + 4 - 1 + 1)) | ((0x4L & p2f2) << (32 + 8 - 2 + 1)) | ((0x8L & p2f2) << (32 + 12 - 3 + 1))
 						| ((0x1L & p2f3) << (48 + 0 + 1)) | ((0x2L & p2f3) << (48 + 4 - 1 + 1)) | ((0x4L & p2f3) << (48 + 8 - 2 + 1)) | ((0x8L & p2f3) << (48 + 12 - 3 + 1));
-
-
-
-
-
-
-
-
-
-
 
 
 				p1f0 = 0xFL & killerBoardsP1[i * 20 + 0];
@@ -513,15 +344,6 @@ public class GameAnalyzer {
 
 
 
-
-
-
-
-
-
-
-
-
 				p1f0 = 0xFL & killerBoardsP1[i * 20 + 0];
 				p1f1 = (0xF0000L & killerBoardsP1[i * 20 + 0]) >> 16;
 				p1f2 = (0xF00000000L & killerBoardsP1[i * 20 + 0]) >> 32;
@@ -557,25 +379,7 @@ public class GameAnalyzer {
 						| ((0x1L & p2f1) << (16 + 0 + 3)) | ((0x2L & p2f1) << (16 + 4 - 1 + 3)) | ((0x4L & p2f1) << (16 + 8 - 2 + 3)) | ((0x8L & p2f1) << (16 + 12 - 3 + 3))
 						| ((0x1L & p2f2) << (32 + 0 + 3)) | ((0x2L & p2f2) << (32 + 4 - 1 + 3)) | ((0x4L & p2f2) << (32 + 8 - 2 + 3)) | ((0x8L & p2f2) << (32 + 12 - 3 + 3))
 						| ((0x1L & p2f3) << (48 + 0 + 3)) | ((0x2L & p2f3) << (48 + 4 - 1 + 3)) | ((0x4L & p2f3) << (48 + 8 - 2 + 3)) | ((0x8L & p2f3) << (48 + 12 - 3 + 3));
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
+
 
 				p1f0 = 0xFL & killerBoardsP1[i * 20 + 0];
 				p1f1 = (0xF0000L & killerBoardsP1[i * 20 + 0]) >> 16;
@@ -613,9 +417,6 @@ public class GameAnalyzer {
 						| ((0x1L & p2f2) << (32 + 0 + 0)) | ((0x2L & p2f2) << (32 + 4 - 1 + 1)) | ((0x4L & p2f2) << (32 + 8 - 2 + 2)) | ((0x8L & p2f2) << (32 + 12 - 3 + 3))
 						| ((0x1L & p2f3) << (48 + 0 + 0)) | ((0x2L & p2f3) << (48 + 4 - 1 + 1)) | ((0x4L & p2f3) << (48 + 8 - 2 + 2)) | ((0x8L & p2f3) << (48 + 12 - 3 + 3));
 
-				
-				
-				
 
 				p1f0 = 0xFL & killerBoardsP1[i * 20 + 0];
 				p1f1 = (0xF0000L & killerBoardsP1[i * 20 + 0]) >> 16;
@@ -652,16 +453,6 @@ public class GameAnalyzer {
 						| ((0x1L & p2f1) << (16 + 0 + 3)) | ((0x2L & p2f1) << (16 + 4 - 1 + 2)) | ((0x4L & p2f1) << (16 + 8 - 2 + 1)) | ((0x8L & p2f1) << (16 + 12 - 3 + 0))
 						| ((0x1L & p2f2) << (32 + 0 + 3)) | ((0x2L & p2f2) << (32 + 4 - 1 + 2)) | ((0x4L & p2f2) << (32 + 8 - 2 + 1)) | ((0x8L & p2f2) << (32 + 12 - 3 + 0))
 						| ((0x1L & p2f3) << (48 + 0 + 3)) | ((0x2L & p2f3) << (48 + 4 - 1 + 2)) | ((0x4L & p2f3) << (48 + 8 - 2 + 1)) | ((0x8L & p2f3) << (48 + 12 - 3 + 0));
-
-
-
-
-
-
-
-
-
-
 
 			}
 		}
@@ -702,26 +493,11 @@ public class GameAnalyzer {
 				return 0xFL;
 			else
 			{
-				System.out.println("Ey du Arschloch");
+				System.out.println("One of the above cases should fit :(");
 				System.exit(-1);
 				return 0x0L;
 			}
 		}
-		
-	
-	public static int countFreeLine(Player[] line, Player player) {
-		int c = 0;
-		for (int i = 0; i < 4; i++) {
-			if (line[i] == player) {
-				c++;
-			}
-			else if (line[i] != Player.NONE)
-			{
-				return 0;
-			}
-		}
-		return c;
-	}
 	
 	
 	public static boolean hasGameEnded(long bp)
@@ -757,9 +533,6 @@ public class GameAnalyzer {
 		return false;
 	}
 	
-	
-	
-	
 	public static long getBP1FromGame(SogoGame g)
 	{
 		long bp = 0x0L;
@@ -792,160 +565,6 @@ public class GameAnalyzer {
 		}
 		
 		return bp;
-	}
-	
-	public static boolean[][][] getB1sFromGame(SogoGame g)
-	{
-		boolean[][][] b1s = new boolean[4][4][4];
-		
-		for (int x = 0; x < 4; x++)
-		{
-			for (int y = 0; y < 4; y++)
-			{
-				for (int z = 0; z < 4; z++)
-				{
-					if (g.board[x][y][z] == Player.NONE)
-					{
-						b1s[x][y][z] = false;
-					}
-					else
-					{
-						b1s[x][y][z] = true;
-					}
-				}
-			}
-		}
-		
-		return b1s;
-	}
-	
-	public static boolean[][][] getB2sFromGame(SogoGame g)
-	{
-		boolean[][][] b2s = new boolean[4][4][4];
-		
-		for (int x = 0; x < 4; x++)
-		{
-			for (int y = 0; y < 4; y++)
-			{
-				for (int z = 0; z < 4; z++)
-				{
-					if (g.board[x][y][z] == Player.NONE)
-					{
-
-					}
-					else
-					{
-						b2s[x][y][z] = g.board[x][y][z] != g.getCurrentPlayer();
-					}
-				}
-			}
-		}
-		
-		return b2s;
-	}
-	
-	public static boolean hasGameEnded(boolean[][][] b1s, boolean[][][] b2s, int x, int y, int z, boolean whoCouldHaveEndedIt)
-	{
-		boolean winX = true;
-		boolean winY = true;
-		boolean winZ = true;
-		boolean winCX1 = true;
-		boolean winCY1 = true;
-		boolean winCZ1 = true;
-		boolean winCX2 = true;
-		boolean winCY2 = true;
-		boolean winCZ2 = true;
-
-		boolean winQ1 = true;
-		boolean winQ2 = true;
-		boolean winQ3 = true;
-		boolean winQ4 = true;
-		for (int s = 0; s < 4; s++)
-		{
-			if (winX && (b1s[s][y][z] == false || b2s[s][y][z] != whoCouldHaveEndedIt))
-				winX = false;
-			if (winY && (b1s[x][s][z] == false || b2s[x][s][z] != whoCouldHaveEndedIt))
-				winY = false;
-			if (winZ && (b1s[x][y][s] == false || b2s[x][y][s] != whoCouldHaveEndedIt))
-				winZ = false;
-			
-
-			if (winCX1 && (b1s[x][s][s] == false || b2s[x][s][s] != whoCouldHaveEndedIt))
-				winCX1 = false;
-			if (winCY1 && (b1s[s][y][s] == false || b2s[s][y][s] != whoCouldHaveEndedIt))
-				winCY1 = false;
-			if (winCZ1 && (b1s[s][s][z] == false || b2s[s][s][z] != whoCouldHaveEndedIt))
-				winCZ1 = false;
-			if (winCX2 && (b1s[x][3-s][s] == false || b2s[x][3-s][s] != whoCouldHaveEndedIt))
-				winCX2 = false;
-			if (winCY2 && (b1s[3-s][y][s] == false || b2s[3-s][y][s] != whoCouldHaveEndedIt))
-				winCY2 = false;
-			if (winCZ2 && (b1s[3-s][s][z] == false || b2s[3-s][s][z] != whoCouldHaveEndedIt))
-				winCZ2 = false;
-			
-
-			if (winQ1 && (b1s[s][s][s] == false || b2s[s][s][s] != whoCouldHaveEndedIt))
-				winQ1 = false;
-			if (winQ2 && (b1s[s][s][3-s] == false || b2s[s][s][3-s] != whoCouldHaveEndedIt))
-				winQ2 = false;
-			if (winQ3 && (b1s[3-s][s][s] == false || b2s[3-s][s][s] != whoCouldHaveEndedIt))
-				winQ3 = false;
-			if (winQ4 && (b1s[3-s][s][3-s] == false || b2s[3-s][s][3-s] != whoCouldHaveEndedIt))
-				winQ4 = false;
-		}
-		
-		boolean hasEnded = winX || winY || winZ || winCX1 || winCX2 || winCY1 || winCY2 || winCZ1 || winCZ2 || winQ1 || winQ2 || winQ3 || winQ4;
-		
-		return hasEnded;
-	}
-	
-	public static boolean isAir(boolean[][][] b1s, int[] coords)
-	{
-		return b1s[coords[0]][coords[1]][coords[2]] == false;
-	}
-	
-	public static boolean isP1(boolean[][][] b2s, int[] coords)
-	{
-		return b2s[coords[0]][coords[1]][coords[2]] == false;
-	}
-	
-	
-	public static int getAmountOfLines(SogoGame g, int lineLength, Player player)
-	{
-		// ATTENTION: Doesnt work yet
-		
-		int linesAmount = 0;
-		
-		for (int x = 0; x < 4; x++)
-		{
-			for (int y = 0; y < 4; y++)
-			{
-				int plAmount = 0;
-				for (int z = 0; z < 4; z++)
-				{
-					if (g.board[x][y][z] == player)
-					{
-						plAmount++;
-					}
-					else if (g.board[x][y][z] == Player.NONE)
-					{
-						// Do nothing do to space
-					}
-					else	// In this case, its the other player
-					{
-						plAmount = -1;
-						break;
-					}
-				}
-				
-				if (plAmount == lineLength)
-				{
-					linesAmount++;
-				}
-			}
-		}
-		
-		return linesAmount;
 	}
 	
 }

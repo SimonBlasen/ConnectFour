@@ -139,8 +139,8 @@ public class MrInefficientTree implements SogoPlayer {
 		List<Player[]> lines = g.getLines();
 		double res = 0;
 		for (Player[] l : lines) {
-			int self = GameAnalyzer.countFreeLine(l, g.getCurrentPlayer());
-			int other = GameAnalyzer.countFreeLine(l, g.getOtherPlayer());
+			int self = 0; /* GameAnalyzer.countFreeLine(l, g.getCurrentPlayer()); */
+			int other = 0; /* GameAnalyzer.countFreeLine(l, g.getOtherPlayer()); */
 			if (other == 0) {
 				switch (self) {
 				case 4:
