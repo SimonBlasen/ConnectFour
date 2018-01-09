@@ -17,7 +17,7 @@ public class BadPlayer implements SogoPlayer {
 	private static final double double_p = 2;
 	private static final double single_p = 1;
 	
-	private boolean debug_messages = false;
+	private boolean debug_messages = true;
 	
 	private SogoGameConsole c;
 	
@@ -51,7 +51,7 @@ public class BadPlayer implements SogoPlayer {
 		stonesAmountRound = countStones(bp1, bp2);
 		
 		
-		if (stonesAmountRound <= 5)
+		/*if (stonesAmountRound <= 5)
 		{
 			SogoMove opening = OpeningDatabase.getMove(g, selfPlayer);
 			
@@ -60,7 +60,7 @@ public class BadPlayer implements SogoPlayer {
 				c.updateMove(opening);
 				return;
 			}
-		}
+		}*/
 		
 		
 		

@@ -65,7 +65,7 @@ public class MrNoviceBit implements SogoPlayer {
 			System.out.println("MrNoviceBit does a move");
 		}
 		
-		for (int depth = 4; depth < 6; depth++)
+		for (int depth = 4; depth < 30; depth++)
 		{
 			double maxscore = Double.NEGATIVE_INFINITY;
 			
