@@ -1,5 +1,6 @@
 package de.cogsys.ai.sogo.player;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import de.cogsys.ai.sogo.control.SogoGameConsole;
@@ -17,7 +18,7 @@ public class BadPlayer implements SogoPlayer {
 	private static final double double_p = 2;
 	private static final double single_p = 1;
 	
-	private boolean debug_messages = true;
+	private boolean debug_messages = false;
 	
 	private SogoGameConsole c;
 	
@@ -240,8 +241,11 @@ public class BadPlayer implements SogoPlayer {
 	    return v;
 	}
 	
-	public static double evaluateGame(long bp1, long bp2)
+	public static double evaluateGame(long bp1, long bp2, boolean selfTurn)
 	{
+		List<Byte> all3LinesP1 = new ArrayList<Byte>();
+		List<Byte> all3LinesP2 = new ArrayList<Byte>();
+		
 		double res = 0.0;
 		
 		for (int i = 0; i < GameAnalyzer.longLines.length; i++)
@@ -299,8 +303,141 @@ public class BadPlayer implements SogoPlayer {
 			}
 		}
 		
+		
+		if (selfTurn == false)
+		{
+			boolean hasIt = hasCloseableThreeLine(all3LinesP2, bp1, bp2);
+			if (hasIt == false)
+			{// Checks the field for Dilemmas 
+				if(checkDilemma(all3LinesP1, bp1, bp2)){
+					return win_p;
+				}else{
+					return res;
+				}
+			}
+			else
+			{
+				return -win_p;
+			
+			}
+		}
+		else
+		{
+			boolean hasIt = hasCloseableThreeLine(all3LinesP1, bp1, bp2);
+			
+			if (hasIt)
+				
+			{
+				return win_p;
+			}
+			else
+			{
+				if(checkDilemma(all3LinesP2, bp2, bp1)){
+					return -win_p;
+				}
+			}
+			
+			
+		}
+		
+		
+		
+		
+		
+		
 		return res;
 	}
+	
+	// Check for a Dilemma, true if bp1 argument has one
+		public static boolean checkDilemma(List<Byte> all3Lines, long bp1, long bp2){
+			
+			long stonePos1;
+			long stonePos2;
+			
+			long curLongLine1;
+			long curLongLine2;
+			
+			// compares all 3Lines
+			for(int i=0; i<all3Lines.size()-1; i++){
+				for(int j=i+1; j<all3Lines.size(); j++){
+
+					curLongLine1 = GameAnalyzer.longLines[all3Lines.get(i)];
+					curLongLine2 = GameAnalyzer.longLines[all3Lines.get(j)];
+					
+					stonePos1 = curLongLine1 & bp1;
+					stonePos1 = stonePos1 ^ curLongLine1;
+					
+					
+					
+					stonePos2 = curLongLine2 & bp1;
+					stonePos2 = stonePos2 ^ curLongLine2;
+					// stonePos now keeps only a single 1 at missing place
+					
+					// Make sure Pos1 != Pos2
+					long testPos = stonePos1 & stonePos2;
+					if(testPos == 0){
+						
+						if(fieldPlayable(stonePos1, bp1, bp2)
+							&& fieldPlayable(stonePos2, bp1, bp2)){
+							return true;
+						}
+					}		
+				}
+			}		
+			
+			return false;
+		}
+		
+		public static boolean hasCloseableThreeLine(List<Byte> all3Lines, long bp1, long bp2)
+		{
+			long stonePos1;
+			
+			long curLongLine1;
+			
+			// compares all 3Lines
+			for(int i=0; i<all3Lines.size()-1; i++){
+
+					curLongLine1 = GameAnalyzer.longLines[all3Lines.get(i)];
+					
+					stonePos1 = curLongLine1 & bp1;
+					stonePos1 = stonePos1 ^ curLongLine1;
+					
+					
+					
+					// stonePos now keeps only a single 1 at missing place
+					
+					// Make sure Pos1 != Pos2
+					long testPos = stonePos1;
+					if(testPos == 0){
+						
+						if(fieldPlayable(stonePos1, bp1, bp2)){
+							return true;
+						}
+					}		
+			}		
+			
+			return false;
+		}
+		
+		
+		// checks if the given stone position can be filled
+		public static boolean fieldPlayable(long stonePos, long bp1, long bp2){
+			
+			// checks if the stone is on the lowest level
+			if(stonePos < 0XFFFFL){
+				return true;
+			}else{
+				
+				stonePos = stonePos >> 16;
+				
+				if((stonePos & bp1) != 0 || (stonePos & bp2) != 0){
+					return true;
+				}			
+			}
+
+			return false;
+		}
+	
 	
 	
 	public double evaluateOddEven(long bp1, long bp2, long oldBp1)
@@ -423,7 +560,7 @@ public class BadPlayer implements SogoPlayer {
 			difference = p1ThreatsOdd - p2ThreatsEven;
 		}
 		
-		return (difference * 100.0) + evaluateGame(bp1, bp2) * 0.06;
+		return (difference * 100.0) + evaluateGame(bp1, bp2, oldBp1 == bp1) * 0.06;
 	}
 	
 	
