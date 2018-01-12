@@ -56,7 +56,7 @@ public class AIRöderDoll implements SogoPlayer {
 
 		takeMove = moves.get(0);
 		
-		for (int depth = 4; depth < 10; depth++)
+		for (int depth = 4; depth < 30; depth++)
 		{
 			max_value_toplevel(moves, bp1, bp2, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, depth);
 			
